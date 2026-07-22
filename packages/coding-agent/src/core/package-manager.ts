@@ -173,16 +173,15 @@ interface ResourceAccumulator {
 }
 
 /**
- * Compute a numeric precedence rank for a resource based on its metadata.
- * Lower rank = higher precedence. 用于sort resolved resources so that
- * name-collision resolution ("first wins") produces the correct outcome.
+ * 根据资源元数据计算数值优先级。
+ * 数值越低，优先级越高。用于排序已解析资源，使名称冲突按“先到先得”正确解决。
  *
- * Precedence (highest to lowest):
- *   0  project + settings entry (source: "local", scope: "project")
- *   1  project + auto-discovered (source: "auto", scope: "project")
- *   2  user + settings entry (source: "local", scope: "user")
- *   3  user + auto-discovered (source: "auto", scope: "user")
- *   4  package resource (origin: "package")
+ * 优先级（从高到低）：
+ *   0  项目 + 设置条目（source: "local", scope: "project"）
+ *   1  项目 + 自动发现（source: "auto", scope: "project"）
+ *   2  用户 + 设置条目（source: "local", scope: "user"）
+ *   3  用户 + 自动发现（source: "auto", scope: "user"）
+ *   4  包资源（origin: "package"）
  */
 function resourcePrecedenceRank(m: PathMetadata): number {
 	if (m.origin === "package") return 4;
@@ -341,7 +340,7 @@ function collectFiles(
 			}
 		}
 	} catch {
-		// Ignore errors
+		// 忽略错误
 	}
 
 	return files;
@@ -417,7 +416,7 @@ function collectSkillEntries(
 			entries.push(...collectSkillEntries(fullPath, mode, ig, root));
 		}
 	} catch {
-		// Ignore errors
+		// 忽略错误
 	}
 
 	return entries;
@@ -493,7 +492,7 @@ function collectAutoPromptEntries(dir: string): string[] {
 			}
 		}
 	} catch {
-		// Ignore errors
+		// 忽略错误
 	}
 
 	return entries;
@@ -530,7 +529,7 @@ function collectAutoThemeEntries(dir: string): string[] {
 			}
 		}
 	} catch {
-		// Ignore errors
+		// 忽略错误
 	}
 
 	return entries;
@@ -580,13 +579,13 @@ function collectAutoExtensionEntries(dir: string): string[] {
 	const entries: string[] = [];
 	if (!existsSync(dir)) return entries;
 
-	// First check if this directory itself has explicit extension entries (package.json or index)
+	// 首先检查此目录本身是否有显式扩展入口（package.json 或 index）
 	const rootEntries = resolveExtensionEntries(dir);
 	if (rootEntries) {
 		return rootEntries;
 	}
 
-	// Otherwise, discover extensions from directory contents
+	// 否则从目录内容中发现扩展
 	const ig = ignore();
 	addIgnoreRules(ig, dir, dir);
 
@@ -624,15 +623,15 @@ function collectAutoExtensionEntries(dir: string): string[] {
 			}
 		}
 	} catch {
-		// Ignore errors
+		// 忽略错误
 	}
 
 	return entries;
 }
 
 /**
- * Collect resource files from a directory based on resource type.
- * Extensions use smart discovery (index.ts in subdirs), others use recursive collection.
+ * 根据资源类型从目录收集资源文件。
+ * 扩展使用智能发现（子目录中的 index.ts），其他资源使用递归收集。
  */
 function collectResourceFiles(dir: string, resourceType: ResourceType): string[] {
 	if (resourceType === "skills") {
@@ -721,12 +720,12 @@ function isEnabledByOverrides(filePath: string, patterns: string[], baseDir: str
 }
 
 /**
- * Apply patterns to paths and return a Set of enabled paths.
- * Pattern types:
- * - Plain patterns: include matching paths
- * - `!pattern`: exclude matching paths
- * - `+path`: force-include exact path (overrides exclusions)
- * - `-path`: force-exclude exact path (overrides force-includes)
+ * 将模式应用到路径，并返回已启用路径的 Set。
+ * 模式类型：
+ * - 普通模式：包含匹配路径
+ * - `!pattern`：排除匹配路径
+ * - `+path`：强制包含精确路径（覆盖排除规则）
+ * - `-path`：强制排除精确路径（覆盖强制包含规则）
  */
 function applyPatterns(allPaths: string[], patterns: string[], baseDir: string): Set<string> {
 	const includes: string[] = [];
@@ -746,7 +745,7 @@ function applyPatterns(allPaths: string[], patterns: string[], baseDir: string):
 		}
 	}
 
-	// Step 1: Apply includes (or all if no includes)
+	// 第 1 步：应用包含规则（没有包含规则时使用全部路径）
 	let result: string[];
 	if (includes.length === 0) {
 		result = [...allPaths];
@@ -754,12 +753,12 @@ function applyPatterns(allPaths: string[], patterns: string[], baseDir: string):
 		result = allPaths.filter((filePath) => matchesAnyPattern(filePath, includes, baseDir));
 	}
 
-	// Step 2: Apply excludes
+	// 第 2 步：应用排除规则
 	if (excludes.length > 0) {
 		result = result.filter((filePath) => !matchesAnyPattern(filePath, excludes, baseDir));
 	}
 
-	// Step 3: Force-include (add back from allPaths, overriding exclusions)
+	// 第 3 步：强制包含（从 allPaths 加回，覆盖排除规则）
 	if (forceIncludes.length > 0) {
 		for (const filePath of allPaths) {
 			if (!result.includes(filePath) && matchesAnyExactPattern(filePath, forceIncludes, baseDir)) {
@@ -768,7 +767,7 @@ function applyPatterns(allPaths: string[], patterns: string[], baseDir: string):
 		}
 	}
 
-	// Step 4: Force-exclude (remove even if included or force-included)
+	// 第 4 步：强制排除（即使已包含或强制包含也要移除）
 	if (forceExcludes.length > 0) {
 		result = result.filter((filePath) => !matchesAnyExactPattern(filePath, forceExcludes, baseDir));
 	}
@@ -906,7 +905,7 @@ export class DefaultPackageManager implements PackageManager {
 		const globalSettings = this.settingsManager.getGlobalSettings();
 		const projectSettings = this.settingsManager.getProjectSettings();
 
-		// Collect all packages with scope (project first so cwd resources win collisions)
+		// 收集所有包及其作用域（项目优先，使 cwd 资源在冲突时胜出）
 		const allPackages: Array<{ pkg: PackageSource; scope: SourceScope }> = [];
 		for (const pkg of projectSettings.packages ?? []) {
 			allPackages.push({ pkg, scope: "project" });
@@ -915,7 +914,7 @@ export class DefaultPackageManager implements PackageManager {
 			allPackages.push({ pkg, scope: "user" });
 		}
 
-		// Dedupe: project scope wins over global for same package identity
+		// 去重：同一包标识下，项目作用域优先于全局作用域
 		const packageSources = this.dedupePackages(allPackages);
 		await this.resolvePackageSources(packageSources, accumulator, onMissing);
 
@@ -1090,8 +1089,8 @@ export class DefaultPackageManager implements PackageManager {
 
 		for (const entry of sources) {
 			const parsed = this.parseSource(entry.source);
-			// Pinned npm versions are fixed. Pinned git refs are configured checkout targets,
-			// so include them to reconcile an existing clone when the configured ref changes.
+			// 固定的 npm 版本不可变。固定的 git ref 是配置的检出目标，
+			// 因此要包含它们，以便配置 ref 改变时同步已有克隆。
 			if (parsed.type === "npm") {
 				if (!parsed.pinned) {
 					npmCandidates.push({ ...entry, parsed });
@@ -1150,7 +1149,7 @@ export class DefaultPackageManager implements PackageManager {
 			const targetVersion = await this.getLatestNpmVersion(source.version ? source.spec : source.name, source.range);
 			return targetVersion !== installedVersion;
 		} catch {
-			// Preserve existing update behavior when version lookup fails.
+			// 版本查询失败时保留现有更新行为。
 			return true;
 		}
 	}
@@ -1453,7 +1452,7 @@ export class DefaultPackageManager implements PackageManager {
 			return { type: "local", path: source };
 		}
 
-		// Try parsing as git URL
+		// 尝试按 git URL 解析
 		const gitParsed = parseGitUrl(source);
 		if (gitParsed) {
 			return gitParsed;
@@ -1671,10 +1670,9 @@ export class DefaultPackageManager implements PackageManager {
 	}
 
 	/**
-	 * Get a unique identity for a package, ignoring version/ref.
-	 * 用于detect when the same package is in both global and project settings.
-	 * For git packages, uses normalized host/path to ensure SSH and HTTPS URLs
-	 * for the same repository are treated as identical.
+	 * 获取包的唯一标识，忽略版本/ref。
+	 * 用于检测同一个包是否同时存在于全局和项目设置中。
+	 * 对 git 包使用规范化的 host/path，确保同一仓库的 SSH 和 HTTPS URL 被视为相同。
 	 */
 	private getPackageIdentity(source: string, scope?: SourceScope): string {
 		const parsed = this.parseSource(source);
@@ -1682,7 +1680,7 @@ export class DefaultPackageManager implements PackageManager {
 			return `npm:${parsed.name}`;
 		}
 		if (parsed.type === "git") {
-			// Use host/path for identity to normalize SSH and HTTPS
+			// 使用 host/path 作为标识，以统一 SSH 和 HTTPS
 			return `git:${parsed.host}/${parsed.path}`;
 		}
 		if (scope) {
@@ -1693,9 +1691,8 @@ export class DefaultPackageManager implements PackageManager {
 	}
 
 	/**
-	 * Dedupe packages: if same package identity appears in both global and project,
-	 * keep only the project one (project wins). A project entry with autoload=false
-	 * is a delta over the global entry, so both are kept (delta first).
+	 * 包去重：同一包标识同时出现在全局和项目中时，只保留项目项（项目优先）。
+	 * autoload=false 的项目项是相对全局项的增量，因此两者都保留（增量在前）。
 	 */
 	private dedupePackages(
 		packages: Array<{ pkg: PackageSource; scope: SourceScope }>,
@@ -1776,10 +1773,10 @@ export class DefaultPackageManager implements PackageManager {
 
 	private getNpmInstallArgs(specs: string[], installRoot: string): string[] {
 		const packageManagerName = this.getPackageManagerName();
-		// Extension packages run inside pi and resolve pi APIs through loader aliases/virtual modules.
-		// Disable peer dependency resolution for managed installs (npm's --legacy-peer-deps, and
-		// equivalent bun/pnpm settings) so package managers do not install or solve host-provided
-		// @earendil-works/pi-* peers. Stale auto-installed pi peers can otherwise block updates.
+		// 扩展包在 pi 内运行，并通过加载器别名/虚拟模块解析 pi API。
+		// 对托管安装禁用 peer 依赖解析（npm 的 --legacy-peer-deps 及等效的 bun/pnpm 设置），
+		// 防止包管理器安装或解析由宿主提供的 @earendil-works/pi-* peer。
+		// 否则，陈旧的自动安装 pi peer 可能阻止更新。
 		if (packageManagerName === "bun") {
 			return ["install", ...specs, "--cwd", installRoot, "--omit=peer"];
 		}
@@ -1864,7 +1861,7 @@ export class DefaultPackageManager implements PackageManager {
 	}
 
 	private async ensureGitRef(targetDir: string, fetchArgs: string[], ref: string): Promise<void> {
-		// Fetch only the ref we will reset to, avoiding unrelated branch/tag noise.
+		// 只获取即将重置到的 ref，避免无关分支/标签产生干扰。
 		await this.runCommand("git", fetchArgs, { cwd: targetDir });
 
 		const localHead = await this.runCommandCapture("git", ["rev-parse", "HEAD"], {
@@ -1882,7 +1879,7 @@ export class DefaultPackageManager implements PackageManager {
 
 		await this.runCommand("git", ["reset", "--hard", commitRef], { cwd: targetDir });
 
-		// Clean untracked files (extensions should be pristine)
+		// 清理未跟踪文件（扩展应保持干净）
 		await this.runCommand("git", ["clean", "-fdx"], { cwd: targetDir });
 
 		const packageJsonPath = join(targetDir, "package.json");
@@ -1900,7 +1897,7 @@ export class DefaultPackageManager implements PackageManager {
 				await this.updateGit(source, "temporary");
 			});
 		} catch {
-			// Keep cached temporary checkout if refresh fails.
+			// 刷新失败时保留缓存的临时检出。
 		}
 	}
 
@@ -2124,7 +2121,7 @@ export class DefaultPackageManager implements PackageManager {
 		for (const resourceType of RESOURCE_TYPES) {
 			const dir = join(packageRoot, resourceType);
 			if (existsSync(dir)) {
-				// Collect all files from the directory (all enabled by default)
+				// 收集目录中的所有文件（默认全部启用）
 				const files = collectResourceFiles(dir, resourceType);
 				for (const f of files) {
 					this.addResource(this.getTargetMap(accumulator, resourceType), f, metadata, true);
@@ -2149,7 +2146,7 @@ export class DefaultPackageManager implements PackageManager {
 		}
 		const dir = join(packageRoot, resourceType);
 		if (existsSync(dir)) {
-			// Collect all files from the directory (all enabled by default)
+			// 收集目录中的所有文件（默认全部启用）
 			const files = collectResourceFiles(dir, resourceType);
 			for (const f of files) {
 				this.addResource(target, f, metadata, true);
@@ -2167,14 +2164,14 @@ export class DefaultPackageManager implements PackageManager {
 		const { allFiles } = this.collectManifestFiles(packageRoot, resourceType);
 
 		if (userPatterns.length === 0) {
-			// Empty array explicitly disables all resources of this type
+			// 空数组显式禁用此类型的所有资源
 			for (const f of allFiles) {
 				this.addResource(target, f, metadata, false);
 			}
 			return;
 		}
 
-		// Apply user patterns
+		// 应用用户模式
 		const enabledByUser = applyPatterns(allFiles, userPatterns, packageRoot);
 
 		for (const f of allFiles) {
@@ -2202,9 +2199,8 @@ export class DefaultPackageManager implements PackageManager {
 	}
 
 	/**
-	 * Collect all files from a package for a resource type, applying manifest patterns.
-	 * 返回 { allFiles, enabledByManifest } where enabledByManifest is the set of files
-	 * that pass the manifest's own patterns.
+	 * 收集包中指定资源类型的所有文件，并应用清单模式。
+	 * 返回 { allFiles, enabledByManifest }，其中 enabledByManifest 是通过清单自身模式的文件集合。
 	 */
 	private collectManifestFiles(
 		packageRoot: string,
@@ -2289,15 +2285,15 @@ export class DefaultPackageManager implements PackageManager {
 	): void {
 		if (entries.length === 0) return;
 
-		// Collect all files from plain entries (non-pattern entries)
+		// 从普通条目（非模式条目）收集所有文件
 		const { plain, patterns } = splitPatterns(entries);
 		const resolvedPlain = plain.map((p) => this.resolvePathFromBase(p, baseDir));
 		const allFiles = this.collectFilesFromPaths(resolvedPlain, resourceType);
 
-		// Determine which files are enabled based on patterns
+		// 根据模式确定启用哪些文件
 		const enabledPaths = applyPatterns(allFiles, patterns, baseDir);
 
-		// Add all files with their enabled state
+		// 添加所有文件及其启用状态
 		for (const f of allFiles) {
 			this.addResource(target, f, metadata, enabledPaths.has(f));
 		}
@@ -2369,7 +2365,7 @@ export class DefaultPackageManager implements PackageManager {
 		};
 
 		if (projectTrusted) {
-			// Project extensions from .pi/
+			// 来自 .pi/ 的项目扩展
 			addResources(
 				"extensions",
 				collectAutoExtensionEntries(projectDirs.extensions),
@@ -2378,7 +2374,7 @@ export class DefaultPackageManager implements PackageManager {
 				projectBaseDir,
 			);
 
-			// Project skills from .pi/
+			// 来自 .pi/ 的项目技能
 			addResources(
 				"skills",
 				collectAutoSkillEntries(projectDirs.skills, "pi"),
@@ -2388,9 +2384,9 @@ export class DefaultPackageManager implements PackageManager {
 			);
 		}
 
-		// Project skills from .agents/ (each with its own baseDir)
+		// 来自 .agents/ 的项目技能（各自具有 baseDir）
 		for (const agentsSkillsDir of projectAgentsSkillDirs) {
-			const agentsBaseDir = dirname(agentsSkillsDir); // the .agents directory
+			const agentsBaseDir = dirname(agentsSkillsDir); // .agents 目录
 			const agentsMetadata: PathMetadata = {
 				...projectMetadata,
 				baseDir: agentsBaseDir,
@@ -2421,7 +2417,7 @@ export class DefaultPackageManager implements PackageManager {
 			);
 		}
 
-		// User extensions from ~/.pi/agent/
+		// 来自 ~/.pi/agent/ 的用户扩展
 		addResources(
 			"extensions",
 			collectAutoExtensionEntries(userDirs.extensions),
@@ -2430,7 +2426,7 @@ export class DefaultPackageManager implements PackageManager {
 			globalBaseDir,
 		);
 
-		// User skills from ~/.pi/agent/
+		// 来自 ~/.pi/agent/ 的用户技能
 		addResources(
 			"skills",
 			collectAutoSkillEntries(userDirs.skills, "pi"),
@@ -2439,7 +2435,7 @@ export class DefaultPackageManager implements PackageManager {
 			globalBaseDir,
 		);
 
-		// User skills from ~/.agents/ (with its own baseDir)
+		// 来自 ~/.agents/ 的用户技能（具有独立 baseDir）
 		const userAgentsBaseDir = dirname(userAgentsSkillsDir);
 		const userAgentsMetadata: PathMetadata = {
 			...userMetadata,
@@ -2482,7 +2478,7 @@ export class DefaultPackageManager implements PackageManager {
 					files.push(...collectResourceFiles(p, resourceType));
 				}
 			} catch {
-				// Ignore errors
+				// 忽略错误
 			}
 		}
 		return files;

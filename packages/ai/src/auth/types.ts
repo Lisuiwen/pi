@@ -56,19 +56,19 @@ export interface CredentialInfo {
  */
 export interface CredentialStore {
 	/**
- * 读取已保存的凭据（可能已过期），用于展示/状态；请求认证由 `Models.getAuth()` 解析。
+	 * 读取已保存的凭据（可能已过期），用于展示/状态；请求认证由 `Models.getAuth()` 解析。
 	 */
 	read(providerId: string): Promise<Credential | undefined>;
 
 	/**
- * 列出凭据元数据，不解析或暴露密钥。列出时不得执行配置的 API key 命令。
+	 * 列出凭据元数据，不解析或暴露密钥。列出时不得执行配置的 API key 命令。
 	 */
 	list(): Promise<readonly CredentialInfo[]>;
 
 	/**
- * 序列化写入（唯一写入路径）。`fn` 会看到当前凭据，以支持刷新及刷新期间登录；
- * 返回新凭据，或返回 undefined 保持条目不变。
- * 按提供商 ID 互斥；后端支持时跨进程互斥（例如文件锁）。解析为写入后的凭据，`fn` 的拒绝会向上传递。
+	 * 序列化写入（唯一写入路径）。`fn` 会看到当前凭据，以支持刷新及刷新期间登录；
+	 * 返回新凭据，或返回 undefined 保持条目不变。
+	 * 按提供商 ID 互斥；后端支持时跨进程互斥（例如文件锁）。解析为写入后的凭据，`fn` 的拒绝会向上传递。
 	 */
 	modify(
 		providerId: string,

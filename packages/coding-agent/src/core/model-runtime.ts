@@ -362,7 +362,7 @@ export class ModelRuntime implements Models {
 		return this.nativeExtensionProviders.get(providerId);
 	}
 
-	/** @internal Compatibility fallback for ModelRegistry when provider auth is unconfigured. */
+	/** @internal 提供商认证未配置时，供 ModelRegistry 使用的兼容性回退方案。 */
 	getCompatibilityRequestConfig(model: Model<Api>): CompatibilityRequestConfig {
 		return resolveCompatibilityRequestConfig(
 			model,
@@ -516,7 +516,7 @@ export class ModelRuntime implements Models {
 
 	async logout(providerId: string): Promise<void> {
 		await this.models.logout(providerId);
-		// Reset credential-dependent compatibility projections before the unconfigured provider is skipped by refresh.
+		// 在刷新跳过未配置的提供商之前，重置依赖凭据的兼容性投影。
 		this.recomposeProvider(providerId);
 		await this.refresh({ allowNetwork: this.modelNetworkEnabled });
 	}
@@ -533,8 +533,8 @@ export class ModelRuntime implements Models {
 			...options,
 			allowNetwork: options.allowNetwork ?? this.modelNetworkEnabled,
 		};
-		// Published pi-ai builds before ModelsStore returned void and accepted a provider ID.
-		// The fallback keeps source-mode CLI tests working without rebuilding workspace dependencies.
+		// 在引入 ModelsStore 之前发布的 pi-ai 构建中，refresh 会返回 void，并接受提供商 ID 参数。
+		// 此回退逻辑可在不重新构建工作区依赖的情况下，保持源码模式 CLI 测试正常运行。
 		const result = ((await this.models.refresh(refreshOptions)) as ModelsRefreshResult | undefined) ?? {
 			aborted: refreshOptions.signal?.aborted ?? false,
 			errors: new Map(),
@@ -543,7 +543,7 @@ export class ModelRuntime implements Models {
 		try {
 			await this.forceRefreshAvailability();
 		} catch {
-			// Availability errors are recorded by forceRefreshAvailability; refreshed models remain usable.
+			// 可用性错误会由 forceRefreshAvailability 记录；刷新后的模型仍可使用。
 		}
 		return result;
 	}
@@ -558,12 +558,12 @@ export class ModelRuntime implements Models {
 	}
 
 	registerProvider(providerId: string, config: ProviderConfigInput): void {
-		// Validate the incoming registration on its own, like the legacy registry:
-		// a broken re-registration must throw without touching the stored config.
+		// 与旧版注册表一样，单独校验传入的注册信息：
+		// 无效的重新注册必须抛出异常，且不能修改已存储的配置。
 		validateExtensionProvider(providerId, this.builtins.get(providerId), this.config.getProvider(providerId), config);
 		this.nativeExtensionProviders.delete(providerId);
-		// Re-registration merges defined values over the previous registration and
-		// preserves undefined ones, matching the legacy ModelRegistry contract.
+		// 重新注册时，将已定义的值合并并覆盖到先前的注册信息中，
+		// 同时保留值为 undefined 的原有字段，以符合旧版 ModelRegistry 约定。
 		const previous = this.extensionProviders.get(providerId);
 		const effective: ProviderConfigInput = { ...previous };
 		for (const [key, value] of Object.entries(config)) {
@@ -578,7 +578,7 @@ export class ModelRuntime implements Models {
 		) {
 			const configuredProviders = new Set(this.snapshot.configuredProviders).add(providerId);
 			const auth = new Map(this.snapshot.auth);
-			// Provisional entry until the async refresh lands; never clobber a real check result.
+			// 异步刷新完成前使用临时条目；绝不能覆盖真实的检查结果。
 			if (!auth.get(providerId)) {
 				auth.set(providerId, {
 					type: effective.oauth && !effective.apiKey ? "oauth" : "api_key",

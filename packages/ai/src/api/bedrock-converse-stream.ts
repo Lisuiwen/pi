@@ -294,7 +294,7 @@ export const stream: StreamFunction<"bedrock-converse-stream", BedrockOptions> =
 		} catch (error) {
 			for (const block of output.content) {
 				delete (block as Block).index;
-				// partialJson is only a streaming scratch buffer; never persist it.
+				// partialJson 仅用作流式处理期间的临时缓冲区，绝不能持久化。
 				delete (block as Block).partialJson;
 			}
 			output.stopReason = options.signal?.aborted ? "aborted" : "error";
@@ -408,8 +408,8 @@ export const streamSimple: StreamFunction<"bedrock-converse-stream", SimpleStrea
 			} satisfies BedrockOptions);
 		}
 
-		// Undefined means the caller did not request an output cap; let the helper use the model cap.
-		// Do not coerce to 0 here, or the thinking budget would become the entire maxTokens value.
+		// undefined 表示调用方未指定输出上限，此时由辅助函数使用模型上限。
+		// 不要在这里强制转成 0，否则 thinking 预算会占满整个 maxTokens。
 		const adjusted = adjustMaxTokensForThinking(
 			base.maxTokens,
 			model.maxTokens,
@@ -472,7 +472,7 @@ function handleContentBlockDelta(
 	let block = blocks[index];
 
 	if (delta?.text !== undefined) {
-		// If no text block exists yet, create one, as `handleContentBlockStart` is not sent for text blocks
+		// 如果文本块尚不存在，则创建一个，因为文本块不会触发 `handleContentBlockStart`
 		if (!block) {
 			const newBlock: Block = { type: "text", text: "", index: contentBlockIndex };
 			output.content.push(newBlock);
@@ -553,8 +553,8 @@ function handleContentBlockStop(
 			break;
 		case "toolCall":
 			block.arguments = parseStreamingJson(block.partialJson);
-			// Finalize in-place and strip the scratch buffer so replay only
-			// carries parsed arguments.
+			// 就地完成最终处理并移除临时缓冲区，确保重放时
+			// 只携带解析后的参数。
 			delete (block as Block).partialJson;
 			stream.push({ type: "toolcall_end", contentIndex: index, toolCall: block, partial: output });
 			break;
@@ -669,13 +669,13 @@ function supportsPromptCaching(model: Model<"bedrock-converse-stream">, env?: Pr
 		if (getProviderEnvValue("AWS_BEDROCK_FORCE_CACHE", env) === "1") return true;
 		return false;
 	}
-	// Claude 5 models (fable-5, sonnet-5)
+	// Claude 5 模型（fable-5、sonnet-5）
 	if (candidates.some((s) => s.includes("fable-5") || s.includes("sonnet-5"))) return true;
-	// Claude 4.x models (opus-4, sonnet-4, haiku-4)
+	// Claude 4.x 模型（opus-4、sonnet-4、haiku-4）
 	if (candidates.some((s) => s.includes("-4-"))) return true;
-	// Claude 3.7 Sonnet
+	// Claude 3.7 Sonnet 模型
 	if (candidates.some((s) => s.includes("claude-3-7-sonnet"))) return true;
-	// Claude 3.5 Haiku
+	// Claude 3.5 Haiku 模型
 	if (candidates.some((s) => s.includes("claude-3-5-haiku"))) return true;
 	return false;
 }

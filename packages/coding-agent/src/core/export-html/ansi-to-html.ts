@@ -2,48 +2,48 @@
  * 模块职责：实现 coding-agent 源码模块「core\export-html\ansi-to-html.ts」，负责相关命令行、会话、工具或基础设施逻辑。
  */
 /**
- * ANSI escape code to HTML converter.
+ * ANSI 转义码到 HTML 的转换器。
  *
- * Converts terminal ANSI color/style codes to HTML with inline styles.
- * Supports:
- * - Standard foreground colors (30-37) and bright variants (90-97)
- * - Standard background colors (40-47) and bright variants (100-107)
- * - 256-color palette (38;5;N and 48;5;N)
- * - RGB true color (38;2;R;G;B and 48;2;R;G;B)
- * - Text styles: bold (1), dim (2), italic (3), underline (4)
- * - Reset (0)
+ * 将终端 ANSI 颜色/样式码转换为带内联样式的 HTML。
+ * 支持：
+ * - 标准前景色（30-37）及其高亮变体（90-97）
+ * - 标准背景色（40-47）及其高亮变体（100-107）
+ * - 256 色调色板（38;5;N 和 48;5;N）
+ * - RGB 真彩色（38;2;R;G;B 和 48;2;R;G;B）
+ * - 文本样式：粗体（1）、暗淡（2）、斜体（3）、下划线（4）
+ * - 重置（0）
  */
 
-// Standard ANSI color palette (0-15)
+// 标准 ANSI 调色板（0-15）
 const ANSI_COLORS = [
-	"#000000", // 0: black
-	"#800000", // 1: red
-	"#008000", // 2: green
-	"#808000", // 3: yellow
-	"#000080", // 4: blue
-	"#800080", // 5: magenta
-	"#008080", // 6: cyan
-	"#c0c0c0", // 7: white
-	"#808080", // 8: bright black
-	"#ff0000", // 9: bright red
-	"#00ff00", // 10: bright green
-	"#ffff00", // 11: bright yellow
-	"#0000ff", // 12: bright blue
-	"#ff00ff", // 13: bright magenta
-	"#00ffff", // 14: bright cyan
-	"#ffffff", // 15: bright white
+	"#000000", // 0：黑色
+	"#800000", // 1：红色
+	"#008000", // 2：绿色
+	"#808000", // 3：黄色
+	"#000080", // 4：蓝色
+	"#800080", // 5：品红色
+	"#008080", // 6：青色
+	"#c0c0c0", // 7：白色
+	"#808080", // 8：亮黑色
+	"#ff0000", // 9：亮红色
+	"#00ff00", // 10：亮绿色
+	"#ffff00", // 11：亮黄色
+	"#0000ff", // 12：亮蓝色
+	"#ff00ff", // 13：亮品红色
+	"#00ffff", // 14：亮青色
+	"#ffffff", // 15：亮白色
 ];
 
 /**
- * Convert 256-color index to hex.
+ * 将 256 色索引转换为十六进制颜色。
  */
 function color256ToHex(index: number): string {
-	// Standard colors (0-15)
+	// 标准颜色（0-15）
 	if (index < 16) {
 		return ANSI_COLORS[index];
 	}
 
-	// Color cube (16-231): 6x6x6 = 216 colors
+	// 色彩立方体（16-231）：6x6x6 = 216 种颜色
 	if (index < 232) {
 		const cubeIndex = index - 16;
 		const r = Math.floor(cubeIndex / 36);
@@ -54,14 +54,14 @@ function color256ToHex(index: number): string {
 		return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
 	}
 
-	// Grayscale (232-255): 24 shades
+	// 灰阶（232-255）：24 个色阶
 	const gray = 8 + (index - 232) * 10;
 	const grayHex = gray.toString(16).padStart(2, "0");
 	return `#${grayHex}${grayHex}${grayHex}`;
 }
 
 /**
- * Escape HTML special characters.
+ * 转义 HTML 特殊字符。
  */
 function escapeHtml(text: string): string {
 	return text
@@ -108,7 +108,7 @@ function hasStyle(style: TextStyle): boolean {
 }
 
 /**
- * Parse ANSI SGR (Select Graphic Rendition) codes and update style.
+ * 解析 ANSI SGR（选择图形呈现）代码并更新样式。
  */
 function applySgrCode(params: number[], style: TextStyle): void {
 	let i = 0;
@@ -116,7 +116,7 @@ function applySgrCode(params: number[], style: TextStyle): void {
 		const code = params[i];
 
 		if (code === 0) {
-			// Reset all
+			// 全部重置
 			style.fg = null;
 			style.bg = null;
 			style.bold = false;
@@ -132,7 +132,7 @@ function applySgrCode(params: number[], style: TextStyle): void {
 		} else if (code === 4) {
 			style.underline = true;
 		} else if (code === 22) {
-			// Reset bold/dim
+			// 重置粗体/暗淡
 			style.bold = false;
 			style.dim = false;
 		} else if (code === 23) {
@@ -140,12 +140,12 @@ function applySgrCode(params: number[], style: TextStyle): void {
 		} else if (code === 24) {
 			style.underline = false;
 		} else if (code >= 30 && code <= 37) {
-			// Standard foreground colors
+			// 标准前景色
 			style.fg = ANSI_COLORS[code - 30];
 		} else if (code === 38) {
-			// Extended foreground color
+			// 扩展前景色
 			if (params[i + 1] === 5 && params.length > i + 2) {
-				// 256-color: 38;5;N
+				// 256 色：38;5;N
 				style.fg = color256ToHex(params[i + 2]);
 				i += 2;
 			} else if (params[i + 1] === 2 && params.length > i + 4) {
@@ -157,15 +157,15 @@ function applySgrCode(params: number[], style: TextStyle): void {
 				i += 4;
 			}
 		} else if (code === 39) {
-			// Default foreground
+			// 默认前景色
 			style.fg = null;
 		} else if (code >= 40 && code <= 47) {
-			// Standard background colors
+			// 标准背景色
 			style.bg = ANSI_COLORS[code - 40];
 		} else if (code === 48) {
-			// Extended background color
+			// 扩展背景色
 			if (params[i + 1] === 5 && params.length > i + 2) {
-				// 256-color: 48;5;N
+				// 256 色：48;5;N
 				style.bg = color256ToHex(params[i + 2]);
 				i += 2;
 			} else if (params[i + 1] === 2 && params.length > i + 4) {
@@ -177,26 +177,26 @@ function applySgrCode(params: number[], style: TextStyle): void {
 				i += 4;
 			}
 		} else if (code === 49) {
-			// Default background
+			// 默认背景色
 			style.bg = null;
 		} else if (code >= 90 && code <= 97) {
-			// Bright foreground colors
+			// 高亮前景色
 			style.fg = ANSI_COLORS[code - 90 + 8];
 		} else if (code >= 100 && code <= 107) {
-			// Bright background colors
+			// 高亮背景色
 			style.bg = ANSI_COLORS[code - 100 + 8];
 		}
-		// Ignore unrecognized codes
+		// 忽略无法识别的代码
 
 		i++;
 	}
 }
 
-// Match ANSI escape sequences: ESC[ followed by params and ending with 'm'
+// 匹配 ANSI 转义序列：以 ESC[ 开头、后接参数并以“m”结尾
 const ANSI_REGEX = /\x1b\[([\d;]*)m/g;
 
 /**
- * Convert ANSI-escaped text to HTML with inline styles.
+ * 将含 ANSI 转义序列的文本转换为带内联样式的 HTML。
  */
 export function ansiToHtml(text: string): string {
 	const style = createEmptyStyle();
@@ -204,31 +204,31 @@ export function ansiToHtml(text: string): string {
 	let lastIndex = 0;
 	let inSpan = false;
 
-	// Reset regex state
+	// 重置正则表达式状态
 	ANSI_REGEX.lastIndex = 0;
 
 	let match = ANSI_REGEX.exec(text);
 	while (match !== null) {
-		// Add text before this escape sequence
+		// 添加此转义序列之前的文本
 		const beforeText = text.slice(lastIndex, match.index);
 		if (beforeText) {
 			result += escapeHtml(beforeText);
 		}
 
-		// Parse SGR parameters
+		// 解析 SGR 参数
 		const paramStr = match[1];
 		const params = paramStr ? paramStr.split(";").map((p) => parseInt(p, 10) || 0) : [0];
 
-		// Close existing span if we have one
+		// 如果已有 span，则将其关闭
 		if (inSpan) {
 			result += "</span>";
 			inSpan = false;
 		}
 
-		// Apply the codes
+		// 应用代码
 		applySgrCode(params, style);
 
-		// Open new span if we have any styling
+		// 存在样式时打开新的 span
 		if (hasStyle(style)) {
 			result += `<span style="${styleToInlineCSS(style)}">`;
 			inSpan = true;
@@ -238,13 +238,13 @@ export function ansiToHtml(text: string): string {
 		match = ANSI_REGEX.exec(text);
 	}
 
-	// Add remaining text
+	// 添加剩余文本
 	const remainingText = text.slice(lastIndex);
 	if (remainingText) {
 		result += escapeHtml(remainingText);
 	}
 
-	// Close any open span
+	// 关闭仍处于打开状态的 span
 	if (inSpan) {
 		result += "</span>";
 	}
@@ -253,8 +253,8 @@ export function ansiToHtml(text: string): string {
 }
 
 /**
- * Convert array of ANSI-escaped lines to HTML.
- * Each line is wrapped in a div element.
+ * 将含 ANSI 转义序列的行数组转换为 HTML。
+ * 每一行都包装在一个 div 元素中。
  */
 export function ansiLinesToHtml(lines: string[]): string {
 	return lines.map((line) => `<div class="ansi-line">${ansiToHtml(line) || "&nbsp;"}</div>`).join("");

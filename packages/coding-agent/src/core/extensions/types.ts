@@ -121,7 +121,7 @@ export interface WorkingIndicatorOptions {
 	intervalMs?: number;
 }
 
-/** 为当前自动补全提供程序包装附加行为。 */
+/** 为当前自动补全提供器包装附加行为。 */
 export type AutocompleteProviderFactory = (current: AutocompleteProvider) => AutocompleteProvider;
 export type EditorFactory = (tui: TUI, theme: EditorTheme, keybindings: KeybindingsManager) => EditorComponent;
 
@@ -222,7 +222,7 @@ export interface ExtensionUIContext {
 	/** 显示用于文本编辑的多行编辑器。 */
 	editor(title: string, prefill?: string): Promise<string | undefined>;
 
-	/** 在内置提供程序之上叠加额外的自动补全行为。 */
+	/** 在内置提供器之上叠加额外的自动补全行为。 */
 	addAutocompleteProvider(factory: AutocompleteProviderFactory): void;
 
 	/**
@@ -451,12 +451,12 @@ export interface ToolDefinition<TParams extends TSchema = TSchema, TDetails = un
 	promptSnippet?: string;
 	/** 工具启用时追加到默认系统提示“指南”部分的可选要点。 */
 	promptGuidelines?: string[];
-	/** 参数模式（TypeBox） */
+	/** 参数 schema（TypeBox） */
 	parameters: TParams;
 	/** 控制由 ToolExecutionComponent 渲染标准彩色外框，还是由工具自行渲染外框。 */
 	renderShell?: "default" | "self";
 
-	/** 在模式验证前准备原始工具调用参数的可选兼容层；必须返回符合 TParams 的对象。 */
+	/** 在 schema 校验前准备原始工具调用参数的可选兼容层；必须返回符合 TParams 的对象。 */
 	prepareArguments?: (args: unknown) => Static<TParams>;
 
 	/**
@@ -736,7 +736,7 @@ export interface MessageStartEvent {
 	message: AgentMessage;
 }
 
-/** assistant 消息流式传输期间随逐令牌更新触发 */
+/** assistant 消息流式传输期间随逐 token 更新触发 */
 export interface MessageUpdateEvent {
 	type: "message_update";
 	message: AgentMessage;
@@ -1161,7 +1161,7 @@ export interface ResolvedCommand extends RegisteredCommand {
 }
 
 // ============================================================================
-// Extension API
+// 扩展 API
 // ============================================================================
 
 /** 事件处理函数类型 */
@@ -1308,7 +1308,7 @@ export interface ExtensionAPI {
 	/** 获取当前活动工具名称列表。 */
 	getActiveTools(): string[];
 
-	/** 获取所有已配置工具及其参数模式、提示指南和来源元数据。 */
+	/** 获取所有已配置工具及其参数 schema、提示指南和来源元数据。 */
 	getAllTools(): ToolInfo[];
 
 	/** 按名称设置活动工具。 */
@@ -1534,7 +1534,7 @@ export type GetSessionNameHandler = () => string | undefined;
 
 export type GetActiveToolsHandler = () => string[];
 
-/** 包含名称、描述、参数模式、提示指南和来源元数据的工具信息。 */
+/** 包含名称、描述、参数 schema、提示指南和来源元数据的工具信息。 */
 export type ToolInfo = Pick<ToolDefinition, "name" | "description" | "parameters" | "promptGuidelines"> & {
 	sourceInfo: SourceInfo;
 };
