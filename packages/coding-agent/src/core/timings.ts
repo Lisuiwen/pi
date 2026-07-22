@@ -2,8 +2,8 @@
  * 模块职责：实现 coding-agent 源码模块「core\timings.ts」，负责相关命令行、会话、工具或基础设施逻辑。
  */
 /**
- * Central timing instrumentation for startup profiling.
- * Enable with PI_TIMING=1 environment variable.
+ * 用于启动性能分析的集中式计时工具。
+ * 通过环境变量 PI_TIMING=1 启用。
  */
 
 const ENABLED = process.env.PI_TIMING === "1";

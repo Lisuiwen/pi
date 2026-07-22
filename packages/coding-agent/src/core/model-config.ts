@@ -1,7 +1,7 @@
 /**
  * 模块职责：实现 coding-agent 源码模块「core\model-config.ts」，负责相关命令行、会话、工具或基础设施逻辑。
  */
-/** Immutable, credential-blind models.json snapshot. */
+/** 不可变且不感知凭据的 models.json 快照。 */
 
 import { readFile } from "node:fs/promises";
 import { type Static, Type } from "typebox";
@@ -225,7 +225,7 @@ function deepFreeze<T>(value: T): T {
 	return Object.freeze(value);
 }
 
-/** One immutable load of models.json. */
+/** models.json 的一次不可变加载结果。 */
 export class ModelConfig {
 	private readonly providers: ReadonlyMap<string, ModelsJsonProvider>;
 	private readonly error: string | undefined;

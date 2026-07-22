@@ -17,8 +17,8 @@ export type ResolvedRequestAuth =
 export { clearApiKeyCache } from "./provider-composer.ts";
 
 /**
- * Synchronous compatibility facade exposed to extensions.
- * Coding-agent internals use ModelRuntime directly.
+ * 暴露给扩展的同步兼容门面。
+ * coding-agent 内部直接使用 ModelRuntime。
  */
 export class ModelRegistry {
 	private readonly runtime: ModelRuntime;
@@ -27,7 +27,7 @@ export class ModelRegistry {
 		this.runtime = runtime;
 	}
 
-	/** Reload models.json asynchronously. Await before making synchronous registry reads. */
+	/** 异步重新加载 models.json。执行同步注册表读取前应等待其完成。 */
 	refresh(): Promise<void> {
 		return this.runtime.reloadConfig();
 	}

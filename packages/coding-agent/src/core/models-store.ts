@@ -24,7 +24,7 @@ export class InMemoryCodingAgentModelsStore implements ModelsStore {
 	}
 }
 
-/** Locked JSON-backed storage for dynamically refreshed provider catalogs. */
+/** 使用锁保护、以 JSON 为后端的存储，用于动态刷新的提供商目录。 */
 export class FileModelsStore implements ModelsStore {
 	private readonly storage: AuthStorageBackend;
 

@@ -2,7 +2,7 @@
  * 模块职责：实现 coding-agent 源码模块「core\index.ts」，负责相关命令行、会话、工具或基础设施逻辑。
  */
 /**
- * Core modules shared between all run modes.
+ * 所有运行模式共享的核心模块。
  */
 
 export {
@@ -32,7 +32,7 @@ export { type BashExecutorOptions, type BashResult, executeBashWithOperations } 
 export type { CompactionResult } from "./compaction/index.ts";
 export { createEventBus, type EventBus, type EventBusController } from "./event-bus.ts";
 export { areExperimentalFeaturesEnabled } from "./experimental.ts";
-// Extensions system
+// 扩展系统
 export {
 	type AgentEndEvent,
 	type AgentSettledEvent,
