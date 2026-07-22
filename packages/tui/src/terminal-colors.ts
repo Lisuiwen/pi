@@ -1,3 +1,7 @@
+/**
+ * 模块职责：实现 packages/tui/src/terminal-colors.ts 中的核心功能。
+ */
+
 export interface RgbColor {
 	r: number;
 	g: number;

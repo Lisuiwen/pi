@@ -1,3 +1,7 @@
+/**
+ * 模块职责：实现 packages/tui/src/index.ts 中的核心功能。
+ */
+
 // Core TUI interfaces and classes
 
 // Autocomplete support

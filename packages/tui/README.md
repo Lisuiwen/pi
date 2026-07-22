@@ -1,19 +1,19 @@
 # @earendil-works/pi-tui
 
-Minimal terminal UI framework with differential rendering and synchronized output for flicker-free interactive CLI applications.
+用于无闪烁交互式 CLI 应用的极简终端 UI 框架，支持差分渲染和同步输出。
 
-## Features
+## 功能特性
 
-- **Differential Rendering**: Three-strategy rendering system that only updates what changed
-- **Synchronized Output**: Uses CSI 2026 for atomic screen updates (no flicker)
-- **Bracketed Paste Mode**: Handles large pastes correctly with markers for >10 line pastes
-- **Component-based**: Simple Component interface with render() method
-- **Theme Support**: Components accept theme interfaces for customizable styling
-- **Built-in Components**: Text, TruncatedText, Input, Editor, Markdown, Loader, SelectList, SettingsList, Spacer, Image, Box, Container
-- **Inline Images**: Renders images in terminals that support Kitty or iTerm2 graphics protocols
-- **Autocomplete Support**: File paths and slash commands
+- **差分渲染**：三策略渲染系统，仅更新发生变化的部分
+- **同步输出**：使用 CSI 2026 实现原子屏幕更新（无闪烁）
+- **括号粘贴模式**：正确处理大段粘贴，并为超过 10 行的粘贴显示标记
+- **组件化**：提供带有 `render()` 方法的简单 Component 接口
+- **主题支持**：组件接受主题接口，可自定义样式
+- **内置组件**：Text、TruncatedText、Input、Editor、Markdown、Loader、SelectList、SettingsList、Spacer、Image、Box、Container
+- **行内图片**：在支持 Kitty 或 iTerm2 图形协议的终端中渲染图片
+- **自动补全**：支持文件路径和斜杠命令
 
-## Quick Start
+## 快速开始
 
 ```typescript
 import { TUI, Text, Editor, ProcessTerminal, matchesKey } from "@earendil-works/pi-tui";
@@ -50,11 +50,11 @@ tui.addInputListener((data) => {
 tui.start();
 ```
 
-## Core API
+## 核心 API
 
 ### TUI
 
-Main container that manages components and rendering.
+管理组件和渲染的主容器。
 
 ```typescript
 const tui = new TUI(terminal);
@@ -70,7 +70,7 @@ tui.onDebug = () => console.log("Debug triggered");
 
 ### Overlays
 
-Overlays render components on top of existing content without replacing it. Useful for dialogs, menus, and modal UI.
+覆盖层在现有内容上方渲染组件而不替换内容，适用于对话框、菜单和模态界面。
 
 ```typescript
 // Show overlay with default options (centered, max 80 cols)
@@ -138,17 +138,17 @@ tui.hideOverlay();
 tui.hasOverlay();
 ```
 
-**Anchor values**: `'center'`, `'top-left'`, `'top-right'`, `'bottom-left'`, `'bottom-right'`, `'top-center'`, `'bottom-center'`, `'left-center'`, `'right-center'`
+**锚点值**：`'center'`、`'top-left'`、`'top-right'`、`'bottom-left'`、`'bottom-right'`、`'top-center'`、`'bottom-center'`、`'left-center'`、`'right-center'`
 
-**Resolution order**:
-1. `minWidth` is applied as a floor after width calculation
-2. For position: absolute `row`/`col` > percentage `row`/`col` > `anchor`
-3. `margin` clamps final position to stay within terminal bounds
-4. `visible` callback controls whether overlay renders (called each frame)
+**解析顺序**：
+1. 计算宽度后，将 `minWidth` 作为下限应用
+2. 位置优先级：绝对 `row`/`col` > 百分比 `row`/`col` > `anchor`
+3. `margin` 会限制最终位置，使其保持在终端边界内
+4. `visible` 回调控制覆盖层是否渲染（每帧调用）
 
 ### Component Interface
 
-All components implement:
+所有组件都实现：
 
 ```typescript
 interface Component {
@@ -158,15 +158,15 @@ interface Component {
 }
 ```
 
-| Method | Description |
+| 方法 | 说明 |
 |--------|-------------|
-| `render(width)` | Returns an array of strings, one per line. Each line **must not exceed `width`** or the TUI will error. Use `truncateToWidth()` or manual wrapping to ensure this. |
-| `handleInput?(data)` | Called when the component has focus and receives keyboard input. The `data` string contains raw terminal input (may include ANSI escape sequences). |
-| `invalidate?()` | Called to clear any cached render state. Components should re-render from scratch on the next `render()` call. |
+| `render(width)` | 返回按行排列的字符串数组。每行**不得超过 `width`**，否则 TUI 会报错。请使用 `truncateToWidth()` 或手动换行确保这一点。 |
+| `handleInput?(data)` | 组件获得焦点并收到键盘输入时调用。`data` 字符串包含原始终端输入（可能含 ANSI 转义序列）。 |
+| `invalidate?()` | 清除缓存的渲染状态。组件应在下一次 `render()` 调用时从头渲染。 |
 
-The TUI appends a full SGR reset and OSC 8 reset at the end of each rendered line. Styles do not carry across lines. If you emit multi-line text with styling, reapply styles per line or use `wrapTextWithAnsi()` so styles are preserved for each wrapped line.
+TUI 会在每个渲染行末追加完整的 SGR 重置和 OSC 8 重置。样式不会跨行保留。如果输出带样式的多行文本，请逐行重新应用样式，或使用 `wrapTextWithAnsi()` 以确保换行后保留样式。
 
-### Focusable Interface (IME Support)
+### Focusable 接口（IME 支持）
 
 Components that display a text cursor and need IME (Input Method Editor) support should implement the `Focusable` interface:
 
@@ -190,9 +190,9 @@ When a `Focusable` component has focus, TUI:
 3. Positions the hardware terminal cursor at that location
 4. Shows the hardware cursor only when `showHardwareCursor` is enabled
 
-The cursor remains hidden by default. This keeps the fake cursor rendering, while still positioning the hardware cursor for terminals that track IME candidate windows with hidden cursors. Some terminals require a visible hardware cursor for IME positioning; enable it with the `TUI` constructor option, `setShowHardwareCursor(true)`, or `PI_HARDWARE_CURSOR=1`. The `Editor` and `Input` built-in components already implement this interface.
+光标默认隐藏。这样既能使用模拟光标渲染，又能为追踪 IME 候选窗口的终端定位硬件光标。某些终端需要显示硬件光标才能正确定位 IME；可通过 `TUI` 构造选项、`setShowHardwareCursor(true)` 或 `PI_HARDWARE_CURSOR=1` 启用。内置的 `Editor` 和 `Input` 组件已实现此接口。
 
-**Container components with embedded inputs:** When a container component (dialog, selector, etc.) contains an `Input` or `Editor` child, the container must implement `Focusable` and propagate the focus state to the child:
+**包含输入控件的容器组件：**当容器组件（对话框、选择器等）包含 `Input` 或 `Editor` 子组件时，容器必须实现 `Focusable`，并将焦点状态传递给子组件：
 
 ```typescript
 import { Container, type Focusable, Input } from "@earendil-works/pi-tui";
@@ -216,13 +216,13 @@ class SearchDialog extends Container implements Focusable {
 }
 ```
 
-Without this propagation, typing with an IME (Chinese, Japanese, Korean, etc.) will show the candidate window in the wrong position.
+如果不传递该状态，使用 IME（中文、日文、韩文等）输入时，候选窗口会显示在错误位置。
 
-## Built-in Components
+## 内置组件
 
 ### Container
 
-Groups child components.
+将子组件分组。
 
 ```typescript
 const container = new Container();
@@ -232,7 +232,7 @@ container.removeChild(component);
 
 ### Box
 
-Container that applies padding and background color to all children.
+为所有子组件应用内边距和背景色的容器。
 
 ```typescript
 const box = new Box(
@@ -246,7 +246,7 @@ box.setBgFn((text) => chalk.bgBlue(text));  // Change background dynamically
 
 ### Text
 
-Displays multi-line text with word wrapping and padding.
+显示支持自动换行和内边距的多行文本。
 
 ```typescript
 const text = new Text(
@@ -261,7 +261,7 @@ text.setCustomBgFn((text) => chalk.bgBlue(text));
 
 ### TruncatedText
 
-Single-line text that truncates to fit viewport width. Useful for status lines and headers.
+会截断以适应视口宽度的单行文本，适用于状态行和标题。
 
 ```typescript
 const truncated = new TruncatedText(
@@ -273,7 +273,7 @@ const truncated = new TruncatedText(
 
 ### Input
 
-Single-line text input with horizontal scrolling.
+支持水平滚动的单行文本输入框。
 
 ```typescript
 const input = new Input();
@@ -282,7 +282,7 @@ input.setValue("initial");
 input.getValue();
 ```
 
-**Key Bindings:**
+**按键绑定：**
 - `Enter` - Submit
 - `Ctrl+A` / `Ctrl+E` - Line start/end
 - `Ctrl+W` or `Alt+Backspace` - Delete word backwards
@@ -290,11 +290,11 @@ input.getValue();
 - `Ctrl+K` - Delete to end of line
 - `Ctrl+Left` / `Ctrl+Right` - Word navigation
 - `Alt+Left` / `Alt+Right` - Word navigation
-- Arrow keys, Backspace, Delete work as expected
+- 方向键、Backspace、Delete 的行为符合预期
 
 ### Editor
 
-Multi-line text editor with autocomplete, file completion, paste handling, and vertical scrolling when content exceeds terminal height.
+支持自动补全、文件补全、粘贴处理的多行文本编辑器；内容超过终端高度时支持垂直滚动。
 
 ```typescript
 interface EditorTheme {
@@ -316,15 +316,15 @@ editor.setPaddingX(1); // Update horizontal padding dynamically
 editor.getPaddingX();  // Get current padding
 ```
 
-**Features:**
-- Multi-line editing with word wrap
-- Slash command autocomplete (type `/`)
-- File path autocomplete (press `Tab`)
-- Large paste handling (>10 lines creates `[paste #1 +50 lines]` marker)
-- Horizontal lines above/below editor
-- Fake cursor rendering (hidden real cursor)
+**功能特性：**
+- 支持自动换行的多行编辑
+- 斜杠命令自动补全（输入 `/`）
+- 文件路径自动补全（按 `Tab`）
+- 大段粘贴处理（超过 10 行时创建 `[paste #1 +50 lines]` 标记）
+- 编辑器上下的水平线
+- 模拟光标渲染（隐藏真实光标）
 
-**Key Bindings:**
+**按键绑定：**
 - `Enter` - Submit
 - `Shift+Enter`, `Ctrl+Enter`, or `Alt+Enter` - New line (terminal-dependent, Alt+Enter most reliable)
 - `Tab` - Autocomplete
@@ -335,11 +335,11 @@ editor.getPaddingX();  // Get current padding
 - `Ctrl+A` / `Ctrl+E` - Line start/end
 - `Ctrl+]` - Jump forward to character (awaits next keypress, then moves cursor to first occurrence)
 - `Ctrl+Alt+]` - Jump backward to character
-- Arrow keys, Backspace, Delete work as expected
+- 方向键、Backspace、Delete 的行为符合预期
 
 ### Markdown
 
-Renders markdown with syntax highlighting and theming support.
+渲染支持语法高亮和主题的 Markdown。
 
 ```typescript
 interface MarkdownTheme {
@@ -379,16 +379,16 @@ const md = new Markdown(
 md.setText("Updated markdown");
 ```
 
-**Features:**
-- Headings, bold, italic, code blocks, lists, links, blockquotes
-- HTML tags rendered as plain text
-- Optional syntax highlighting via `highlightCode`
-- Padding support
-- Render caching for performance
+**功能特性：**
+- 标题、粗体、斜体、代码块、列表、链接、引用块
+- HTML 标签按纯文本渲染
+- 可通过 `highlightCode` 启用语法高亮
+- 支持内边距
+- 通过渲染缓存提升性能
 
 ### Loader
 
-Animated loading spinner.
+动画加载指示器。
 
 ```typescript
 const loader = new Loader(
@@ -404,7 +404,7 @@ loader.stop();
 
 ### CancellableLoader
 
-Extends Loader with Escape key handling and an AbortSignal for cancelling async operations.
+扩展 Loader，支持 Escape 键处理和用于取消异步操作的 AbortSignal。
 
 ```typescript
 const loader = new CancellableLoader(
@@ -417,14 +417,14 @@ loader.onAbort = () => done(null); // Called when user presses Escape
 doAsyncWork(loader.signal).then(done);
 ```
 
-**Properties:**
+**属性：**
 - `signal: AbortSignal` - Aborted when user presses Escape
 - `aborted: boolean` - Whether the loader was aborted
 - `onAbort?: () => void` - Callback when user presses Escape
 
 ### SelectList
 
-Interactive selection list with keyboard navigation.
+支持键盘导航的交互式选择列表。
 
 ```typescript
 interface SelectItem {
@@ -456,14 +456,14 @@ list.onSelectionChange = (item) => console.log("Highlighted:", item);
 list.setFilter("opt"); // Filter items
 ```
 
-**Controls:**
-- Arrow keys: Navigate
-- Enter: Select
-- Escape: Cancel
+**操作：**
+- 方向键：导航
+- Enter：选择
+- Escape：取消
 
 ### SettingsList
 
-Settings panel with value cycling and submenus.
+支持值循环和子菜单的设置面板。
 
 ```typescript
 interface SettingItem {
@@ -496,14 +496,14 @@ const settings = new SettingsList(
 settings.updateValue("theme", "light");
 ```
 
-**Controls:**
-- Arrow keys: Navigate
-- Enter/Space: Activate (cycle value or open submenu)
-- Escape: Cancel
+**操作：**
+- 方向键：导航
+- Enter/Space：激活（循环值或打开子菜单）
+- Escape：取消
 
 ### Spacer
 
-Empty lines for vertical spacing.
+用于垂直间距的空行。
 
 ```typescript
 const spacer = new Spacer(2); // 2 empty lines (default: 1)
@@ -511,7 +511,7 @@ const spacer = new Spacer(2); // 2 empty lines (default: 1)
 
 ### Image
 
-Renders images inline for terminals that support the Kitty graphics protocol (Kitty, Ghostty, WezTerm) or iTerm2 inline images. Falls back to a text placeholder on unsupported terminals.
+在支持 Kitty 图形协议（Kitty、Ghostty、WezTerm）或 iTerm2 行内图片的终端中渲染行内图片。在不支持的终端中回退为文本占位符。
 
 ```typescript
 interface ImageTheme {
@@ -533,13 +533,13 @@ const image = new Image(
 tui.addChild(image);
 ```
 
-Supported formats: PNG, JPEG, GIF, WebP. Dimensions are parsed from the image headers automatically.
+支持的格式：PNG、JPEG、GIF、WebP。会自动从图片头解析尺寸。
 
-## Autocomplete
+## 自动补全
 
 ### CombinedAutocompleteProvider
 
-Supports both slash commands and file paths.
+同时支持斜杠命令和文件路径。
 
 ```typescript
 import { CombinedAutocompleteProvider } from "@earendil-works/pi-tui";
@@ -556,13 +556,13 @@ const provider = new CombinedAutocompleteProvider(
 editor.setAutocompleteProvider(provider);
 ```
 
-**Features:**
-- Type `/` to see slash commands
-- Press `Tab` for file path completion
-- Works with `~/`, `./`, `../`, and `@` prefix
-- Filters to attachable files for `@` prefix
+**功能特性：**
+- 输入 `/` 查看斜杠命令
+- 按 `Tab` 补全文件路径
+- 支持 `~/`、`./`、`../` 和 `@` 前缀
+- 使用 `@` 前缀时筛选可附加的文件
 
-## Key Detection
+## 按键检测
 
 Use `matchesKey()` with the `Key` helper for detecting keyboard input (supports Kitty keyboard protocol):
 
@@ -582,23 +582,23 @@ if (matchesKey(data, Key.enter)) {
 }
 ```
 
-**Key identifiers** (use `Key.*` for autocomplete, or string literals):
-- Basic keys: `Key.enter`, `Key.escape`, `Key.tab`, `Key.space`, `Key.backspace`, `Key.delete`, `Key.home`, `Key.end`
-- Arrow keys: `Key.up`, `Key.down`, `Key.left`, `Key.right`
-- With modifiers: `Key.ctrl("c")`, `Key.shift("tab")`, `Key.alt("left")`, `Key.ctrlShift("p")`
-- String format also works: `"enter"`, `"ctrl+c"`, `"shift+tab"`, `"ctrl+shift+p"`
+**按键标识符**（使用 `Key.*` 可获得自动补全，也可使用字符串字面量）：
+- 基本按键：`Key.enter`、`Key.escape`、`Key.tab`、`Key.space`、`Key.backspace`、`Key.delete`、`Key.home`、`Key.end`
+- 方向键：`Key.up`、`Key.down`、`Key.left`、`Key.right`
+- 带修饰键：`Key.ctrl("c")`、`Key.shift("tab")`、`Key.alt("left")`、`Key.ctrlShift("p")`
+- 也支持字符串格式：`"enter"`、`"ctrl+c"`、`"shift+tab"`、`"ctrl+shift+p"`
 
-## Differential Rendering
+## 差分渲染
 
-The TUI uses three rendering strategies:
+TUI 使用三种渲染策略：
 
 1. **First Render**: Output all lines without clearing scrollback
 2. **Width Changed or Change Above Viewport**: Clear screen and full re-render
 3. **Normal Update**: Move cursor to first changed line, clear to end, render changed lines
 
-All updates are wrapped in **synchronized output** (`\x1b[?2026h` ... `\x1b[?2026l`) for atomic, flicker-free rendering.
+所有更新都包裹在**同步输出**（`\x1b[?2026h` ... `\x1b[?2026l`）中，以实现原子、无闪烁的渲染。
 
-## Terminal Interface
+## 终端接口
 
 The TUI works with any object implementing the `Terminal` interface:
 
@@ -618,11 +618,11 @@ interface Terminal {
 }
 ```
 
-**Built-in implementations:**
-- `ProcessTerminal` - Uses `process.stdin/stdout`
-- `VirtualTerminal` - For testing (uses `@xterm/headless`)
+**内置实现：**
+- `ProcessTerminal` - 使用 `process.stdin/stdout`
+- `VirtualTerminal` - 用于测试（使用 `@xterm/headless`）
 
-## Utilities
+## 工具函数
 
 ```typescript
 import { visibleWidth, truncateToWidth, wrapTextWithAnsi } from "@earendil-works/pi-tui";
@@ -641,11 +641,11 @@ const lines = wrapTextWithAnsi("This is a long line that needs wrapping", 20);
 // ["This is a long line", "that needs wrapping"]
 ```
 
-## Creating Custom Components
+## 创建自定义组件
 
-When creating custom components, **each line returned by `render()` must not exceed the `width` parameter**. The TUI will error if any line is wider than the terminal.
+创建自定义组件时，`render()` 返回的**每一行都不得超过 `width` 参数**。如果某行宽于终端，TUI 将报错。
 
-### Handling Input
+### 处理输入
 
 Use `matchesKey()` with the `Key` helper for keyboard input:
 
@@ -681,7 +681,7 @@ class MyInteractiveComponent implements Component {
 }
 ```
 
-### Handling Line Width
+### 处理行宽
 
 Use the provided utilities to ensure lines fit:
 
@@ -712,7 +712,7 @@ class MyComponent implements Component {
 }
 ```
 
-### ANSI Code Considerations
+### ANSI 代码注意事项
 
 Both `visibleWidth()` and `truncateToWidth()` correctly handle ANSI escape codes:
 
@@ -727,7 +727,7 @@ const width = visibleWidth(styled); // 11 (not counting ANSI codes)
 const truncated = truncateToWidth(styled, 8); // Red "Hello" + " W..." with proper reset
 ```
 
-### Caching
+### 缓存
 
 For performance, components should cache their rendered output and only re-render when necessary:
 
@@ -756,35 +756,35 @@ class CachedComponent implements Component {
 }
 ```
 
-## Example
+## 示例
 
 See `test/chat-simple.ts` for a complete chat interface example with:
-- Markdown messages with custom background colors
-- Loading spinner during responses
-- Editor with autocomplete and slash commands
-- Spacers between messages
+- 带自定义背景色的 Markdown 消息
+- 响应期间的加载指示器
+- 支持自动补全和斜杠命令的编辑器
+- 消息之间的间隔组件
 
 Run it:
 ```bash
 npx tsx test/chat-simple.ts
 ```
 
-## Development
+## 开发
 
 ```bash
-# Install dependencies (from monorepo root)
+# 安装依赖（从 monorepo 根目录执行）
 npm install
 
-# Run type checking
+# 运行类型检查
 npm run check
 
-# Run the demo
+# 运行演示
 npx tsx test/chat-simple.ts
 ```
 
-### Debug logging
+### 调试日志
 
-Set `PI_TUI_WRITE_LOG` to capture the raw ANSI stream written to stdout.
+设置 `PI_TUI_WRITE_LOG` 以捕获写入 stdout 的原始 ANSI 流。
 
 ```bash
 PI_TUI_WRITE_LOG=/tmp/tui-ansi.log npx tsx test/chat-simple.ts

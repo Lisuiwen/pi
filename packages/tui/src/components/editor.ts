@@ -1,3 +1,7 @@
+/**
+ * 模块职责：实现 packages/tui/src/components/editor.ts 中的核心功能。
+ */
+
 import type { AutocompleteProvider, AutocompleteSuggestions } from "../autocomplete.ts";
 import { getKeybindings } from "../keybindings.ts";
 import { decodePrintableKey, matchesKey } from "../keys.ts";
@@ -24,29 +28,29 @@ const PASTE_MARKER_REGEX = /\[paste #(\d+)( (\+\d+ lines|\d+ chars))?\]/g;
 /** Non-global version for single-segment testing. */
 const PASTE_MARKER_SINGLE = /^\[paste #(\d+)( (\+\d+ lines|\d+ chars))?\]$/;
 
-/** Check if a segment is a paste marker (i.e. was merged by segmentWithMarkers). */
+/** 检查是否 a segment is a paste marker (i.e. was merged by segmentWithMarkers). */
 function isPasteMarker(segment: string): boolean {
 	return segment.length >= 10 && PASTE_MARKER_SINGLE.test(segment);
 }
 
 /**
  * A segmenter that wraps Intl.Segmenter and merges graphemes that fall
- * within paste markers into single atomic segments.  This makes cursor
+ * within paste markers into single atomic segments.  此makes cursor
  * movement, deletion, word-wrap, etc. treat paste markers as single units.
  *
- * Only markers whose numeric ID exists in `validIds` are merged.
+ * 仅markers whose numeric ID exists in `validIds` are merged.
  */
 function segmentWithMarkers(
 	text: string,
 	baseSegmenter: Intl.Segmenter,
 	validIds: Set<number>,
 ): Iterable<Intl.SegmentData> {
-	// Fast path: no paste markers in the text or no valid IDs.
+	// 快速路径: no paste markers in the text or no valid IDs.
 	if (validIds.size === 0 || !text.includes("[paste #")) {
 		return baseSegmenter.segment(text);
 	}
 
-	// Find all marker spans with valid IDs.
+	// 查找 all marker spans with valid IDs.
 	const markers: Array<{ start: number; end: number }> = [];
 	for (const m of text.matchAll(PASTE_MARKER_REGEX)) {
 		const id = Number.parseInt(m[1]!, 10);
@@ -57,7 +61,7 @@ function segmentWithMarkers(
 		return baseSegmenter.segment(text);
 	}
 
-	// Build merged segment list.
+	// 构建 merged segment list.
 	const baseSegments = baseSegmenter.segment(text);
 	const result: Intl.SegmentData[] = [];
 	let markerIdx = 0;
@@ -71,8 +75,8 @@ function segmentWithMarkers(
 		const marker = markerIdx < markers.length ? markers[markerIdx]! : null;
 
 		if (marker && seg.index >= marker.start && seg.index < marker.end) {
-			// This segment falls inside a marker.
-			// If this is the first segment of the marker, emit a merged segment.
+			// 此segment falls inside a marker.
+			// 如果 this is the first segment of the marker, emit a merged segment.
 			if (seg.index === marker.start) {
 				const markerText = text.slice(marker.start, marker.end);
 				result.push({
@@ -105,10 +109,10 @@ export interface TextChunk {
  * Wraps at word boundaries when possible, falling back to character-level
  * wrapping for words longer than the available width.
  *
- * @param line - The text line to wrap
+ * @param line - 该text line to wrap
  * @param maxWidth - Maximum visible width per chunk
  * @param preSegmented - Optional pre-segmented graphemes (e.g. with paste-marker awareness).
- *                       When omitted the default Intl.Segmenter is used.
+ *                       当 omitted the default Intl.Segmenter is used.
  * @returns Array of chunks with text and position information
  */
 export function wordWrapLine(line: string, maxWidth: number, preSegmented?: Intl.SegmentData[]): TextChunk[] {
@@ -149,7 +153,7 @@ export function wordWrapLine(line: string, maxWidth: number, preSegmented?: Intl
 				currentWidth -= wrapOppWidth;
 			} else if (chunkStart < charIndex) {
 				// No viable wrap opportunity: force-break at current position.
-				// This also handles the case where backtracking to a word
+				// 此also handles the case where backtracking to a word
 				// boundary wouldn't help because the remaining content plus
 				// the current grapheme (e.g. a wide character) still exceeds
 				// maxWidth.
@@ -164,7 +168,7 @@ export function wordWrapLine(line: string, maxWidth: number, preSegmented?: Intl
 			// Single atomic segment wider than maxWidth (e.g. paste marker
 			// in a narrow terminal). Re-wrap it at grapheme granularity.
 
-			// The segment remains logically atomic for cursor
+			// 该segment remains logically atomic for cursor
 			// movement / editing — the split is purely visual for word-wrap layout.
 			const subChunks = wordWrapLine(grapheme, maxWidth);
 			for (let j = 0; j < subChunks.length - 1; j++) {
@@ -270,7 +274,7 @@ export class Editor implements Component, Focusable {
 	private theme: EditorTheme;
 	private paddingX: number = 0;
 
-	// Store last render width for cursor navigation
+	// 保存 last render width for cursor navigation
 	private lastWidth: number = 80;
 
 	// Vertical scrolling support
@@ -317,9 +321,9 @@ export class Editor implements Component, Focusable {
 	// Preferred visual column for vertical cursor movement (sticky column)
 	private preferredVisualCol: number | null = null;
 
-	// When the cursor is snapped to the start of an atomic segment, e.g. a
+	// 当 the cursor is snapped to the start of an atomic segment, e.g. a
 	// paste marker, cursorCol no longer reflects where the cursor would have
-	// landed. This field stores the pre-snap cursorCol so that the next
+	// landed. 此field stores the pre-snap cursorCol so that the next
 	// vertical move can resolve it to a visual column on whatever VL it belongs
 	// to.
 	private snappedFromCursorCol: number | null = null;
@@ -341,7 +345,7 @@ export class Editor implements Component, Focusable {
 		this.autocompleteMaxVisible = Number.isFinite(maxVisible) ? Math.max(3, Math.min(20, Math.floor(maxVisible))) : 5;
 	}
 
-	/** Set of currently valid paste IDs, for marker-aware segmentation. */
+	/** 设置 of currently valid paste IDs, for marker-aware segmentation. */
 	private validPasteIds(): Set<number> {
 		return new Set(this.pastes.keys());
 	}
@@ -382,13 +386,13 @@ export class Editor implements Component, Focusable {
 	}
 
 	/**
-	 * Add a prompt to history for up/down arrow navigation.
-	 * Called after successful submission.
+	 * 添加 a prompt to history for up/down arrow navigation.
+	 * 调用 after successful submission.
 	 */
 	addToHistory(text: string): void {
 		const trimmed = text.trim();
 		if (!trimmed) return;
-		// Don't add consecutive duplicates
+		// 不要 add consecutive duplicates
 		if (this.history.length > 0 && this.history[0] === trimmed) return;
 		this.history.unshift(trimmed);
 		// Limit history size
@@ -477,7 +481,7 @@ export class Editor implements Component, Focusable {
 		// without padding we reserve 1 column for the cursor.
 		const layoutWidth = Math.max(1, contentWidth - (paddingX ? 0 : 1));
 
-		// Store for cursor navigation (must match wrapping width)
+		// 保存 for cursor navigation (must match wrapping width)
 		this.lastWidth = layoutWidth;
 
 		const horizontal = this.borderColor("─");
@@ -485,11 +489,11 @@ export class Editor implements Component, Focusable {
 		// Layout the text
 		const layoutLines = this.layoutText(layoutWidth);
 
-		// Calculate max visible lines: 30% of terminal height, minimum 5 lines
+		// 计算 max visible lines: 30% of terminal height, minimum 5 lines
 		const terminalRows = this.tui.terminal.rows;
 		const maxVisibleLines = Math.max(5, Math.floor(terminalRows * 0.3));
 
-		// Find the cursor line index in layoutLines
+		// 查找 the cursor line index in layoutLines
 		let cursorLineIndex = layoutLines.findIndex((line) => line.hasCursor);
 		if (cursorLineIndex === -1) cursorLineIndex = 0;
 
@@ -504,14 +508,14 @@ export class Editor implements Component, Focusable {
 		const maxScrollOffset = Math.max(0, layoutLines.length - maxVisibleLines);
 		this.scrollOffset = Math.max(0, Math.min(this.scrollOffset, maxScrollOffset));
 
-		// Get visible lines slice
+		// 获取 visible lines slice
 		const visibleLines = layoutLines.slice(this.scrollOffset, this.scrollOffset + maxVisibleLines);
 
 		const result: string[] = [];
 		const leftPadding = " ".repeat(paddingX);
 		const rightPadding = leftPadding;
 
-		// Render top border (with scroll indicator if scrolled down)
+		// 渲染 top border (with scroll indicator if scrolled down)
 		if (this.scrollOffset > 0) {
 			const indicator = `─── ↑ ${this.scrollOffset} more `;
 			const remaining = width - visibleWidth(indicator);
@@ -524,7 +528,7 @@ export class Editor implements Component, Focusable {
 			result.push(horizontal.repeat(width));
 		}
 
-		// Render each visible layout line
+		// 渲染 each visible layout line
 		// Emit hardware cursor marker when focused so TUI can position the
 		// hardware cursor for IME candidate-window placement even while
 		// autocomplete (e.g. slash-command menu) is visible.
@@ -535,7 +539,7 @@ export class Editor implements Component, Focusable {
 			let lineVisibleWidth = visibleWidth(layoutLine.text);
 			let cursorInPadding = false;
 
-			// Add cursor if this line has it
+			// 添加 cursor if this line has it
 			if (layoutLine.hasCursor && layoutLine.cursorPos !== undefined) {
 				const before = displayText.slice(0, layoutLine.cursorPos);
 				const after = displayText.slice(layoutLine.cursorPos);
@@ -545,7 +549,7 @@ export class Editor implements Component, Focusable {
 
 				if (after.length > 0) {
 					// Cursor is on a character (grapheme) - replace it with highlighted version
-					// Get the first grapheme from 'after'
+					// 获取 the first grapheme from 'after'
 					const afterGraphemes = [...this.segment(after, "grapheme")];
 					const firstGrapheme = afterGraphemes[0]?.segment || "";
 					const restAfter = after.slice(firstGrapheme.length);
@@ -557,22 +561,22 @@ export class Editor implements Component, Focusable {
 					const cursor = "\x1b[7m \x1b[0m";
 					displayText = before + marker + cursor;
 					lineVisibleWidth = lineVisibleWidth + 1;
-					// If cursor overflows content width into the padding, flag it
+					// 如果 cursor overflows content width into the padding, flag it
 					if (lineVisibleWidth > contentWidth && paddingX > 0) {
 						cursorInPadding = true;
 					}
 				}
 			}
 
-			// Calculate padding based on actual visible width
+			// 计算 padding based on actual visible width
 			const padding = " ".repeat(Math.max(0, contentWidth - lineVisibleWidth));
 			const lineRightPadding = cursorInPadding ? rightPadding.slice(1) : rightPadding;
 
-			// Render the line (no side borders, just horizontal lines above and below)
+			// 渲染 the line (no side borders, just horizontal lines above and below)
 			result.push(`${leftPadding}${displayText}${padding}${lineRightPadding}`);
 		}
 
-		// Render bottom border (with scroll indicator if more content below)
+		// 渲染 bottom border (with scroll indicator if more content below)
 		const linesBelow = layoutLines.length - (this.scrollOffset + visibleLines.length);
 		if (linesBelow > 0) {
 			const indicator = `─── ↓ ${linesBelow} more `;
@@ -582,7 +586,7 @@ export class Editor implements Component, Focusable {
 			result.push(horizontal.repeat(width));
 		}
 
-		// Add autocomplete list if active
+		// 添加 autocomplete list if active
 		if (this.autocompleteState && this.autocompleteList) {
 			const autocompleteResult = this.autocompleteList.render(contentWidth);
 			for (const line of autocompleteResult) {
@@ -598,7 +602,7 @@ export class Editor implements Component, Focusable {
 	handleInput(data: string): void {
 		const kb = getKeybindings();
 
-		// Handle character jump mode (awaiting next character to jump to)
+		// 处理 character jump mode (awaiting next character to jump to)
 		if (this.jumpMode !== null) {
 			// Cancel if the hotkey is pressed again
 			if (kb.matches(data, "tui.editor.jumpForward") || kb.matches(data, "tui.editor.jumpBackward")) {
@@ -619,7 +623,7 @@ export class Editor implements Component, Focusable {
 			this.jumpMode = null;
 		}
 
-		// Handle bracketed paste mode
+		// 处理 bracketed paste mode
 		if (data.includes("\x1b[200~")) {
 			this.isInPaste = true;
 			this.pasteBuffer = "";
@@ -656,7 +660,7 @@ export class Editor implements Component, Focusable {
 			return;
 		}
 
-		// Handle autocomplete mode
+		// 处理 autocomplete mode
 		if (this.autocompleteState && this.autocompleteList) {
 			if (kb.matches(data, "tui.select.cancel")) {
 				this.cancelAutocomplete();
@@ -800,7 +804,7 @@ export class Editor implements Component, Focusable {
 			if (this.disableSubmit) return;
 
 			// Workaround for terminals without Shift+Enter support:
-			// If char before cursor is \, delete it and insert newline instead of submitting.
+			// 如果 char before cursor is \, delete it and insert newline instead of submitting.
 			const currentLine = this.state.lines[this.state.cursorLine] || "";
 			if (this.state.cursorCol > 0 && currentLine[this.state.cursorCol - 1] === "\\") {
 				this.handleBackspace();
@@ -930,14 +934,14 @@ export class Editor implements Component, Focusable {
 					const isLastChunk = chunkIndex === chunks.length - 1;
 
 					// Determine if cursor is in this chunk
-					// For word-wrapped chunks, we need to handle the case where
+					// 对于 word-wrapped chunks, we need to handle the case where
 					// cursor might be in trimmed whitespace at end of chunk
 					let hasCursorInChunk = false;
 					let adjustedCursorPos = 0;
 
 					if (isCurrentLine) {
 						if (isLastChunk) {
-							// Last chunk: cursor belongs here if >= startIndex
+							// 最后，chunk: cursor belongs here if >= startIndex
 							hasCursorInChunk = cursorPos >= chunk.startIndex;
 							adjustedCursorPos = cursorPos - chunk.startIndex;
 						} else {
@@ -987,8 +991,8 @@ export class Editor implements Component, Focusable {
 	}
 
 	/**
-	 * Get text with paste markers expanded to their actual content.
-	 * Use this when you need the full content (e.g., for external editor).
+	 * 获取 text with paste markers expanded to their actual content.
+	 * 使用 this when you need the full content (e.g., for external editor).
 	 */
 	getExpandedText(): string {
 		return this.expandPasteMarkers(this.state.lines.join("\n"));
@@ -1019,7 +1023,7 @@ export class Editor implements Component, Focusable {
 	/**
 	 * Insert text at the current cursor position.
 	 * Used for programmatic insertion (e.g., clipboard image markers).
-	 * This is atomic for undo - single undo restores entire pre-insert state.
+	 * 此is atomic for undo - single undo restores entire pre-insert state.
 	 */
 	insertTextAtCursor(text: string): void {
 		if (!text) return;
@@ -1065,13 +1069,13 @@ export class Editor implements Component, Focusable {
 				// All lines before current line
 				...this.state.lines.slice(0, this.state.cursorLine),
 
-				// The first inserted line merged with text before cursor
+				// 该first inserted line merged with text before cursor
 				beforeCursor + insertedLines[0],
 
 				// All middle inserted lines
 				...insertedLines.slice(1, -1),
 
-				// The last inserted line with text after cursor
+				// 该last inserted line with text after cursor
 				insertedLines[insertedLines.length - 1] + afterCursor,
 
 				// All lines after current line
@@ -1115,7 +1119,7 @@ export class Editor implements Component, Focusable {
 			this.onChange(this.getText());
 		}
 
-		// Check if we should trigger or update autocomplete
+		// 检查是否 we should trigger or update autocomplete
 		if (!this.autocompleteState) {
 			// Auto-trigger for "/" at the start of a line (slash commands)
 			if (char === "/" && this.isAtStartOfMessage()) {
@@ -1134,11 +1138,11 @@ export class Editor implements Component, Focusable {
 			else if (/[a-zA-Z0-9.\-_]/.test(char)) {
 				const currentLine = this.state.lines[this.state.cursorLine] || "";
 				const textBeforeCursor = currentLine.slice(0, this.state.cursorCol);
-				// Check if we're in a slash command (with or without space for arguments)
+				// 检查是否 we're in a slash command (with or without space for arguments)
 				if (this.isInSlashCommandContext(textBeforeCursor)) {
 					this.tryTriggerAutocomplete();
 				}
-				// Check if we're in a symbol-based completion context like @, #, or provider triggers
+				// 检查是否 we're in a symbol-based completion context like @, #, or provider triggers
 				else if (this.autocompleteTriggerPattern.test(textBeforeCursor)) {
 					this.tryTriggerAutocomplete();
 				}
@@ -1176,7 +1180,7 @@ export class Editor implements Component, Focusable {
 			.filter((char) => char === "\n" || char.charCodeAt(0) >= 32)
 			.join("");
 
-		// If pasting a file path (starts with /, ~, or .) and the character before
+		// 如果 pasting a file path (starts with /, ~, or .) and the character before
 		// the cursor is a word character, prepend a space for better readability
 		if (/^[/~.]/.test(filteredText)) {
 			const currentLine = this.state.lines[this.state.cursorLine] || "";
@@ -1189,10 +1193,10 @@ export class Editor implements Component, Focusable {
 		// Split into lines to check for large paste
 		const pastedLines = filteredText.split("\n");
 
-		// Check if this is a large paste (> 10 lines or > 1000 characters)
+		// 检查是否 this is a large paste (> 10 lines or > 1000 characters)
 		const totalChars = filteredText.length;
 		if (pastedLines.length > 10 || totalChars > 1000) {
-			// Store the paste and insert a marker
+			// 保存 the paste and insert a marker
 			this.pasteCounter++;
 			const pasteId = this.pasteCounter;
 			this.pastes.set(pasteId, filteredText);
@@ -1232,7 +1236,7 @@ export class Editor implements Component, Focusable {
 		this.state.lines[this.state.cursorLine] = before;
 		this.state.lines.splice(this.state.cursorLine + 1, 0, after);
 
-		// Move cursor to start of new line
+		// 移动 cursor to start of new line
 		this.state.cursorLine++;
 		this.setCursorCol(0);
 
@@ -1279,14 +1283,14 @@ export class Editor implements Component, Focusable {
 			let line = this.state.lines[this.state.cursorLine] || "";
 			const beforeCursor = line.slice(0, this.state.cursorCol);
 
-			// Find the last grapheme in the text before cursor
+			// 查找 the last grapheme in the text before cursor
 			const graphemes = [...this.segment(beforeCursor, "grapheme")];
 			const lastGrapheme = graphemes[graphemes.length - 1];
 			const graphemeLength = lastGrapheme ? lastGrapheme.segment.length : 1;
 			const isPastedSegmented = PASTE_MARKER_SINGLE.exec(lastGrapheme.segment);
 
 			if (isPastedSegmented) {
-				// This contains the id part e.g 4 from [paste #4 +123 lines]
+				// 此contains the id part e.g 4 from [paste #4 +123 lines]
 				const targetId = Number(isPastedSegmented[1]);
 				this.pastes.delete(targetId);
 				this.pasteCounter--;
@@ -1339,7 +1343,7 @@ export class Editor implements Component, Focusable {
 		if (this.autocompleteState) {
 			this.updateAutocomplete();
 		} else {
-			// If autocomplete was cancelled (no matches), re-trigger if we're in a completable context
+			// 如果 autocomplete was cancelled (no matches), re-trigger if we're in a completable context
 			const currentLine = this.state.lines[this.state.cursorLine] || "";
 			const textBeforeCursor = currentLine.slice(0, this.state.cursorCol);
 			// Slash command context
@@ -1354,8 +1358,8 @@ export class Editor implements Component, Focusable {
 	}
 
 	/**
-	 * Set cursor column and clear preferredVisualCol.
-	 * Use this for all non-vertical cursor movements to reset sticky column behavior.
+	 * 设置 cursor column and clear preferredVisualCol.
+	 * 使用 this for all non-vertical cursor movements to reset sticky column behavior.
 	 */
 	private setCursorCol(col: number): void {
 		this.state.cursorCol = col;
@@ -1364,7 +1368,7 @@ export class Editor implements Component, Focusable {
 	}
 
 	/**
-	 * Move cursor to a target visual line, applying sticky column logic.
+	 * 移动 cursor to a target visual line, applying sticky column logic.
 	 * Shared by moveCursor() and pageScroll().
 	 */
 	private moveToVisualLine(
@@ -1376,8 +1380,8 @@ export class Editor implements Component, Focusable {
 		const targetVL = visualLines[targetVisualLine];
 		if (!(currentVL && targetVL)) return;
 
-		// When the cursor was snapped to a segment start, resolve the pre-snap
-		// position against the VL it belongs to. This gives the correct visual
+		// 当 the cursor was snapped to a segment start, resolve the pre-snap
+		// position against the VL it belongs to. 此gives the correct visual
 		// column even after a resize reshuffles VLs.
 		let currentVisualCol: number;
 		if (this.snappedFromCursorCol !== null) {
@@ -1387,7 +1391,7 @@ export class Editor implements Component, Focusable {
 			currentVisualCol = this.state.cursorCol - currentVL.startCol;
 		}
 
-		// For non-last segments, clamp to length-1 to stay within the segment
+		// 对于 non-last segments, clamp to length-1 to stay within the segment
 		const isLastSourceSegment =
 			currentVisualLine === visualLines.length - 1 ||
 			visualLines[currentVisualLine + 1]?.logicalLine !== currentVL.logicalLine;
@@ -1400,7 +1404,7 @@ export class Editor implements Component, Focusable {
 
 		const moveToVisualCol = this.computeVerticalMoveColumn(currentVisualCol, sourceMaxVisualCol, targetMaxVisualCol);
 
-		// Set cursor position
+		// 设置 cursor position
 		this.state.cursorLine = targetVL.logicalLine;
 		const targetCol = targetVL.startCol + moveToVisualCol;
 		const logicalLine = this.state.lines[targetVL.logicalLine] || "";
@@ -1418,7 +1422,7 @@ export class Editor implements Component, Focusable {
 				const isMovingDown = targetVisualLine > currentVisualLine;
 
 				if (isContinuation && isMovingDown) {
-					// The segment started on a previous visual line, and we
+					// 该segment started on a previous visual line, and we
 					// already visited it on the way down. Skip all remaining
 					// continuation VLs and land on the first VL past it.
 					const segEnd = seg.index + seg.segment.length;
@@ -1437,7 +1441,7 @@ export class Editor implements Component, Focusable {
 				}
 
 				// Snap to the start of the segment so it gets highlighted.
-				// Store the pre-snap position so the next vertical move can
+				// 保存 the pre-snap position so the next vertical move can
 				// resolve it to the correct visual column.
 				this.snappedFromCursorCol = this.state.cursorCol;
 				this.state.cursorCol = seg.index;
@@ -1453,7 +1457,7 @@ export class Editor implements Component, Focusable {
 	 * Compute the target visual column for vertical cursor movement.
 	 * Implements the sticky column decision table:
 	 *
-	 * | P | S | T | U | Scenario                                             | Set Preferred | Move To     |
+	 * | P | S | T | U | Scenario                                             | 设置 Preferred | 移动 To     |
 	 * |---|---|---|---| ---------------------------------------------------- |---------------|-------------|
 	 * | 0 | * | 0 | - | Start nav, target fits                               | null          | current     |
 	 * | 0 | * | 1 | - | Start nav, target shorter                            | current       | target end  |
@@ -1521,7 +1525,7 @@ export class Editor implements Component, Focusable {
 		if (this.state.cursorCol > 0) {
 			this.pushUndoSnapshot();
 
-			// Calculate text to be deleted and save to kill ring (backward deletion = prepend)
+			// 计算 text to be deleted and save to kill ring (backward deletion = prepend)
 			const deletedText = currentLine.slice(0, this.state.cursorCol);
 			this.killRing.push(deletedText, { prepend: true, accumulate: this.lastAction === "kill" });
 			this.lastAction = "kill";
@@ -1556,7 +1560,7 @@ export class Editor implements Component, Focusable {
 		if (this.state.cursorCol < currentLine.length) {
 			this.pushUndoSnapshot();
 
-			// Calculate text to be deleted and save to kill ring (forward deletion = append)
+			// 计算 text to be deleted and save to kill ring (forward deletion = append)
 			const deletedText = currentLine.slice(this.state.cursorCol);
 			this.killRing.push(deletedText, { prepend: false, accumulate: this.lastAction === "kill" });
 			this.lastAction = "kill";
@@ -1585,7 +1589,7 @@ export class Editor implements Component, Focusable {
 
 		const currentLine = this.state.lines[this.state.cursorLine] || "";
 
-		// If at start of line, behave like backspace at column 0 (merge with previous line)
+		// 如果 at start of line, behave like backspace at column 0 (merge with previous line)
 		if (this.state.cursorCol === 0) {
 			if (this.state.cursorLine > 0) {
 				this.pushUndoSnapshot();
@@ -1630,7 +1634,7 @@ export class Editor implements Component, Focusable {
 
 		const currentLine = this.state.lines[this.state.cursorLine] || "";
 
-		// If at end of line, merge with next line (delete the newline)
+		// 如果 at end of line, merge with next line (delete the newline)
 		if (this.state.cursorCol >= currentLine.length) {
 			if (this.state.cursorLine < this.state.lines.length - 1) {
 				this.pushUndoSnapshot();
@@ -1679,7 +1683,7 @@ export class Editor implements Component, Focusable {
 			// Delete grapheme at cursor position (handles emojis, combining characters, etc.)
 			const afterCursor = currentLine.slice(this.state.cursorCol);
 
-			// Find the first grapheme at cursor
+			// 查找 the first grapheme at cursor
 			const graphemes = [...this.segment(afterCursor, "grapheme")];
 			const firstGrapheme = graphemes[0];
 			const graphemeLength = firstGrapheme ? firstGrapheme.segment.length : 1;
@@ -1718,7 +1722,7 @@ export class Editor implements Component, Focusable {
 	}
 
 	/**
-	 * Build a mapping from visual lines to logical positions.
+	 * 构建 a mapping from visual lines to logical positions.
 	 * Returns an array where each element represents a visual line with:
 	 * - logicalLine: index into this.state.lines
 	 * - startCol: starting column in the logical line
@@ -1752,7 +1756,7 @@ export class Editor implements Component, Focusable {
 	}
 
 	/**
-	 * Find the visual line index that contains the given logical position.
+	 * 查找 the visual line index that contains the given logical position.
 	 */
 	private findVisualLineAt(
 		visualLines: Array<{ logicalLine: number; startCol: number; length: number }>,
@@ -1763,7 +1767,7 @@ export class Editor implements Component, Focusable {
 			const vl = visualLines[i];
 			if (!vl || vl.logicalLine !== line) continue;
 			const offset = col - vl.startCol;
-			// Cursor is in this segment if it's within range. For the last
+			// Cursor is in this segment if it's within range. 对于 the last
 			// segment of a logical line, cursor can be at length (end position)
 			const isLastSegmentOfLine = i === visualLines.length - 1 || visualLines[i + 1]?.logicalLine !== vl.logicalLine;
 			if (offset >= 0 && (offset < vl.length || (isLastSegmentOfLine && offset === vl.length))) {
@@ -1774,7 +1778,7 @@ export class Editor implements Component, Focusable {
 	}
 
 	/**
-	 * Find the visual line index for the current cursor position.
+	 * 查找 the visual line index for the current cursor position.
 	 */
 	private findCurrentVisualLine(
 		visualLines: Array<{ logicalLine: number; startCol: number; length: number }>,
@@ -1832,7 +1836,7 @@ export class Editor implements Component, Focusable {
 			}
 		}
 
-		// Keep an open autocomplete picker in sync with the new cursor
+		// 保持 an open autocomplete picker in sync with the new cursor
 		// position: cursor movement changes the text before the cursor, so a
 		// picker computed for the old position is stale. Re-query so it
 		// refreshes — or closes when the new position yields no suggestions —
@@ -1865,7 +1869,7 @@ export class Editor implements Component, Focusable {
 		this.lastAction = null;
 		const currentLine = this.state.lines[this.state.cursorLine] || "";
 
-		// If at start of line, move to end of previous line
+		// 如果 at start of line, move to end of previous line
 		if (this.state.cursorCol === 0) {
 			if (this.state.cursorLine > 0) {
 				this.state.cursorLine--;
@@ -1902,7 +1906,7 @@ export class Editor implements Component, Focusable {
 	 * Replaces the last yanked text with the previous entry in the ring.
 	 */
 	private yankPop(): void {
-		// Only works if we just yanked and have more than one entry
+		// 仅works if we just yanked and have more than one entry
 		if (this.lastAction !== "yank" || this.killRing.length <= 1) return;
 
 		this.pushUndoSnapshot();
@@ -1940,7 +1944,7 @@ export class Editor implements Component, Focusable {
 			const before = currentLine.slice(0, this.state.cursorCol);
 			const after = currentLine.slice(this.state.cursorCol);
 
-			// First line merges with text before cursor
+			// 首先，line merges with text before cursor
 			this.state.lines[this.state.cursorLine] = before + (lines[0] || "");
 
 			// Insert middle lines
@@ -1948,7 +1952,7 @@ export class Editor implements Component, Focusable {
 				this.state.lines.splice(this.state.cursorLine + i, 0, lines[i] || "");
 			}
 
-			// Last line merges with text after cursor
+			// 最后，line merges with text after cursor
 			const lastLineIndex = this.state.cursorLine + lines.length - 1;
 			this.state.lines.splice(lastLineIndex, 0, (lines[lines.length - 1] || "") + after);
 
@@ -1964,7 +1968,7 @@ export class Editor implements Component, Focusable {
 
 	/**
 	 * Delete the previously yanked text (used by yank-pop).
-	 * The yanked text is derived from killRing[end] since it hasn't been rotated yet.
+	 * 该yanked text is derived from killRing[end] since it hasn't been rotated yet.
 	 */
 	private deleteYankedText(): void {
 		const yankedText = this.killRing.peek();
@@ -1985,13 +1989,13 @@ export class Editor implements Component, Focusable {
 			const startLine = this.state.cursorLine - (yankLines.length - 1);
 			const startCol = (this.state.lines[startLine] || "").length - (yankLines[0] || "").length;
 
-			// Get text after cursor on current line
+			// 获取 text after cursor on current line
 			const afterCursor = (this.state.lines[this.state.cursorLine] || "").slice(this.state.cursorCol);
 
-			// Get text before yank start position
+			// 获取 text before yank start position
 			const beforeYank = (this.state.lines[startLine] || "").slice(0, startCol);
 
-			// Remove all lines from startLine to cursorLine and replace with merged line
+			// 移除 all lines from startLine to cursorLine and replace with merged line
 			this.state.lines.splice(startLine, yankLines.length, beforeYank + afterCursor);
 
 			// Update cursor
@@ -2060,7 +2064,7 @@ export class Editor implements Component, Focusable {
 		this.lastAction = null;
 		const currentLine = this.state.lines[this.state.cursorLine] || "";
 
-		// If at end of line, move to start of next line
+		// 如果 at end of line, move to start of next line
 		if (this.state.cursorCol >= currentLine.length) {
 			if (this.state.cursorLine < this.state.lines.length - 1) {
 				this.state.cursorLine++;
@@ -2096,7 +2100,7 @@ export class Editor implements Component, Focusable {
 
 	// Autocomplete methods
 	/**
-	 * Find the best autocomplete item index for the given prefix.
+	 * 查找 the best autocomplete item index for the given prefix.
 	 * Returns -1 if no match is found.
 	 *
 	 * Match priority:

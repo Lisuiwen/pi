@@ -1,4 +1,8 @@
 /**
+ * 模块职责：实现 packages/tui/src/tui.ts 中的核心功能。
+ */
+
+/**
  * Minimal TUI implementation with differential rendering
  */
 
@@ -63,7 +67,7 @@ function extractKittyImageRows(line: string): number {
  */
 export interface Component {
 	/**
-	 * Render the component to lines for the given viewport width
+	 * 渲染 the component to lines for the given viewport width
 	 * @param width - Current viewport width
 	 * @returns Array of strings, each representing a line
 	 */
@@ -75,14 +79,14 @@ export interface Component {
 	handleInput?(data: string): void;
 
 	/**
-	 * If true, component receives key release events (Kitty protocol).
+	 * 如果 true, component receives key release events (Kitty protocol).
 	 * Default is false - release events are filtered out.
 	 */
 	wantsKeyRelease?: boolean;
 
 	/**
 	 * Invalidate any cached rendering state.
-	 * Called when theme changes or when component needs to re-render from scratch.
+	 * 调用 when theme changes or when component needs to re-render from scratch.
 	 */
 	invalidate(): void;
 }
@@ -97,12 +101,12 @@ type PendingOsc11BackgroundQuery = {
 
 /**
  * Interface for components that can receive focus and display a hardware cursor.
- * When focused, the component should emit CURSOR_MARKER at the cursor position
+ * 当 focused, the component should emit CURSOR_MARKER at the cursor position
  * in its render output. TUI will find this marker and position the hardware
  * cursor there for proper IME candidate window positioning.
  */
 export interface Focusable {
-	/** Set by TUI when focus changes. Component should emit CURSOR_MARKER when true. */
+	/** 设置 by TUI when focus changes. Component should emit CURSOR_MARKER when true. */
 	focused: boolean;
 }
 
@@ -113,7 +117,7 @@ export function isFocusable(component: Component | null): component is Component
 
 /**
  * Cursor position marker - APC (Application Program Command) sequence.
- * This is a zero-width escape sequence that terminals ignore.
+ * 此is a zero-width escape sequence that terminals ignore.
  * Components emit this at the cursor position when focused.
  * TUI finds and strips this marker, then positions the hardware cursor there.
  */
@@ -148,11 +152,11 @@ export interface OverlayMargin {
 /** Value that can be absolute (number) or percentage (string like "50%") */
 export type SizeValue = number | `${number}%`;
 
-/** Parse a SizeValue into absolute value given a reference size */
+/** 解析 a SizeValue into absolute value given a reference size */
 function parseSizeValue(value: SizeValue | undefined, referenceSize: number): number | undefined {
 	if (value === undefined) return undefined;
 	if (typeof value === "number") return value;
-	// Parse percentage string like "50%"
+	// 解析 percentage string like "50%"
 	const match = value.match(/^(\d+(?:\.\d+)?)%$/);
 	if (match) {
 		return Math.floor((referenceSize * parseFloat(match[1])) / 100);
@@ -198,11 +202,11 @@ export interface OverlayOptions {
 	// === Visibility ===
 	/**
 	 * Control overlay visibility based on terminal dimensions.
-	 * If provided, overlay is only rendered when this returns true.
-	 * Called each render cycle with current terminal dimensions.
+	 * 如果 provided, overlay is only rendered when this returns true.
+	 * 调用 each render cycle with current terminal dimensions.
 	 */
 	visible?: (termWidth: number, termHeight: number) => boolean;
-	/** If true, don't capture keyboard focus when shown */
+	/** 如果 true, don't capture keyboard focus when shown */
 	nonCapturing?: boolean;
 }
 
@@ -213,20 +217,20 @@ export interface OverlayUnfocusOptions {
 }
 
 /**
- * Handle returned by showOverlay for controlling the overlay
+ * 处理 returned by showOverlay for controlling the overlay
  */
 export interface OverlayHandle {
 	/** Permanently remove the overlay (cannot be shown again) */
 	hide(): void;
 	/** Temporarily hide or show the overlay */
 	setHidden(hidden: boolean): void;
-	/** Check if overlay is temporarily hidden */
+	/** 检查是否 overlay is temporarily hidden */
 	isHidden(): boolean;
 	/** Focus this overlay and bring it to the visual front */
 	focus(): void;
 	/** Release focus to the next visible capturing overlay or previous target, or to an explicit target when provided */
 	unfocus(options?: OverlayUnfocusOptions): void;
-	/** Check if this overlay currently has focus */
+	/** 检查是否 this overlay currently has focus */
 	isFocused(): boolean;
 }
 
@@ -301,7 +305,7 @@ export class TUI extends Container {
 	private focusedComponent: Component | null = null;
 	private inputListeners = new Set<InputListener>();
 
-	/** Global callback for debug key (Shift+Ctrl+D). Called before input is forwarded to focused component. */
+	/** Global callback for debug key (Shift+Ctrl+D). 调用 before input is forwarded to focused component. */
 	public onDebug?: () => void;
 	private renderRequested = false;
 	private renderTimer: NodeJS.Timeout | undefined;
@@ -310,9 +314,9 @@ export class TUI extends Container {
 	private cursorRow = 0; // Logical cursor row (end of rendered content)
 	private hardwareCursorRow = 0; // Actual terminal cursor row (may differ due to IME positioning)
 	private showHardwareCursor = process.env.PI_HARDWARE_CURSOR === "1";
-	private clearOnShrink = process.env.PI_CLEAR_ON_SHRINK === "1"; // Clear empty rows when content shrinks (default: off)
-	private maxLinesRendered = 0; // Track terminal's working area (max lines ever rendered)
-	private previousViewportTop = 0; // Track previous viewport top for resize-aware cursor moves
+	private clearOnShrink = process.env.PI_CLEAR_ON_SHRINK === "1"; // 清除 empty rows when content shrinks (default: off)
+	private maxLinesRendered = 0; // 跟踪 terminal's working area (max lines ever rendered)
+	private previousViewportTop = 0; // 跟踪 previous viewport top for resize-aware cursor moves
 	private fullRedrawCount = 0;
 	private stopped = false;
 	private pendingOsc11BackgroundReplies = 0;
@@ -355,9 +359,9 @@ export class TUI extends Container {
 	}
 
 	/**
-	 * Set whether to trigger full re-render when content shrinks.
-	 * When true (default), empty rows are cleared when content shrinks.
-	 * When false, empty rows remain (reduces redraws on slower terminals).
+	 * 设置 whether to trigger full re-render when content shrinks.
+	 * 当 true (default), empty rows are cleared when content shrinks.
+	 * 当 false, empty rows remain (reduces redraws on slower terminals).
 	 */
 	setClearOnShrink(enabled: boolean): void {
 		this.clearOnShrink = enabled;
@@ -499,14 +503,14 @@ export class TUI extends Container {
 			focusOrder: ++this.focusOrderCounter,
 		};
 		this.overlayStack.push(entry);
-		// Only focus if overlay is actually visible
+		// 仅focus if overlay is actually visible
 		if (!options?.nonCapturing && this.isOverlayVisible(entry)) {
 			this.setFocus(component);
 		}
 		this.terminal.hideCursor();
 		this.requestRender();
 
-		// Return handle for controlling this overlay
+		// 返回 handle for controlling this overlay
 		return {
 			hide: () => {
 				const index = this.overlayStack.indexOf(entry);
@@ -529,7 +533,7 @@ export class TUI extends Container {
 				// Update focus when hiding/showing
 				if (hidden) {
 					this.clearOverlayFocusRestoreFor(entry);
-					// If this overlay had focus, move focus to next visible or preFocus
+					// 如果 this overlay had focus, move focus to next visible or preFocus
 					if (this.focusedComponent === component) {
 						const topVisible = this.getTopmostVisibleOverlay();
 						this.setFocus(topVisible?.component ?? entry.preFocus);
@@ -593,7 +597,7 @@ export class TUI extends Container {
 		this.retargetOverlayPreFocus(overlay);
 		this.overlayStack.pop();
 		if (this.focusedComponent === overlay.component) {
-			// Find topmost visible overlay, or fall back to preFocus
+			// 查找 topmost visible overlay, or fall back to preFocus
 			const topVisible = this.getTopmostVisibleOverlay();
 			this.setFocus(topVisible?.component ?? overlay.preFocus);
 		}
@@ -601,12 +605,12 @@ export class TUI extends Container {
 		this.requestRender();
 	}
 
-	/** Check if there are any visible overlays */
+	/** 检查是否 there are any visible overlays */
 	hasOverlay(): boolean {
 		return this.overlayStack.some((o) => this.isOverlayVisible(o));
 	}
 
-	/** Check if an overlay entry is currently visible */
+	/** 检查是否 an overlay entry is currently visible */
 	private isOverlayVisible(entry: OverlayStackEntry): boolean {
 		if (entry.hidden) return false;
 		if (entry.options?.visible) {
@@ -615,7 +619,7 @@ export class TUI extends Container {
 		return true;
 	}
 
-	/** Find the visual-frontmost visible capturing overlay, if any */
+	/** 查找 the visual-frontmost visible capturing overlay, if any */
 	private getTopmostVisibleOverlay(): OverlayStackEntry | undefined {
 		let topmost: OverlayStackEntry | undefined;
 		for (const overlay of this.overlayStack) {
@@ -675,7 +679,7 @@ export class TUI extends Container {
 	}
 
 	private queryCellSize(): void {
-		// Only query if terminal supports images (cell size is only used for image rendering)
+		// 仅query if terminal supports images (cell size is only used for image rendering)
 		if (!getCapabilities().images) {
 			return;
 		}
@@ -693,7 +697,7 @@ export class TUI extends Container {
 		if (this.terminalColorSchemeNotificationsEnabled) {
 			this.terminal.write("\x1b[?2031l");
 		}
-		// Move cursor to the end of the content to prevent overwriting/artifacts on exit
+		// 移动 cursor to the end of the content to prevent overwriting/artifacts on exit
 		if (this.previousLines.length > 0) {
 			// Overwrite the inverted cursor with a normal space to clear the artifact
 			this.terminal.write(" ");
@@ -796,7 +800,7 @@ export class TUI extends Container {
 			return;
 		}
 
-		// If focused component is an overlay, verify it's still visible
+		// 如果 focused component is an overlay, verify it's still visible
 		// (visibility can change due to terminal resize or visible() callback)
 		const focusedOverlay = this.overlayStack.find((o) => o.component === this.focusedComponent);
 		if (focusedOverlay && !this.isOverlayVisible(focusedOverlay)) {
@@ -825,7 +829,7 @@ export class TUI extends Container {
 		}
 
 		// Pass input to focused component (including Ctrl+C)
-		// The focused component can decide how to handle Ctrl+C
+		// 该focused component can decide how to handle Ctrl+C
 		if (this.focusedComponent?.handleInput) {
 			// Filter out key release events unless component opts in
 			if (isKeyRelease(data) && !this.focusedComponent.wantsKeyRelease) {
@@ -904,7 +908,7 @@ export class TUI extends Container {
 	): { width: number; row: number; col: number; maxHeight: number | undefined } {
 		const opt = options ?? {};
 
-		// Parse margin (clamp to non-negative)
+		// 解析 margin (clamp to non-negative)
 		const margin =
 			typeof opt.margin === "number"
 				? { top: opt.margin, right: opt.margin, bottom: opt.margin, left: opt.margin }
@@ -920,7 +924,7 @@ export class TUI extends Container {
 
 		// === Resolve width ===
 		let width = parseSizeValue(opt.width, termWidth) ?? Math.min(80, availWidth);
-		// Apply minWidth
+		// 应用 minWidth
 		if (opt.minWidth !== undefined) {
 			width = Math.max(width, opt.minWidth);
 		}
@@ -985,7 +989,7 @@ export class TUI extends Container {
 			col = this.resolveAnchorCol(anchor, width, availWidth, marginLeft);
 		}
 
-		// Apply offsets
+		// 应用 offsets
 		if (opt.offsetY !== undefined) row += opt.offsetY;
 		if (opt.offsetX !== undefined) col += opt.offsetX;
 
@@ -1044,19 +1048,19 @@ export class TUI extends Container {
 		for (const entry of visibleEntries) {
 			const { component, options } = entry;
 
-			// Get layout with height=0 first to determine width and maxHeight
+			// 获取 layout with height=0 first to determine width and maxHeight
 			// (width and maxHeight don't depend on overlay height)
 			const { width, maxHeight } = this.resolveOverlayLayout(options, 0, termWidth, termHeight);
 
-			// Render component at calculated width
+			// 渲染 component at calculated width
 			let overlayLines = component.render(width);
 
-			// Apply maxHeight if specified
+			// 应用 maxHeight if specified
 			if (maxHeight !== undefined && overlayLines.length > maxHeight) {
 				overlayLines = overlayLines.slice(0, maxHeight);
 			}
 
-			// Get final row/col with actual overlay height
+			// 获取 final row/col with actual overlay height
 			const { row, col } = this.resolveOverlayLayout(options, overlayLines.length, termWidth, termHeight);
 
 			rendered.push({ overlayLines, row, col, w: width });
@@ -1212,7 +1216,7 @@ export class TUI extends Container {
 			" ".repeat(afterPad);
 
 		// CRITICAL: Always verify and truncate to terminal width.
-		// This is the final safeguard against width overflow which would crash the TUI.
+		// 此is the final safeguard against width overflow which would crash the TUI.
 		// Width tracking can drift from actual visible width due to:
 		// - Complex ANSI/OSC sequences (hyperlinks, colors)
 		// - Wide characters at segment boundaries
@@ -1226,21 +1230,21 @@ export class TUI extends Container {
 	}
 
 	/**
-	 * Find and extract cursor position from rendered lines.
+	 * 查找 and extract cursor position from rendered lines.
 	 * Searches for CURSOR_MARKER, calculates its position, and strips it from the output.
-	 * Only scans the bottom terminal height lines (visible viewport).
+	 * 仅scans the bottom terminal height lines (visible viewport).
 	 * @param lines - Rendered lines to search
 	 * @param height - Terminal height (visible viewport size)
 	 * @returns Cursor position { row, col } or null if no marker found
 	 */
 	private extractCursorPosition(lines: string[], height: number): { row: number; col: number } | null {
-		// Only scan the bottom `height` lines (visible viewport)
+		// 仅scan the bottom `height` lines (visible viewport)
 		const viewportTop = Math.max(0, lines.length - height);
 		for (let row = lines.length - 1; row >= viewportTop; row--) {
 			const line = lines[row];
 			const markerIndex = line.indexOf(CURSOR_MARKER);
 			if (markerIndex !== -1) {
-				// Calculate visual column (width of text before marker)
+				// 计算 visual column (width of text before marker)
 				const beforeMarker = line.slice(0, markerIndex);
 				const col = visibleWidth(beforeMarker);
 
@@ -1269,7 +1273,7 @@ export class TUI extends Container {
 			return targetScreenRow - currentScreenRow;
 		};
 
-		// Render all components to get new lines
+		// 渲染 all components to get new lines
 		let newLines = this.render(width);
 
 		// Composite overlays into the rendered lines (before differential compare)
@@ -1285,10 +1289,10 @@ export class TUI extends Container {
 		// Helper to clear scrollback and viewport and render all new lines
 		const fullRender = (clear: boolean): void => {
 			this.fullRedrawCount += 1;
-			let buffer = "\x1b[?2026h"; // Begin synchronized output
+			let buffer = "\x1b[?2026h"; // 开始同步输出
 			if (clear) {
 				buffer += this.deleteKittyImages(this.previousKittyImageIds);
-				buffer += "\x1b[2J\x1b[H\x1b[3J"; // Clear screen, home, then clear scrollback
+				buffer += "\x1b[2J\x1b[H\x1b[3J"; // 清除 screen, home, then clear scrollback
 			}
 			for (let i = 0; i < newLines.length; i++) {
 				if (i > 0) buffer += "\r\n";
@@ -1307,7 +1311,7 @@ export class TUI extends Container {
 				}
 				buffer += line;
 			}
-			buffer += "\x1b[?2026l"; // End synchronized output
+			buffer += "\x1b[?2026l"; // 结束同步输出
 			this.terminal.write(buffer);
 			this.cursorRow = Math.max(0, newLines.length - 1);
 			this.hardwareCursorRow = this.cursorRow;
@@ -1334,7 +1338,7 @@ export class TUI extends Container {
 			fs.appendFileSync(logPath, msg);
 		};
 
-		// First render - just output everything without clearing (assumes clean screen)
+		// 首先，render - just output everything without clearing (assumes clean screen)
 		if (this.previousLines.length === 0 && !widthChanged && !heightChanged) {
 			logRedraw("first render");
 			fullRender(false);
@@ -1366,7 +1370,7 @@ export class TUI extends Container {
 			return;
 		}
 
-		// Find first and last changed lines
+		// 查找 first and last changed lines
 		let firstChanged = -1;
 		let lastChanged = -1;
 		const maxLines = Math.max(newLines.length, this.previousLines.length);
@@ -1395,7 +1399,7 @@ export class TUI extends Container {
 		}
 		const appendStart = appendedLines && firstChanged === this.previousLines.length && firstChanged > 0;
 
-		// No changes - but still need to update hardware cursor position if it moved
+		// 没有变化，但仍需在硬件光标移动时更新其位置
 		if (firstChanged === -1) {
 			this.positionHardwareCursor(cursorPos, newLines.length);
 			this.previousViewportTop = prevViewportTop;
@@ -1408,7 +1412,7 @@ export class TUI extends Container {
 			if (this.previousLines.length > newLines.length) {
 				let buffer = "\x1b[?2026h";
 				buffer += this.deleteChangedKittyImages(firstChanged, lastChanged);
-				// Move to end of new content (clamp to 0 for empty content)
+				// 移动 to end of new content (clamp to 0 for empty content)
 				const targetRow = Math.max(0, newLines.length - 1);
 				if (targetRow < prevViewportTop) {
 					logRedraw(`deleted lines moved viewport up (${targetRow} < ${prevViewportTop})`);
@@ -1419,7 +1423,7 @@ export class TUI extends Container {
 				if (lineDiff > 0) buffer += `\x1b[${lineDiff}B`;
 				else if (lineDiff < 0) buffer += `\x1b[${-lineDiff}A`;
 				buffer += "\r";
-				// Clear extra lines without scrolling
+				// 清除 extra lines without scrolling
 				const extraLines = this.previousLines.length - newLines.length;
 				if (extraLines > height) {
 					logRedraw(`extraLines > height (${extraLines} > ${height})`);
@@ -1453,16 +1457,16 @@ export class TUI extends Container {
 		}
 
 		// Differential rendering can only touch what was actually visible.
-		// If the first changed line is above the previous viewport, we need a full redraw.
+		// 如果 the first changed line is above the previous viewport, we need a full redraw.
 		if (firstChanged < prevViewportTop) {
 			logRedraw(`firstChanged < viewportTop (${firstChanged} < ${prevViewportTop})`);
 			fullRender(true);
 			return;
 		}
 
-		// Render from first changed line to end
-		// Build buffer with all updates wrapped in synchronized output
-		let buffer = "\x1b[?2026h"; // Begin synchronized output
+		// 渲染 from first changed line to end
+		// 构建 buffer with all updates wrapped in synchronized output
+		let buffer = "\x1b[?2026h"; // 开始同步输出
 		buffer += this.deleteChangedKittyImages(firstChanged, lastChanged);
 		const prevViewportBottom = prevViewportTop + height - 1;
 		const moveTargetRow = appendStart ? firstChanged - 1 : firstChanged;
@@ -1479,18 +1483,18 @@ export class TUI extends Container {
 			hardwareCursorRow = moveTargetRow;
 		}
 
-		// Move cursor to first changed line (use hardwareCursorRow for actual position)
+		// 移动 cursor to first changed line (use hardwareCursorRow for actual position)
 		const lineDiff = computeLineDiff(moveTargetRow);
 		if (lineDiff > 0) {
-			buffer += `\x1b[${lineDiff}B`; // Move down
+			buffer += `\x1b[${lineDiff}B`; // 向下移动
 		} else if (lineDiff < 0) {
-			buffer += `\x1b[${-lineDiff}A`; // Move up
+			buffer += `\x1b[${-lineDiff}A`; // 向上移动
 		}
 
-		buffer += appendStart ? "\r\n" : "\r"; // Move to column 0
+		buffer += appendStart ? "\r\n" : "\r"; // 移动到第 0 列
 
-		// Only render changed lines (firstChanged to lastChanged), not all lines to end
-		// This reduces flicker when only a single line changes (e.g., spinner animation)
+		// 仅render changed lines (firstChanged to lastChanged), not all lines to end
+		// 此reduces flicker when only a single line changes (e.g., spinner animation)
 		const renderEnd = Math.min(lastChanged, newLines.length - 1);
 		for (let i = firstChanged; i <= renderEnd; i++) {
 			if (i > firstChanged) buffer += "\r\n";
@@ -1518,7 +1522,7 @@ export class TUI extends Container {
 				continue;
 			}
 
-			buffer += "\x1b[2K"; // Clear current line
+			buffer += "\x1b[2K"; // 清除当前行
 			if (!isImage && visibleWidth(line) > width) {
 				// Log all lines to crash file for debugging
 				const crashLogPath = path.join(os.homedir(), ".pi", "agent", "pi-crash.log");
@@ -1550,12 +1554,12 @@ export class TUI extends Container {
 			buffer += line;
 		}
 
-		// Track where cursor ended up after rendering
+		// 跟踪 where cursor ended up after rendering
 		let finalCursorRow = renderEnd;
 
-		// If we had more lines before, clear them and move cursor back
+		// 如果 we had more lines before, clear them and move cursor back
 		if (this.previousLines.length > newLines.length) {
-			// Move to end of new content first if we stopped before it
+			// 移动 to end of new content first if we stopped before it
 			if (renderEnd < newLines.length - 1) {
 				const moveDown = newLines.length - 1 - renderEnd;
 				buffer += `\x1b[${moveDown}B`;
@@ -1565,11 +1569,11 @@ export class TUI extends Container {
 			for (let i = newLines.length; i < this.previousLines.length; i++) {
 				buffer += "\r\n\x1b[2K";
 			}
-			// Move cursor back to end of new content
+			// 移动 cursor back to end of new content
 			buffer += `\x1b[${extraLines}A`;
 		}
 
-		buffer += "\x1b[?2026l"; // End synchronized output
+		buffer += "\x1b[?2026l"; // 结束同步输出
 
 		if (process.env.PI_TUI_DEBUG === "1") {
 			const debugDir = "/tmp/tui";
@@ -1600,15 +1604,15 @@ export class TUI extends Container {
 			fs.writeFileSync(debugPath, debugData);
 		}
 
-		// Write entire buffer at once
+		// 一次性写入整个缓冲区
 		this.terminal.write(buffer);
 
-		// Track cursor position for next render
+		// 跟踪 cursor position for next render
 		// cursorRow tracks end of content (for viewport calculation)
 		// hardwareCursorRow tracks actual terminal cursor position (for movement)
 		this.cursorRow = Math.max(0, newLines.length - 1);
 		this.hardwareCursorRow = finalCursorRow;
-		// Track terminal's working area (grows but doesn't shrink unless cleared)
+		// 跟踪 terminal's working area (grows but doesn't shrink unless cleared)
 		this.maxLinesRendered = Math.max(this.maxLinesRendered, newLines.length);
 		this.previousViewportTop = Math.max(prevViewportTop, finalCursorRow - height + 1);
 
@@ -1623,7 +1627,7 @@ export class TUI extends Container {
 
 	/**
 	 * Position the hardware cursor for IME candidate window.
-	 * @param cursorPos The cursor position extracted from rendered output, or null
+	 * @param cursorPos 该cursor position extracted from rendered output, or null
 	 * @param totalLines Total number of rendered lines
 	 */
 	private positionHardwareCursor(cursorPos: { row: number; col: number } | null, totalLines: number): void {
@@ -1636,15 +1640,15 @@ export class TUI extends Container {
 		const targetRow = Math.max(0, Math.min(cursorPos.row, totalLines - 1));
 		const targetCol = Math.max(0, cursorPos.col);
 
-		// Move cursor from current position to target
+		// 移动 cursor from current position to target
 		const rowDelta = targetRow - this.hardwareCursorRow;
 		let buffer = "";
 		if (rowDelta > 0) {
-			buffer += `\x1b[${rowDelta}B`; // Move down
+			buffer += `\x1b[${rowDelta}B`; // 向下移动
 		} else if (rowDelta < 0) {
-			buffer += `\x1b[${-rowDelta}A`; // Move up
+			buffer += `\x1b[${-rowDelta}A`; // 向上移动
 		}
-		// Move to absolute column (1-indexed)
+		// 移动 to absolute column (1-indexed)
 		buffer += `\x1b[${targetCol + 1}G`;
 
 		if (buffer) {

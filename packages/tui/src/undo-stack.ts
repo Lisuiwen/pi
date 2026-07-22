@@ -1,4 +1,8 @@
 /**
+ * 模块职责：实现 packages/tui/src/undo-stack.ts 中的核心功能。
+ */
+
+/**
  * Generic undo stack with clone-on-push semantics.
  *
  * Stores deep clones of state snapshots. Popped snapshots are returned
@@ -17,7 +21,7 @@ export class UndoStack<S> {
 		return this.stack.pop();
 	}
 
-	/** Remove all snapshots. */
+	/** 移除 all snapshots. */
 	clear(): void {
 		this.stack.length = 0;
 	}

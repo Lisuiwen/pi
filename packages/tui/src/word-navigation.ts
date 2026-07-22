@@ -1,10 +1,14 @@
+/**
+ * 模块职责：实现 packages/tui/src/word-navigation.ts 中的核心功能。
+ */
+
 import { getWordSegmenter, isWhitespaceChar, PUNCTUATION_REGEX } from "./utils.ts";
 
 const wordSegmenter = getWordSegmenter();
 
 /**
  * Options for word navigation functions.
- * When omitted, uses the default Intl.Segmenter word segmentation.
+ * 当 omitted, uses the default Intl.Segmenter word segmentation.
  */
 export interface WordNavigationOptions {
 	/** Custom segmenter returning word segments for the given text. */
@@ -14,7 +18,7 @@ export interface WordNavigationOptions {
 }
 
 /**
- * Find the cursor position after moving one word backward from `cursor` in `text`.
+ * 查找 the cursor position after moving one word backward from `cursor` in `text`.
  * Skips trailing whitespace, then stops at the next word/punctuation boundary.
  *
  * Pure function - does not mutate any state.
@@ -70,7 +74,7 @@ export function findWordBackward(text: string, cursor: number, options?: WordNav
 }
 
 /**
- * Find the cursor position after moving one word forward from `cursor` in `text`.
+ * 查找 the cursor position after moving one word forward from `cursor` in `text`.
  * Skips leading whitespace, then stops at the next word/punctuation boundary.
  *
  * Pure function - does not mutate any state.

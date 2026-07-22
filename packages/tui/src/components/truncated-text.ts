@@ -1,3 +1,7 @@
+/**
+ * 模块职责：实现 packages/tui/src/components/truncated-text.ts 中的核心功能。
+ */
+
 import type { Component } from "../tui.ts";
 import { truncateToWidth, visibleWidth } from "../utils.ts";
 
@@ -25,12 +29,12 @@ export class TruncatedText implements Component {
 		// Empty line padded to width
 		const emptyLine = " ".repeat(width);
 
-		// Add vertical padding above
+		// 添加 vertical padding above
 		for (let i = 0; i < this.paddingY; i++) {
 			result.push(emptyLine);
 		}
 
-		// Calculate available width after horizontal padding
+		// 计算 available width after horizontal padding
 		const availableWidth = Math.max(1, width - this.paddingX * 2);
 
 		// Take only the first line (stop at newline)
@@ -43,7 +47,7 @@ export class TruncatedText implements Component {
 		// Truncate text if needed (accounting for ANSI codes)
 		const displayText = truncateToWidth(singleLineText, availableWidth);
 
-		// Add horizontal padding
+		// 添加 horizontal padding
 		const leftPadding = " ".repeat(this.paddingX);
 		const rightPadding = " ".repeat(this.paddingX);
 		const lineWithPadding = leftPadding + displayText + rightPadding;
@@ -55,7 +59,7 @@ export class TruncatedText implements Component {
 
 		result.push(finalLine);
 
-		// Add vertical padding below
+		// 添加 vertical padding below
 		for (let i = 0; i < this.paddingY; i++) {
 			result.push(emptyLine);
 		}

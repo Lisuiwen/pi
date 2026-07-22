@@ -1,3 +1,7 @@
+/**
+ * 模块职责：实现 packages/tui/src/terminal.ts 中的核心功能。
+ */
+
 import * as fs from "node:fs";
 import { createRequire } from "node:module";
 import * as path from "node:path";
@@ -67,27 +71,27 @@ export interface Terminal {
 	// Write output to terminal
 	write(data: string): void;
 
-	// Get terminal dimensions
+	// 获取 terminal dimensions
 	get columns(): number;
 	get rows(): number;
 
-	// Whether Kitty keyboard protocol is active
+	// 是否 Kitty keyboard protocol is active
 	get kittyProtocolActive(): boolean;
 
 	// Cursor positioning (relative to current position)
-	moveBy(lines: number): void; // Move cursor up (negative) or down (positive) by N lines
+	moveBy(lines: number): void; // 移动 cursor up (negative) or down (positive) by N lines
 
 	// Cursor visibility
-	hideCursor(): void; // Hide the cursor
-	showCursor(): void; // Show the cursor
+	hideCursor(): void; // 隐藏光标
+	showCursor(): void; // 显示光标
 
-	// Clear operations
-	clearLine(): void; // Clear current line
-	clearFromCursor(): void; // Clear from cursor to end of screen
-	clearScreen(): void; // Clear entire screen and move cursor to (0,0)
+	// 清除 operations
+	clearLine(): void; // 清除当前行
+	clearFromCursor(): void; // 清除从光标到屏幕末尾的内容
+	clearScreen(): void; // 清除整个屏幕并将光标移至 (0,0)
 
 	// Title operations
-	setTitle(title: string): void; // Set terminal window title
+	setTitle(title: string): void; // 设置终端窗口标题
 
 	// Progress indicator (OSC 9;4)
 	setProgress(active: boolean): void;
@@ -118,7 +122,7 @@ export class ProcessTerminal implements Terminal {
 				return path.join(env, `tui-${ts}-${process.pid}.log`);
 			}
 		} catch {
-			// Not an existing directory - use as-is (file path)
+			// 不是现有目录，按原样作为文件路径使用
 		}
 		return env;
 	})();
@@ -135,7 +139,7 @@ export class ProcessTerminal implements Terminal {
 		this.inputHandler = onInput;
 		this.resizeHandler = onResize;
 
-		// Save previous state and enable raw mode
+		// 保存之前的状态并启用原始模式
 		this.wasRaw = process.stdin.isRaw || false;
 		if (process.stdin.setRawMode) {
 			process.stdin.setRawMode(true);
@@ -143,13 +147,13 @@ export class ProcessTerminal implements Terminal {
 		process.stdin.setEncoding("utf8");
 		process.stdin.resume();
 
-		// Enable bracketed paste mode - terminal will wrap pastes in \x1b[200~ ... \x1b[201~
+		// 启用括号粘贴模式，终端会将粘贴内容包裹在 \x1b[200~ ... \x1b[201~
 		process.stdout.write("\x1b[?2004h");
 
-		// Set up resize handler immediately
+		// 立即设置大小调整处理器
 		process.stdout.on("resize", this.resizeHandler);
 
-		// Refresh terminal dimensions - they may be stale after suspend/resume
+		// 刷新终端尺寸；挂起/恢复后尺寸可能已过期
 		// (SIGWINCH is lost while process is stopped). Unix only.
 		if (process.platform !== "win32") {
 			process.kill(process.pid, "SIGWINCH");
@@ -167,22 +171,22 @@ export class ProcessTerminal implements Terminal {
 	}
 
 	/**
-	 * Set up StdinBuffer to split batched input into individual sequences.
-	 * This ensures components receive single events, making matchesKey/isKeyRelease work correctly.
+	 * 设置 up StdinBuffer to split batched input into individual sequences.
+	 * 此ensures components receive single events, making matchesKey/isKeyRelease work correctly.
 	 *
 	 * Also watches for Kitty protocol response and enables it when detected.
-	 * This is done here (after stdinBuffer parsing) rather than on raw stdin
+	 * 此is done here (after stdinBuffer parsing) rather than on raw stdin
 	 * to handle the case where the response arrives split across multiple events.
 	 */
 	private setupStdinBuffer(): void {
 		this.stdinBuffer = new StdinBuffer({ timeout: 10 });
 
-		// Forward individual sequences to the input handler
+		// 将单个序列转发给输入处理器
 		this.stdinBuffer.on("data", (sequence) => {
 			const negotiationSequence = this.readKeyboardProtocolNegotiationSequence(sequence);
 			if (negotiationSequence === "pending") {
 				this.scheduleKeyboardProtocolNegotiationBufferFlush();
-				return; // Wait briefly for the rest of a split Kitty response.
+				return; // 短暂等待拆分的 Kitty 响应的其余部分。
 			}
 			if (this.handleKeyboardProtocolNegotiationSequence(negotiationSequence)) {
 				return;
@@ -208,11 +212,11 @@ export class ProcessTerminal implements Terminal {
 	 * Query terminal for Kitty keyboard protocol support and enable it if available.
 	 *
 	 * Kitty's progressive enhancement detection requires requesting the desired
-	 * flags before querying them. The trailing DA query is a sentinel supported by
+	 * flags before querying them. 该trailing DA query is a sentinel supported by
 	 * terminals that do not know Kitty keyboard protocol; receiving DA before a
 	 * Kitty response enables modifyOtherKeys fallback without a startup timeout.
 	 *
-	 * The requested flags are:
+	 * 该requested flags are:
 	 * - 1 = disambiguate escape codes
 	 * - 2 = report event types (press/repeat/release)
 	 * - 4 = report alternate keys (shifted key, base layout key)
@@ -357,7 +361,7 @@ export class ProcessTerminal implements Terminal {
 					helper.enableVirtualTerminalInput?.();
 					return;
 				} catch {
-					// Try the next possible packaging location.
+					// 尝试 the next possible packaging location.
 				}
 			}
 		} catch {
@@ -369,7 +373,7 @@ export class ProcessTerminal implements Terminal {
 		const shouldDisableKittyProtocol = this.keyboardProtocolPushed || this._kittyProtocolActive;
 		this.clearKeyboardProtocolNegotiationBuffer();
 		if (shouldDisableKittyProtocol) {
-			// Disable Kitty keyboard protocol first so any late key releases
+			// 禁用 Kitty keyboard protocol first so any late key releases
 			// do not generate new Kitty escape sequences.
 			process.stdout.write("\x1b[<u");
 			this.keyboardProtocolPushed = false;
@@ -408,13 +412,13 @@ export class ProcessTerminal implements Terminal {
 			process.stdout.write(TERMINAL_PROGRESS_CLEAR_SEQUENCE);
 		}
 
-		// Disable bracketed paste mode
+		// 禁用括号粘贴模式
 		process.stdout.write("\x1b[?2004l");
 
 		const shouldDisableKittyProtocol = this.keyboardProtocolPushed || this._kittyProtocolActive;
 		this.clearKeyboardProtocolNegotiationBuffer();
 
-		// Disable Kitty keyboard protocol if not already done by drainInput()
+		// 禁用 Kitty keyboard protocol if not already done by drainInput()
 		if (shouldDisableKittyProtocol) {
 			process.stdout.write("\x1b[<u");
 			this.keyboardProtocolPushed = false;
@@ -423,13 +427,13 @@ export class ProcessTerminal implements Terminal {
 		}
 		this.disableModifyOtherKeys();
 
-		// Clean up StdinBuffer
+		// 清理 StdinBuffer
 		if (this.stdinBuffer) {
 			this.stdinBuffer.destroy();
 			this.stdinBuffer = undefined;
 		}
 
-		// Remove event handlers
+		// 移除事件处理器
 		if (this.stdinDataHandler) {
 			process.stdin.removeListener("data", this.stdinDataHandler);
 			this.stdinDataHandler = undefined;
@@ -441,11 +445,11 @@ export class ProcessTerminal implements Terminal {
 		}
 
 		// Pause stdin to prevent any buffered input (e.g., Ctrl+D) from being
-		// re-interpreted after raw mode is disabled. This fixes a race condition
+		// re-interpreted after raw mode is disabled. 此fixes a race condition
 		// where Ctrl+D could close the parent shell over SSH.
 		process.stdin.pause();
 
-		// Restore raw mode state
+		// 恢复原始模式状态
 		if (process.stdin.setRawMode) {
 			process.stdin.setRawMode(this.wasRaw);
 		}
@@ -457,7 +461,7 @@ export class ProcessTerminal implements Terminal {
 			try {
 				fs.appendFileSync(this.writeLogPath, data, { encoding: "utf8" });
 			} catch {
-				// Ignore logging errors
+				// 忽略日志错误
 			}
 		}
 	}
@@ -472,10 +476,10 @@ export class ProcessTerminal implements Terminal {
 
 	moveBy(lines: number): void {
 		if (lines > 0) {
-			// Move down
+			// 向下移动
 			process.stdout.write(`\x1b[${lines}B`);
 		} else if (lines < 0) {
-			// Move up
+			// 向上移动
 			process.stdout.write(`\x1b[${-lines}A`);
 		}
 		// lines === 0: no movement
@@ -498,7 +502,7 @@ export class ProcessTerminal implements Terminal {
 	}
 
 	clearScreen(): void {
-		process.stdout.write("\x1b[2J\x1b[H"); // Clear screen and move to home (1,1)
+		process.stdout.write("\x1b[2J\x1b[H"); // 清屏并移动到起点 (1,1)
 	}
 
 	setTitle(title: string): void {

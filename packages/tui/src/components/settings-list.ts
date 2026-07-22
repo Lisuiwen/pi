@@ -1,3 +1,7 @@
+/**
+ * 模块职责：实现 packages/tui/src/components/settings-list.ts 中的核心功能。
+ */
+
 import { fuzzyFilter } from "../fuzzy.ts";
 import { getKeybindings } from "../keybindings.ts";
 import type { Component } from "../tui.ts";
@@ -13,9 +17,9 @@ export interface SettingItem {
 	description?: string;
 	/** Current value to display (right side) */
 	currentValue: string;
-	/** If provided, Enter/Space cycles through these values */
+	/** 如果 provided, Enter/Space cycles through these values */
 	values?: string[];
-	/** If provided, Enter opens this submenu. Receives current value and done callback. */
+	/** 如果 provided, Enter opens this submenu. Receives current value and done callback. */
 	submenu?: (currentValue: string, done: (selectedValue?: string) => void) => Component;
 }
 
@@ -79,7 +83,7 @@ export class SettingsList implements Component {
 	}
 
 	render(width: number): string[] {
-		// If submenu is active, render it instead
+		// 如果 submenu is active, render it instead
 		if (this.submenuComponent) {
 			return this.submenuComponent.render(width);
 		}
@@ -110,17 +114,17 @@ export class SettingsList implements Component {
 			return lines;
 		}
 
-		// Calculate visible range with scrolling
+		// 计算 visible range with scrolling
 		const startIndex = Math.max(
 			0,
 			Math.min(this.selectedIndex - Math.floor(this.maxVisible / 2), displayItems.length - this.maxVisible),
 		);
 		const endIndex = Math.min(startIndex + this.maxVisible, displayItems.length);
 
-		// Calculate max label width for alignment
+		// 计算 max label width for alignment
 		const maxLabelWidth = Math.min(30, Math.max(...this.items.map((item) => visibleWidth(item.label))));
 
-		// Render visible items
+		// 渲染 visible items
 		for (let i = startIndex; i < endIndex; i++) {
 			const item = displayItems[i];
 			if (!item) continue;
@@ -133,7 +137,7 @@ export class SettingsList implements Component {
 			const labelPadded = item.label + " ".repeat(Math.max(0, maxLabelWidth - visibleWidth(item.label)));
 			const labelText = this.theme.label(labelPadded, isSelected);
 
-			// Calculate space for value
+			// 计算 space for value
 			const separator = "  ";
 			const usedWidth = prefixWidth + maxLabelWidth + visibleWidth(separator);
 			const valueMaxWidth = width - usedWidth - 2;
@@ -143,13 +147,13 @@ export class SettingsList implements Component {
 			lines.push(truncateToWidth(prefix + labelText + separator + valueText, width));
 		}
 
-		// Add scroll indicator if needed
+		// 添加 scroll indicator if needed
 		if (startIndex > 0 || endIndex < displayItems.length) {
 			const scrollText = `  (${this.selectedIndex + 1}/${displayItems.length})`;
 			lines.push(this.theme.hint(truncateToWidth(scrollText, width - 2, "")));
 		}
 
-		// Add description for selected item
+		// 添加 description for selected item
 		const selectedItem = displayItems[this.selectedIndex];
 		if (selectedItem?.description) {
 			lines.push("");
@@ -159,15 +163,15 @@ export class SettingsList implements Component {
 			}
 		}
 
-		// Add hint
+		// 添加 hint
 		this.addHintLine(lines, width);
 
 		return lines;
 	}
 
 	handleInput(data: string): void {
-		// If submenu is active, delegate all input to it
-		// The submenu's onCancel (triggered by escape) will call done() which closes it
+		// 如果 submenu is active, delegate all input to it
+		// 该submenu's onCancel (triggered by escape) will call done() which closes it
 		if (this.submenuComponent) {
 			this.submenuComponent.handleInput?.(data);
 			return;

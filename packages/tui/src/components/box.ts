@@ -1,3 +1,7 @@
+/**
+ * 模块职责：实现 packages/tui/src/components/box.ts 中的核心功能。
+ */
+
 import type { Component } from "../tui.ts";
 import { applyBackgroundToLine, visibleWidth } from "../utils.ts";
 
@@ -46,7 +50,7 @@ export class Box implements Component {
 
 	setBgFn(bgFn?: (text: string) => string): void {
 		this.bgFn = bgFn;
-		// Don't invalidate here - we'll detect bgFn changes by sampling output
+		// 不要 invalidate here - we'll detect bgFn changes by sampling output
 	}
 
 	private invalidateCache(): void {
@@ -79,7 +83,7 @@ export class Box implements Component {
 		const contentWidth = Math.max(1, width - this.paddingX * 2);
 		const leftPad = " ".repeat(this.paddingX);
 
-		// Render all children
+		// 渲染 all children
 		const childLines: string[] = [];
 		for (const child of this.children) {
 			const lines = child.render(contentWidth);
@@ -92,15 +96,15 @@ export class Box implements Component {
 			return [];
 		}
 
-		// Check if bgFn output changed by sampling
+		// 检查是否 bgFn output changed by sampling
 		const bgSample = this.bgFn ? this.bgFn("test") : undefined;
 
-		// Check cache validity
+		// 检查缓存 validity
 		if (this.matchCache(width, childLines, bgSample)) {
 			return this.cache!.lines;
 		}
 
-		// Apply background and padding
+		// 应用 background and padding
 		const result: string[] = [];
 
 		// Top padding

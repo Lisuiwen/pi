@@ -1,8 +1,12 @@
+/**
+ * 模块职责：实现 packages/tui/src/components/loader.ts 中的核心功能。
+ */
+
 import type { TUI } from "../tui.ts";
 import { Text } from "./text.ts";
 
 export interface LoaderIndicatorOptions {
-	/** Animation frames. Use an empty array to hide the indicator. */
+	/** Animation frames. 使用 an empty array to hide the indicator. */
 	frames?: string[];
 	/** Frame interval in milliseconds for animated indicators. */
 	intervalMs?: number;

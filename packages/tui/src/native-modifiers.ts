@@ -1,3 +1,7 @@
+/**
+ * 模块职责：实现 packages/tui/src/native-modifiers.ts 中的核心功能。
+ */
+
 import { createRequire } from "node:module";
 import * as path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -41,7 +45,7 @@ function loadNativeModifiersHelper(): NativeModifiersHelper | undefined {
 				return helper;
 			}
 		} catch {
-			// Try the next possible packaging location.
+			// 尝试 the next possible packaging location.
 		}
 	}
 

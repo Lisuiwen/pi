@@ -1,3 +1,7 @@
+/**
+ * 模块职责：实现 packages/tui/src/components/input.ts 中的核心功能。
+ */
+
 import { getKeybindings } from "../keybindings.ts";
 import { decodeKittyPrintable } from "../keys.ts";
 import { KillRing } from "../kill-ring.ts";
@@ -46,20 +50,20 @@ export class Input implements Component, Focusable {
 	}
 
 	handleInput(data: string): void {
-		// Handle bracketed paste mode
+		// 处理 bracketed paste mode
 		// Start of paste: \x1b[200~
 		// End of paste: \x1b[201~
 
-		// Check if we're starting a bracketed paste
+		// 检查是否 we're starting a bracketed paste
 		if (data.includes("\x1b[200~")) {
 			this.isInPaste = true;
 			this.pasteBuffer = "";
 			data = data.replace("\x1b[200~", "");
 		}
 
-		// If we're in a paste, buffer the data
+		// 如果 we're in a paste, buffer the data
 		if (this.isInPaste) {
-			// Check if this chunk contains the end marker
+			// 检查是否 this chunk contains the end marker
 			this.pasteBuffer += data;
 
 			const endIndex = this.pasteBuffer.indexOf("\x1b[201~");
@@ -73,7 +77,7 @@ export class Input implements Component, Focusable {
 				// Reset paste state
 				this.isInPaste = false;
 
-				// Handle any remaining input after the paste marker
+				// 处理 any remaining input after the paste marker
 				const remaining = this.pasteBuffer.substring(endIndex + 6); // 6 = length of \x1b[201~
 				this.pasteBuffer = "";
 				if (remaining) {
@@ -376,7 +380,7 @@ export class Input implements Component, Focusable {
 	}
 
 	render(width: number): string[] {
-		// Calculate visible window
+		// 计算 visible window
 		const prompt = "> ";
 		const availableWidth = width - prompt.length;
 
@@ -421,7 +425,7 @@ export class Input implements Component, Focusable {
 			}
 		}
 
-		// Build line with fake cursor
+		// 构建 line with fake cursor
 		// Insert cursor character at cursor position
 		const graphemes = [...segmenter.segment(visibleText.slice(cursorDisplay))];
 		const cursorGrapheme = graphemes[0];
@@ -433,11 +437,11 @@ export class Input implements Component, Focusable {
 		// Hardware cursor marker (zero-width, emitted before fake cursor for IME positioning)
 		const marker = this.focused ? CURSOR_MARKER : "";
 
-		// Use inverse video to show cursor
+		// 使用 inverse video to show cursor
 		const cursorChar = `\x1b[7m${atCursor}\x1b[27m`; // ESC[7m = reverse video, ESC[27m = normal
 		const textWithCursor = beforeCursor + marker + cursorChar + afterCursor;
 
-		// Calculate visual width
+		// 计算 visual width
 		const visualLength = visibleWidth(textWithCursor);
 		const padding = " ".repeat(Math.max(0, availableWidth - visualLength));
 		const line = prompt + textWithCursor + padding;

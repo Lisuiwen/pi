@@ -1,3 +1,7 @@
+/**
+ * 模块职责：实现 packages/tui/src/components/text.ts 中的核心功能。
+ */
+
 import type { Component } from "../tui.ts";
 import { applyBackgroundToLine, visibleWidth, wrapTextWithAnsi } from "../utils.ts";
 
@@ -43,12 +47,12 @@ export class Text implements Component {
 	}
 
 	render(width: number): string[] {
-		// Check cache
+		// 检查缓存
 		if (this.cachedLines && this.cachedText === this.text && this.cachedWidth === width) {
 			return this.cachedLines;
 		}
 
-		// Don't render anything if there's no actual text
+		// 不要 render anything if there's no actual text
 		if (!this.text || this.text.trim() === "") {
 			const result: string[] = [];
 			this.cachedText = this.text;
@@ -60,22 +64,22 @@ export class Text implements Component {
 		// Replace tabs with 3 spaces
 		const normalizedText = this.text.replace(/\t/g, "   ");
 
-		// Calculate content width (subtract left/right margins)
+		// 计算 content width (subtract left/right margins)
 		const contentWidth = Math.max(1, width - this.paddingX * 2);
 
 		// Wrap text (this preserves ANSI codes but does NOT pad)
 		const wrappedLines = wrapTextWithAnsi(normalizedText, contentWidth);
 
-		// Add margins and background to each line
+		// 添加 margins and background to each line
 		const leftMargin = " ".repeat(this.paddingX);
 		const rightMargin = " ".repeat(this.paddingX);
 		const contentLines: string[] = [];
 
 		for (const line of wrappedLines) {
-			// Add margins
+			// 添加 margins
 			const lineWithMargins = leftMargin + line + rightMargin;
 
-			// Apply background if specified (this also pads to full width)
+			// 应用 background if specified (this also pads to full width)
 			if (this.customBgFn) {
 				contentLines.push(applyBackgroundToLine(lineWithMargins, width, this.customBgFn));
 			} else {
@@ -86,7 +90,7 @@ export class Text implements Component {
 			}
 		}
 
-		// Add top/bottom padding (empty lines)
+		// 添加 top/bottom padding (empty lines)
 		const emptyLine = " ".repeat(width);
 		const emptyLines: string[] = [];
 		for (let i = 0; i < this.paddingY; i++) {

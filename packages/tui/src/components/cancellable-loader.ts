@@ -1,3 +1,7 @@
+/**
+ * 模块职责：实现 packages/tui/src/components/cancellable-loader.ts 中的核心功能。
+ */
+
 import { getKeybindings } from "../keybindings.ts";
 import { Loader } from "./loader.ts";
 
@@ -13,7 +17,7 @@ import { Loader } from "./loader.ts";
 export class CancellableLoader extends Loader {
 	private abortController = new AbortController();
 
-	/** Called when user presses Escape */
+	/** 调用 when user presses Escape */
 	onAbort?: () => void;
 
 	/** AbortSignal that is aborted when user presses Escape */
@@ -21,7 +25,7 @@ export class CancellableLoader extends Loader {
 		return this.abortController.signal;
 	}
 
-	/** Whether the loader was aborted */
+	/** 是否 the loader was aborted */
 	get aborted(): boolean {
 		return this.abortController.signal.aborted;
 	}

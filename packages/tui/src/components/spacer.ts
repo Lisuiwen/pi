@@ -1,3 +1,7 @@
+/**
+ * 模块职责：实现 packages/tui/src/components/spacer.ts 中的核心功能。
+ */
+
 import type { Component } from "../tui.ts";
 
 /**

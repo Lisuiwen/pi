@@ -1,3 +1,7 @@
+/**
+ * 模块职责：实现 packages/tui/src/terminal-image.ts 中的核心功能。
+ */
+
 import { execSync } from "node:child_process";
 
 export type ImageProtocol = "kitty" | "iterm2" | null;
@@ -22,9 +26,9 @@ export interface ImageRenderOptions {
 	maxWidthCells?: number;
 	maxHeightCells?: number;
 	preserveAspectRatio?: boolean;
-	/** Kitty image ID. If provided, reuses/replaces existing image with this ID. */
+	/** Kitty image ID. 如果 provided, reuses/replaces existing image with this ID. */
 	imageId?: number;
-	/** Whether Kitty should apply its default cursor movement after placement. */
+	/** 是否 Kitty should apply its default cursor movement after placement. */
 	moveCursor?: boolean;
 }
 
@@ -42,7 +46,7 @@ export function setCellDimensions(dims: CellDimensions): void {
 }
 
 /**
- * Checks whether the attached tmux client forwards OSC 8 hyperlinks to the
+ * 检查s whether the attached tmux client forwards OSC 8 hyperlinks to the
  * outer terminal. tmux only re-emits them when its `client_termfeatures` lists
  * `hyperlinks`, and strips them otherwise. On any error fallbacks `false`.
  */
@@ -144,7 +148,7 @@ const KITTY_PREFIX = "\x1b_G";
 const ITERM2_PREFIX = "\x1b]1337;File=";
 
 export function isImageLine(line: string): boolean {
-	// Fast path: sequence at line start (single-row images)
+	// 快速路径: sequence at line start (single-row images)
 	if (line.startsWith(KITTY_PREFIX) || line.startsWith(ITERM2_PREFIX)) {
 		return true;
 	}
@@ -158,7 +162,7 @@ export function isImageLine(line: string): boolean {
  * (e.g., main app vs extensions).
  */
 export function allocateImageId(): number {
-	// Use random ID in range [1, 0xffffffff] to avoid collisions
+	// 使用 random ID in range [1, 0xffffffff] to avoid collisions
 	return Math.floor(Math.random() * 0xfffffffe) + 1;
 }
 
@@ -168,7 +172,7 @@ export function encodeKitty(
 		columns?: number;
 		rows?: number;
 		imageId?: number;
-		/** Whether Kitty should apply its default cursor movement after placement. Default: true. */
+		/** 是否 Kitty should apply its default cursor movement after placement. Default: true. */
 		moveCursor?: boolean;
 	} = {},
 ): string {
@@ -467,13 +471,13 @@ export function renderImage(
 
 /**
  * Wrap text in an OSC 8 hyperlink sequence.
- * The text is rendered as a clickable hyperlink in terminals that support OSC 8
+ * 该text is rendered as a clickable hyperlink in terminals that support OSC 8
  * (Ghostty, Kitty, WezTerm, iTerm2, VSCode, and others).
  * In terminals that do not support OSC 8, the escape sequences are ignored
  * and only the plain text is displayed.
  *
- * @param text - The visible text to display
- * @param url - The URL to link to
+ * @param text - 该visible text to display
+ * @param url - 该URL to link to
  */
 export function hyperlink(text: string, url: string): string {
 	return `\x1b]8;;${url}\x1b\\${text}\x1b]8;;\x1b\\`;

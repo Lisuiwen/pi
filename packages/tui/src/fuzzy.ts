@@ -1,4 +1,8 @@
 /**
+ * 模块职责：实现 packages/tui/src/fuzzy.ts 中的核心功能。
+ */
+
+/**
  * Fuzzy matching utilities.
  * Matches if all query characters appear in order (not necessarily consecutive).
  * Lower score = better match.
@@ -31,24 +35,24 @@ export function fuzzyMatch(query: string, text: string): FuzzyMatch {
 			if (textLower[i] === normalizedQuery[queryIndex]) {
 				const isWordBoundary = i === 0 || /[\s\-_./:]/.test(textLower[i - 1]!);
 
-				// Reward consecutive matches
+				// 连续匹配加分
 				if (lastMatchIndex === i - 1) {
 					consecutiveMatches++;
 					score -= consecutiveMatches * 5;
 				} else {
 					consecutiveMatches = 0;
-					// Penalize gaps
+					// 间隔扣分
 					if (lastMatchIndex >= 0) {
 						score += (i - lastMatchIndex - 1) * 2;
 					}
 				}
 
-				// Reward word boundary matches
+				// 单词边界匹配加分
 				if (isWordBoundary) {
 					score -= 10;
 				}
 
-				// Slight penalty for later matches
+				// 较晚匹配轻微扣分
 				score += i * 0.1;
 
 				lastMatchIndex = i;

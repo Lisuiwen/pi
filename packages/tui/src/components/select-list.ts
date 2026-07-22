@@ -1,3 +1,7 @@
+/**
+ * 模块职责：实现 packages/tui/src/components/select-list.ts 中的核心功能。
+ */
+
 import { getKeybindings } from "../keybindings.ts";
 import type { Component } from "../tui.ts";
 import { truncateToWidth, visibleWidth } from "../utils.ts";
@@ -74,7 +78,7 @@ export class SelectList implements Component {
 	render(width: number): string[] {
 		const lines: string[] = [];
 
-		// If no items match filter, show message
+		// 如果 no items match filter, show message
 		if (this.filteredItems.length === 0) {
 			lines.push(this.theme.noMatch("  No matching commands"));
 			return lines;
@@ -82,14 +86,14 @@ export class SelectList implements Component {
 
 		const primaryColumnWidth = this.getPrimaryColumnWidth();
 
-		// Calculate visible range with scrolling
+		// 计算 visible range with scrolling
 		const startIndex = Math.max(
 			0,
 			Math.min(this.selectedIndex - Math.floor(this.maxVisible / 2), this.filteredItems.length - this.maxVisible),
 		);
 		const endIndex = Math.min(startIndex + this.maxVisible, this.filteredItems.length);
 
-		// Render visible items
+		// 渲染 visible items
 		for (let i = startIndex; i < endIndex; i++) {
 			const item = this.filteredItems[i];
 			if (!item) continue;
@@ -99,7 +103,7 @@ export class SelectList implements Component {
 			lines.push(this.renderItem(item, isSelected, width, descriptionSingleLine, primaryColumnWidth));
 		}
 
-		// Add scroll indicators if needed
+		// 添加 scroll indicators if needed
 		if (startIndex > 0 || endIndex < this.filteredItems.length) {
 			const scrollText = `  (${this.selectedIndex + 1}/${this.filteredItems.length})`;
 			// Truncate if too long for terminal

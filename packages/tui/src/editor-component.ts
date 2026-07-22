@@ -1,10 +1,14 @@
+/**
+ * 模块职责：实现 packages/tui/src/editor-component.ts 中的核心功能。
+ */
+
 import type { AutocompleteProvider } from "./autocomplete.ts";
 import type { Component } from "./tui.ts";
 
 /**
  * Interface for custom editor components.
  *
- * This allows extensions to provide their own editor implementation
+ * 此allows extensions to provide their own editor implementation
  * (e.g., vim mode, emacs mode, custom keybindings) while maintaining
  * compatibility with the core application.
  */
@@ -13,30 +17,30 @@ export interface EditorComponent extends Component {
 	// Core text access (required)
 	// =========================================================================
 
-	/** Get the current text content */
+	/** 获取当前文本内容 */
 	getText(): string;
 
-	/** Set the text content */
+	/** 设置当前文本内容 */
 	setText(text: string): void;
 
-	/** Handle raw terminal input (key presses, paste sequences, etc.) */
+	/** 处理原始终端输入（按键、粘贴序列等） */
 	handleInput(data: string): void;
 
 	// =========================================================================
 	// Callbacks (required)
 	// =========================================================================
 
-	/** Called when user submits (e.g., Enter key) */
+	/** 用户提交时调用（例如 Enter 键） */
 	onSubmit?: (text: string) => void;
 
-	/** Called when text changes */
+	/** 文本变化时调用 */
 	onChange?: (text: string) => void;
 
 	// =========================================================================
 	// History support (optional)
 	// =========================================================================
 
-	/** Add text to history for up/down navigation */
+	/** 将文本加入历史记录以支持上下导航 */
 	addToHistory?(text: string): void;
 
 	// =========================================================================
@@ -47,7 +51,7 @@ export interface EditorComponent extends Component {
 	insertTextAtCursor?(text: string): void;
 
 	/**
-	 * Get text with any markers expanded (e.g., paste markers).
+	 * 获取 text with any markers expanded (e.g., paste markers).
 	 * Falls back to getText() if not implemented.
 	 */
 	getExpandedText?(): string;
@@ -56,19 +60,19 @@ export interface EditorComponent extends Component {
 	// Autocomplete support (optional)
 	// =========================================================================
 
-	/** Set the autocomplete provider */
+	/** 设置自动补全提供器 */
 	setAutocompleteProvider?(provider: AutocompleteProvider): void;
 
 	// =========================================================================
 	// Appearance (optional)
 	// =========================================================================
 
-	/** Border color function */
+	/** 边框颜色函数 */
 	borderColor?: (str: string) => string;
 
-	/** Set horizontal padding */
+	/** 设置水平内边距 */
 	setPaddingX?(padding: number): void;
 
-	/** Set max visible items in autocomplete dropdown */
+	/** 设置 max visible items in autocomplete dropdown */
 	setAutocompleteMaxVisible?(maxVisible: number): void;
 }
