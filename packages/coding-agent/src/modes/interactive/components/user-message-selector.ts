@@ -1,3 +1,6 @@
+/**
+ * 模块职责：实现 coding-agent 源码模块「modes\interactive\components\user-message-selector.ts」，负责相关命令行、会话、工具或基础设施逻辑。
+ */
 import { type Component, Container, getKeybindings, Spacer, Text, truncateToWidth } from "@earendil-works/pi-tui";
 import { theme } from "../theme/theme.ts";
 import { DynamicBorder } from "./dynamic-border.ts";

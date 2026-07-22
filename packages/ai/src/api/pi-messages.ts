@@ -1,12 +1,13 @@
+/** 模块职责：实现 packages/ai/src\api\pi-messages.ts 相关的模型、协议或工具逻辑。 */
 /**
- * pi-messages API implementation.
+ * pi-messages API 实现。
  *
- * Streams pi's own message protocol directly to a backend: the request is a
- * single POST of `{ model, context, options }` to `<baseUrl>/messages`, the
- * response is an SSE stream of serialized assistant-message events plus a
- * terminal `done`/`error` event. This is the wire protocol spoken by the
- * Radius gateway, but any backend implementing it can be used, e.g. via a
- * models.json custom provider with `"api": "pi-messages"`.
+ * 将 pi 自有的消息协议直接流式发送到后端：请求是一次
+ * 向 `<baseUrl>/messages` 发出的 `{ model, context, options }` POST，
+ * 响应则是由序列化 assistant-message 事件组成的 SSE 流，
+ * 并以最终的 `done`/`error` 事件收尾。这是 Radius gateway
+ * 使用的线协议，但任何实现了该协议的后端都可以接入，例如通过
+ * models.json 自定义 provider 并设置 `"api": "pi-messages"`。
  */
 
 import type {
@@ -31,14 +32,14 @@ import { getProviderEnvValue } from "../utils/provider-env.ts";
 export interface PiMessagesOptions extends StreamOptions {
 	reasoning?: ThinkingLevel;
 	toolChoice?: "auto" | "none" | "required" | { type: "function"; function: { name: string } };
-	/** Ask the backend for debug metadata (e.g. routing response headers). */
+	/** 向后端请求调试元数据（例如路由响应头）。 */
 	debug?: boolean;
 }
 
 type PiMessagesUsage = AssistantMessage["usage"];
 type PiMessagesStopReason = AssistantMessage["stopReason"];
 
-/** Impact summary of a server-side message rewrite (e.g. a gateway policy). */
+/** 服务端消息改写的影响摘要（例如网关策略）。 */
 export type PiMessagesRewriteImpact = {
 	policyId: string;
 	policyVersion: number;
@@ -48,7 +49,7 @@ export type PiMessagesRewriteImpact = {
 	systemPromptChanged: boolean;
 };
 
-/** Serialized assistant-message event as sent by a pi-messages backend. */
+/** 由 pi-messages 后端发送的序列化 assistant-message 事件。 */
 export type PiMessagesEvent =
 	| { type: "start" }
 	| { type: "text_start"; contentIndex: number }
@@ -338,7 +339,7 @@ function resolveCacheRetention(cacheRetention?: CacheRetention, env?: ProviderEn
 	if (cacheRetention) {
 		return cacheRetention;
 	}
-	// Backend defaults apply when unset; only the legacy env opt-in is mapped.
+	// 未设置时使用后端默认值；这里只映射旧版环境变量开关。
 	return getProviderEnvValue("PI_CACHE_RETENTION", env) === "long" ? "long" : undefined;
 }
 
@@ -431,3 +432,4 @@ export const streamSimple: StreamFunction<"pi-messages", SimpleStreamOptions> = 
 		debug: extra?.debug,
 	});
 };
+/** 模块职责：实现 packages/ai/src\api\pi-messages.ts 相关的模型、协议或工具逻辑。 */

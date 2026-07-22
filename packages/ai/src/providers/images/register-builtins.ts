@@ -1,3 +1,4 @@
+/** 模块职责：实现 packages/ai/src\providers\images\register-builtins.ts 相关的模型、协议或工具逻辑。 */
 import type { generateImages as generateImagesOpenRouterFunction } from "../../api/openrouter-images.ts";
 import { registerImagesApiProvider } from "../../images-api-registry.ts";
 import type { AssistantImages, ImagesContext, ImagesFunction, ImagesModel, ImagesOptions } from "../../types.ts";
@@ -48,3 +49,4 @@ export function registerBuiltInImagesApiProviders(): void {
 }
 
 registerBuiltInImagesApiProviders();
+/** 模块职责：实现 packages/ai/src\providers\images\register-builtins.ts 相关的模型、协议或工具逻辑。 */

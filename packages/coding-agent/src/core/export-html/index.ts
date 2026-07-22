@@ -1,3 +1,6 @@
+/**
+ * 模块职责：实现 coding-agent 源码模块「core\export-html\index.ts」，负责相关命令行、会话、工具或基础设施逻辑。
+ */
 import type { AgentState } from "@earendil-works/pi-agent-core";
 import { existsSync, readFileSync, writeFileSync } from "fs";
 import { basename, join } from "path";
@@ -13,9 +16,9 @@ import { SessionManager } from "../session-manager.ts";
  * Used by agent-session to pre-render extension tool output.
  */
 export interface ToolHtmlRenderer {
-	/** Render a tool call to HTML. Returns undefined if tool has no custom renderer. */
+	/** Render a tool call to HTML. 返回 undefined if tool has no custom renderer. */
 	renderCall(toolCallId: string, toolName: string, args: unknown): string | undefined;
-	/** Render a tool result to HTML. Returns collapsed/expanded or undefined if tool has no custom renderer. */
+	/** Render a tool result to HTML. 返回 collapsed/expanded or undefined if tool has no custom renderer. */
 	renderResult(
 		toolCallId: string,
 		toolName: string,
@@ -77,7 +80,7 @@ function adjustBrightness(color: string, factor: number): string {
 	return `rgb(${adjust(parsed.r)}, ${adjust(parsed.g)}, ${adjust(parsed.b)})`;
 }
 
-/** Derive export background colors from a base color (e.g., userMessageBg). */
+/** Derive export background colors from a base color (例如： userMessageBg). */
 function deriveExportColors(baseColor: string): { pageBg: string; cardBg: string; infoBg: string } {
 	const parsed = parseColor(baseColor);
 	if (!parsed) {

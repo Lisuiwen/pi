@@ -1,13 +1,14 @@
+/** 模块职责：实现 packages/ai/src\utils\estimate.ts 相关的模型、协议或工具逻辑。 */
 import type { AssistantMessage, Context, ImageContent, Message, TextContent, Tool, Usage } from "../types.ts";
 
 export interface ContextUsageEstimate {
-	/** Estimated total context tokens. */
+	/** 估算得到的上下文总 token 数。 */
 	tokens: number;
-	/** Tokens reported by the most recent applicable assistant usage block. */
+	/** 最近一个仍然适用的 assistant usage 块上报的 token 数。 */
 	usageTokens: number;
-	/** Estimated tokens after the most recent applicable assistant usage block. */
+	/** 最近一个仍然适用的 assistant usage 块之后新增的估算 token 数。 */
 	trailingTokens: number;
-	/** Index of the applicable message that provided usage, or null when none exists. */
+	/** 提供 usage 的那条适用消息的索引；若不存在则为 `null`。 */
 	lastUsageIndex: number | null;
 }
 
@@ -68,8 +69,8 @@ function getLastAssistantUsageInfo(messages: readonly Message[]): { usage: Usage
 		const message = messages[i];
 		if (message.role === "assistant") {
 			const assistant = message as AssistantMessage;
-			// A newer prefix message was inserted after this response (for example, a
-			// compaction summary), so its usage cannot describe the current prefix.
+			// 在这条响应之后插入了更新的前缀消息（例如压缩摘要），
+			// 因此它的 usage 已不能再描述当前前缀。
 			const usageAppliesToPrefix = assistant.timestamp >= latestPrefixTimestamp;
 			if (
 				usageAppliesToPrefix &&
@@ -141,3 +142,4 @@ export function estimateContextTokens(context: Context | readonly Message[]): Co
 		lastUsageIndex: estimate.lastUsageIndex,
 	};
 }
+/** 模块职责：实现 packages/ai/src\utils\estimate.ts 相关的模型、协议或工具逻辑。 */

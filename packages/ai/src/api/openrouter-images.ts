@@ -1,3 +1,4 @@
+/** 模块职责：实现 packages/ai/src\api\openrouter-images.ts 相关的模型、协议或工具逻辑。 */
 import OpenAI from "openai";
 import type {
 	ChatCompletion,
@@ -183,3 +184,4 @@ function parseUsage(
 	usage.cost.total = usage.cost.input + usage.cost.output + usage.cost.cacheRead + usage.cost.cacheWrite;
 	return usage;
 }
+/** 模块职责：实现 packages/ai/src\api\openrouter-images.ts 相关的模型、协议或工具逻辑。 */

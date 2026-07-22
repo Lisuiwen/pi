@@ -1,4 +1,7 @@
 /**
+ * 模块职责：实现 coding-agent 源码模块「modes\rpc\rpc-types.ts」，负责相关命令行、会话、工具或基础设施逻辑。
+ */
+/**
  * RPC protocol types for headless operation.
  *
  * Commands are sent as JSON lines on stdin.

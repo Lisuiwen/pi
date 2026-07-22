@@ -1,3 +1,4 @@
+/** 模块职责：实现 packages/ai/src\model-catalog.ts 相关的模型、协议或工具逻辑。 */
 import type { Api, Model, ProviderId } from "./types.ts";
 
 export type ModelGroups = Record<string, Record<string, object>>;
@@ -25,3 +26,4 @@ export function flattenModelCatalog<const TProvider extends ProviderId, const TG
 ): ModelCatalog<TGroups, TProvider> {
 	return Object.assign({}, ...Object.values(groups)) as ModelCatalog<TGroups, TProvider>;
 }
+/** 模块职责：实现 packages/ai/src\model-catalog.ts 相关的模型、协议或工具逻辑。 */

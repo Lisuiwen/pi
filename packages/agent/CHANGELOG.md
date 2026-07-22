@@ -1,28 +1,28 @@
-# Changelog
+# 变更日志
 
-## [Unreleased]
+## [未发布]
 
 ## [0.81.1] - 2026-07-21
 
-### Added
+### 新增
 
-- Added retry policy support and lifecycle events for compaction and branch-summary operations in `AgentHarness` ([#6901](https://github.com/earendil-works/pi/pull/6901) by [@davidbrai](https://github.com/davidbrai)).
+- 新增retry policy support and lifecycle events for compaction and branch-summary operations in `AgentHarness` ([#6901](https://github.com/earendil-works/pi/pull/6901) by [@davidbrai](https://github.com/davidbrai)).
 
-### Fixed
+### 修复
 
 - Restored the `Agent` `streamFn` option and host-configurable fallback for omitted agent-loop stream functions without reintroducing a `pi-ai/compat` dependency ([#6915](https://github.com/earendil-works/pi/issues/6915)).
 
 ## [0.81.0] - 2026-07-21
 
-### Breaking Changes
+### 破坏性变更
 
-- Changed `SessionStorage` to use `getPathToRootOrCompaction()`, require session name and statistics methods, support cursor-based entry reads, and store retained compaction tails as self-contained checkpoints ([#6594](https://github.com/earendil-works/pi/pull/6594) by [@cristinaponcela](https://github.com/cristinaponcela)).
-- Moved the `uuidv7` export to `@earendil-works/pi-ai` ([#6834](https://github.com/earendil-works/pi/pull/6834) by [@xl0](https://github.com/xl0)).
-- Replaced the optional `Agent` `streamFn` fallback with a required `streamFunction` and made low-level loop stream functions required, preventing `@earendil-works/pi-ai/compat` and all built-in providers from entering selective-provider bundles ([#6851](https://github.com/earendil-works/pi/issues/6851)).
+- 变更`SessionStorage` to use `getPathToRootOrCompaction()`, require session name and statistics methods, support cursor-based entry reads, and store retained compaction tails as self-contained checkpoints ([#6594](https://github.com/earendil-works/pi/pull/6594) by [@cristinaponcela](https://github.com/cristinaponcela)).
+- 移动 `uuidv7` export to `@earendil-works/pi-ai` ([#6834](https://github.com/earendil-works/pi/pull/6834) by [@xl0](https://github.com/xl0)).
+- 替换 optional `Agent` `streamFn` fallback with a required `streamFunction` and made low-level loop stream functions required, preventing `@earendil-works/pi-ai/compat` and all built-in providers from entering selective-provider bundles ([#6851](https://github.com/earendil-works/pi/issues/6851)).
 
-### Added
+### 新增
 
-- Added usage metadata to tool results, compaction entries, and branch summaries in the agent harness ([#6671](https://github.com/earendil-works/pi/pull/6671) by [@davidbrai](https://github.com/davidbrai)).
+- 新增usage metadata to tool results, compaction entries, and branch summaries in the agent harness ([#6671](https://github.com/earendil-works/pi/pull/6671) by [@davidbrai](https://github.com/davidbrai)).
 
 ## [0.80.10] - 2026-07-16
 
@@ -32,79 +32,79 @@
 
 ## [0.80.7] - 2026-07-14
 
-### Added
+### 新增
 
-- Added `AgentToolResult.addedToolNames` propagation to `ToolResultMessage` so tools introduced by a result can be loaded from that transcript point onward ([#6474](https://github.com/earendil-works/pi-mono/pull/6474)).
+- 新增`AgentToolResult.addedToolNames` propagation to `ToolResultMessage` so tools introduced by a result can be loaded from that transcript point onward ([#6474](https://github.com/earendil-works/pi-mono/pull/6474)).
 
 ## [0.80.6] - 2026-07-09
 
-### Added
+### 新增
 
-- Added the `max` model thinking level after `xhigh`.
+- 新增the `max` model thinking level after `xhigh`.
 
 ## [0.80.5] - 2026-07-09
 
 ## [0.80.4] - 2026-07-09
 
-### Added
+### 新增
 
-- Added configurable harness session context entry transforms and custom-entry message projectors.
-- Added custom metadata support in JSONL session headers ([#6417](https://github.com/earendil-works/pi/pull/6417) by [@ArcadiaLin](https://github.com/ArcadiaLin)).
-- Exported `InMemorySessionStorage` and `JsonlSessionStorage` ([#6435](https://github.com/earendil-works/pi/issues/6435)).
+- 新增configurable harness session context entry transforms and custom-entry message projectors.
+- 新增custom metadata support in JSONL session headers ([#6417](https://github.com/earendil-works/pi/pull/6417) by [@ArcadiaLin](https://github.com/ArcadiaLin)).
+- 导出`InMemorySessionStorage` and `JsonlSessionStorage` ([#6435](https://github.com/earendil-works/pi/issues/6435)).
 
-### Fixed
+### 修复
 
-- Fixed harness split-turn compaction to serialize summary requests so single-concurrency providers are not asked to run overlapping generations ([#5536](https://github.com/earendil-works/pi/issues/5536)).
-- Fixed harness tool calls from length-truncated assistant messages to fail instead of waiting for missing tool results ([#6285](https://github.com/earendil-works/pi/pull/6285)).
-- Fixed harness session ingestion to normalize `null` message content before context projection, avoiding crashes on lax imported transcripts ([#6343](https://github.com/earendil-works/pi/pull/6343)).
-- Fixed non-positive or oversized harness shell execution timeouts to fail with a clear validation error instead of being clamped to an immediate timeout ([#6181](https://github.com/earendil-works/pi/issues/6181)).
-- Fixed harness session storage short entry ids to use the random tail of the generated uuidv7 instead of the timestamp prefix, which was nearly constant between calls ([#6242](https://github.com/earendil-works/pi/issues/6242)).
+- 修复harness split-turn compaction to serialize summary requests so single-concurrency providers are not asked to run overlapping generations ([#5536](https://github.com/earendil-works/pi/issues/5536)).
+- 修复harness tool calls from length-truncated assistant messages to fail instead of waiting for missing tool results ([#6285](https://github.com/earendil-works/pi/pull/6285)).
+- 修复harness session ingestion to normalize `null` message content before context projection, avoiding crashes on lax imported transcripts ([#6343](https://github.com/earendil-works/pi/pull/6343)).
+- 修复non-positive or oversized harness shell execution timeouts to fail with a clear validation error instead of being clamped to an immediate timeout ([#6181](https://github.com/earendil-works/pi/issues/6181)).
+- 修复harness session storage short entry ids to use the random tail of the generated uuidv7 instead of the timestamp prefix, which was nearly constant between calls ([#6242](https://github.com/earendil-works/pi/issues/6242)).
 
 ## [0.80.3] - 2026-06-30
 
-### Added
+### 新增
 
-- Added `prepareNextTurnWithContext` for `Agent` users that need the next-turn loop context.
+- 新增`prepareNextTurnWithContext` for `Agent` users that need the next-turn loop context.
 
-### Fixed
+### 修复
 
-- Fixed `Agent.prepareNextTurn` to keep receiving the run abort signal instead of the next-turn context.
+- 修复`Agent.prepareNextTurn` to keep receiving the run abort signal instead of the next-turn context.
 
 ## [0.80.2] - 2026-06-23
 
-### Changed
+### 变更
 
-- Renamed the public harness shell execution options type from `ExecutionEnvExecOptions` to `ShellExecOptions`.
+- 重命名 public harness shell execution options type from `ExecutionEnvExecOptions` to `ShellExecOptions`.
 
 ## [0.80.1] - 2026-06-23
 
 ## [0.80.0] - 2026-06-23
 
-### Breaking Changes
+### 破坏性变更
 
 - `AgentHarnessOptions.models` is required and is the only auth path: the harness streams turns, compaction, and branch summarization through the provided `Models` instance (`models.streamSimple()`/`completeSimple()`), resolving auth through the providers. `AgentHarnessOptions.getApiKeyAndHeaders` is removed — apps that resolved keys per request now express that as provider auth (`ApiKeyAuth`/`OAuthAuth`) on the providers in the `Models` collection. Build one with `createModels()` + provider factories (or `builtinModels()` from `@earendil-works/pi-ai/providers/all`); tests use `fauxProvider()`.
 - `compact()`, `generateSummary()`, and `generateBranchSummary()` take a `Models` parameter and no longer accept explicit `apiKey`/`headers`.
 - `StreamFn` is defined structurally (`(model, context, options?) => AssistantMessageEventStream | Promise<...>`); `Models.streamSimple` satisfies it.
-- Removed the `@earendil-works/pi-agent-core/base` selective-provider entrypoint; use the root package with an explicit `Models` instance instead.
+- 移除the `@earendil-works/pi-agent-core/base` selective-provider entrypoint; use the root package with an explicit `Models` instance instead.
 
-### Fixed
+### 修复
 
-- Fixed harness session names to normalize newline characters before storing labels ([#5999](https://github.com/earendil-works/pi/pull/5999) by [@haoqixu](https://github.com/haoqixu)).
-- Fixed harness compaction estimates to ignore malformed all-zero assistant usage after truncated responses ([#5526](https://github.com/earendil-works/pi/pull/5526) by [@dmmulroy](https://github.com/dmmulroy)).
+- 修复harness session names to normalize newline characters before storing labels ([#5999](https://github.com/earendil-works/pi/pull/5999) by [@haoqixu](https://github.com/haoqixu)).
+- 修复harness compaction estimates to ignore malformed all-zero assistant usage after truncated responses ([#5526](https://github.com/earendil-works/pi/pull/5526) by [@dmmulroy](https://github.com/dmmulroy)).
 
 ## [0.79.10] - 2026-06-22
 
 ## [0.79.9] - 2026-06-20
 
-### Fixed
+### 修复
 
-- Fixed Node execution environment commands through legacy WSL `bash.exe` to pass scripts over stdin so shell variables expand in the target bash ([#5893](https://github.com/earendil-works/pi/issues/5893)).
+- 修复Node execution environment commands through legacy WSL `bash.exe` to pass scripts over stdin so shell variables expand in the target bash ([#5893](https://github.com/earendil-works/pi/issues/5893)).
 
 ## [0.79.8] - 2026-06-19
 
-### Added
+### 新增
 
-- Added `@earendil-works/pi-agent-core/base` for bundlers that want to pair the agent core with selective `@earendil-works/pi-ai/base` provider registration ([#5348](https://github.com/earendil-works/pi/pull/5348) by [@FredKSchott](https://github.com/FredKSchott)).
+- 新增`@earendil-works/pi-agent-core/base` for bundlers that want to pair the agent core with selective `@earendil-works/pi-ai/base` provider registration ([#5348](https://github.com/earendil-works/pi/pull/5348) by [@FredKSchott](https://github.com/FredKSchott)).
 
 ## [0.79.7] - 2026-06-18
 
@@ -118,17 +118,17 @@
 
 ## [0.79.2] - 2026-06-12
 
-### Fixed
+### 修复
 
-- Fixed late tool progress callbacks after tool settlement to be ignored instead of emitting stale `tool_execution_update` events ([#5573](https://github.com/earendil-works/pi/issues/5573)).
+- 修复late tool progress callbacks after tool settlement to be ignored instead of emitting stale `tool_execution_update` events ([#5573](https://github.com/earendil-works/pi/issues/5573)).
 
 ## [0.79.1] - 2026-06-09
 
 ## [0.79.0] - 2026-06-08
 
-### Fixed
+### 修复
 
-- Fixed the compaction summarization system prompt to use neutral AI assistant wording for non-coding agents ([#5401](https://github.com/earendil-works/pi/issues/5401)).
+- 修复 compaction summarization system prompt to use neutral AI assistant wording for non-coding agents ([#5401](https://github.com/earendil-works/pi/issues/5401)).
 
 ## [0.78.1] - 2026-06-04
 
@@ -136,34 +136,34 @@
 
 ## [0.77.0] - 2026-05-28
 
-### Breaking Changes
+### 破坏性变更
 
-- Renamed agent harness `model_select` and `thinking_level_select` events to `model_update` and `thinking_level_update`.
+- 重命名agent harness `model_select` and `thinking_level_select` events to `model_update` and `thinking_level_update`.
 
-### Added
+### 新增
 
-- Added agent harness tool registry APIs, `tools_update` events, branch-scoped active-tool persistence, and duplicate tool validation.
+- 新增agent harness tool registry APIs, `tools_update` events, branch-scoped active-tool persistence, and duplicate tool validation.
 
 ## [0.76.0] - 2026-05-27
 
-### Fixed
+### 修复
 
-- Fixed context token estimates to count user image attachments consistently with tool result images ([#4983](https://github.com/earendil-works/pi/issues/4983)).
+- 修复context token estimates to count user image attachments consistently with tool result images ([#4983](https://github.com/earendil-works/pi/issues/4983)).
 
 ## [0.75.5] - 2026-05-23
 
 ## [0.75.4] - 2026-05-20
 
-### Changed
+### 变更
 
-- Changed source syntax to avoid TypeScript constructs that require JavaScript emit, keeping the package compatible with Node.js strip-only TypeScript checks.
-- Removed the package-level development watch script now that the root TypeScript check validates strip-only-compatible sources.
+- 变更source syntax to avoid TypeScript constructs that require JavaScript emit, keeping the package compatible with Node.js strip-only TypeScript checks.
+- 移除the package-level development watch script now that the root TypeScript check validates strip-only-compatible sources.
 
-### Fixed
+### 修复
 
-- Fixed tool-call preflight to stop preparing sibling tool calls after the run is aborted ([#4276](https://github.com/earendil-works/pi/issues/4276)).
-- Fixed tail truncation for oversized single-line output that ends with a trailing newline ([#4715](https://github.com/earendil-works/pi/issues/4715)).
-- Fixed Windows Node execution environment command spawns to hide helper console windows from background processes ([#4699](https://github.com/earendil-works/pi/issues/4699)).
+- 修复tool-call preflight to stop preparing sibling tool calls after the run is aborted ([#4276](https://github.com/earendil-works/pi/issues/4276)).
+- 修复tail truncation for oversized single-line output that ends with a trailing newline ([#4715](https://github.com/earendil-works/pi/issues/4715)).
+- 修复Windows Node execution environment command spawns to hide helper console windows from background processes ([#4699](https://github.com/earendil-works/pi/issues/4699)).
 
 ## [0.75.3] - 2026-05-18
 
@@ -173,7 +173,7 @@
 
 ## [0.75.0] - 2026-05-17
 
-### Breaking Changes
+### 破坏性变更
 
 - Raised the minimum supported Node.js version to 22.19.0.
 
@@ -187,15 +187,15 @@
 
 ## [0.72.1] - 2026-05-02
 
-### Changed
+### 变更
 
-- Changed the default agent transport to `auto` so providers can use their best available transport by default ([#4083](https://github.com/badlogic/pi-mono/issues/4083)).
+- 变更 default agent transport to `auto` so providers can use their best available transport by default ([#4083](https://github.com/badlogic/pi-mono/issues/4083)).
 
 ## [0.72.0] - 2026-05-01
 
-### Added
+### 新增
 
-- Added `shouldStopAfterTurn` to the low-level agent loop config for gracefully exiting after a completed turn before polling queued messages or starting another LLM call.
+- 新增`shouldStopAfterTurn` to the low-level agent loop config for gracefully exiting after a completed turn before polling queued messages or starting another LLM call.
 
 ## [0.71.1] - 2026-05-01
 
@@ -217,24 +217,24 @@
 
 ## [0.69.0] - 2026-04-22
 
-### Breaking Changes
+### 破坏性变更
 
 - Migrated public TypeBox-facing types and examples from `@sinclair/typebox` 0.34.x to `typebox` 1.x. Install and import from `typebox` instead of relying on `@sinclair/typebox` transitively ([#3112](https://github.com/badlogic/pi-mono/issues/3112))
 
-### Added
+### 新增
 
-- Added `terminate: true` tool-result hints to skip the automatic follow-up LLM call when every finalized tool result in the current batch opts into early termination ([#3525](https://github.com/badlogic/pi-mono/issues/3525))
+- 新增`terminate: true` tool-result hints to skip the automatic follow-up LLM call when every finalized tool result in the current batch opts into early termination ([#3525](https://github.com/badlogic/pi-mono/issues/3525))
 
 ## [0.68.1] - 2026-04-22
 
-### Fixed
+### 修复
 
-- Fixed `streamProxy()` to preserve the proxy-safe serializable subset of stream options, including session, transport, retry-delay, metadata, header, cache-retention, and thinking-budget settings ([#3512](https://github.com/badlogic/pi-mono/issues/3512))
-- Fixed parallel tool execution to emit `tool_execution_end` as soon as each tool is finalized, while still emitting persisted tool-result messages in assistant source order ([#3503](https://github.com/badlogic/pi-mono/issues/3503))
+- 修复`streamProxy()` to preserve the proxy-safe serializable subset of stream options, including session, transport, retry-delay, metadata, header, cache-retention, and thinking-budget settings ([#3512](https://github.com/badlogic/pi-mono/issues/3512))
+- 修复parallel tool execution to emit `tool_execution_end` as soon as each tool is finalized, while still emitting persisted tool-result messages in assistant source order ([#3503](https://github.com/badlogic/pi-mono/issues/3503))
 
 ## [0.68.0] - 2026-04-20
 
-### Changed
+### 变更
 
 - Clarified parallel tool execution ordering docs to specify that final tool lifecycle and tool-result artifacts are emitted in tool completion order.
 
@@ -242,9 +242,9 @@
 
 ## [0.67.67] - 2026-04-17
 
-### Fixed
+### 修复
 
-- Fixed parallel tool-call finalization to convert `afterToolCall` hook throws into error tool results instead of aborting the batch ([#3084](https://github.com/badlogic/pi-mono/issues/3084))
+- 修复parallel tool-call finalization to convert `afterToolCall` hook throws into error tool results instead of aborting the batch ([#3084](https://github.com/badlogic/pi-mono/issues/3084))
 
 ## [0.67.6] - 2026-04-16
 
@@ -270,7 +270,7 @@
 
 ## [0.65.0] - 2026-04-03
 
-### Breaking Changes
+### 破坏性变更
 
 - `AgentState` has been reshaped:
   - `streamMessage` was renamed to `streamingMessage`
@@ -279,7 +279,7 @@
   - `pendingToolCalls` is now typed as `ReadonlySet<string>`
   - `tools` and `messages` are now accessor properties, and assigning either field copies the provided top-level array instead of preserving array identity
 - `AgentOptions.initialState` no longer accepts runtime-owned fields. Remove `isStreaming`, `streamingMessage`, `pendingToolCalls`, and `errorMessage` from `initialState` values.
-- Removed `Agent` mutator methods in favor of direct property access:
+- 移除`Agent` mutator methods in favor of direct property access:
   - `agent.setSystemPrompt(value)` -> `agent.state.systemPrompt = value`
   - `agent.setModel(model)` -> `agent.state.model = model`
   - `agent.setThinkingLevel(level)` -> `agent.state.thinkingLevel = level`
@@ -291,7 +291,7 @@
   - `agent.setBeforeToolCall(fn)` -> `agent.beforeToolCall = fn`
   - `agent.setAfterToolCall(fn)` -> `agent.afterToolCall = fn`
   - `agent.setTransport(transport)` -> `agent.transport = transport`
-- Removed queue mode getter/setter methods in favor of properties:
+- 移除queue mode getter/setter methods in favor of properties:
   - `agent.setSteeringMode(mode)` -> `agent.steeringMode = mode`
   - `agent.getSteeringMode()` -> `agent.steeringMode`
   - `agent.setFollowUpMode(mode)` -> `agent.followUpMode = mode`
@@ -304,15 +304,15 @@
 
 ## [0.64.0] - 2026-03-29
 
-### Added
+### 新增
 
-- Added `AgentTool.prepareArguments` hook to prepare raw tool call arguments before schema validation, enabling compatibility shims for resumed sessions with outdated tool schemas
+- 新增`AgentTool.prepareArguments` hook to prepare raw tool call arguments before schema validation, enabling compatibility shims for resumed sessions with outdated tool schemas
 
 ## [0.63.2] - 2026-03-29
 
-### Added
+### 新增
 
-- Added `Agent.signal` to expose the active abort signal for the current turn, allowing callers to forward cancellation into nested async work ([#2660](https://github.com/badlogic/pi-mono/issues/2660))
+- 新增`Agent.signal` to expose the active abort signal for the current turn, allowing callers to forward cancellation into nested async work ([#2660](https://github.com/badlogic/pi-mono/issues/2660))
 
 ## [0.63.1] - 2026-03-27
 
@@ -330,9 +330,9 @@
 
 ## [0.58.4] - 2026-03-16
 
-### Fixed
+### 修复
 
-- Fixed steering messages to wait until the current assistant message's tool-call batch fully finishes instead of skipping pending tool calls.
+- 修复steering messages to wait until the current assistant message's tool-call batch fully finishes instead of skipping pending tool calls.
 
 ## [0.58.3] - 2026-03-15
 
@@ -342,13 +342,13 @@
 
 ## [0.58.0] - 2026-03-14
 
-### Added
+### 新增
 
-- Added `beforeToolCall` and `afterToolCall` hooks to `AgentOptions` and `AgentLoopConfig` for preflight blocking and post-execution tool result mutation.
+- 新增`beforeToolCall` and `afterToolCall` hooks to `AgentOptions` and `AgentLoopConfig` for preflight blocking and post-execution tool result mutation.
 
-### Changed
+### 变更
 
-- Added configurable tool execution mode to `Agent` and `agentLoop` via `toolExecution: "parallel" | "sequential"`, with `parallel` as the default. Parallel mode preflights tool calls sequentially, executes allowed tools concurrently, and emits final tool results in assistant source order.
+- 新增configurable tool execution mode to `Agent` and `agentLoop` via `toolExecution: "parallel" | "sequential"`, with `parallel` as the default. Parallel mode preflights tool calls sequentially, executes allowed tools concurrently, and emits final tool results in assistant source order.
 
 ## [0.57.1] - 2026-03-07
 
@@ -384,9 +384,9 @@
 
 ## [0.52.12] - 2026-02-13
 
-### Added
+### 新增
 
-- Added `transport` to `AgentOptions` and `AgentLoopConfig` forwarding, allowing stream transport preference (`"sse"`, `"websocket"`, `"auto"`) to flow into provider calls.
+- 新增`transport` to `AgentOptions` and `AgentLoopConfig` forwarding, allowing stream transport preference (`"sse"`, `"websocket"`, `"auto"`) to flow into provider calls.
 
 ## [0.52.11] - 2026-02-13
 
@@ -398,9 +398,9 @@
 
 ## [0.52.7] - 2026-02-06
 
-### Fixed
+### 修复
 
-- Fixed `continue()` to resume queued steering/follow-up messages when context currently ends in an assistant message, and preserved one-at-a-time steering ordering during assistant-tail resumes ([#1312](https://github.com/badlogic/pi-mono/pull/1312) by [@ferologics](https://github.com/ferologics))
+- 修复`continue()` to resume queued steering/follow-up messages when context currently ends in an assistant message, and preserved one-at-a-time steering ordering during assistant-tail resumes ([#1312](https://github.com/badlogic/pi-mono/pull/1312) by [@ferologics](https://github.com/ferologics))
 
 ## [0.52.6] - 2026-02-05
 
@@ -434,9 +434,9 @@
 
 ## [0.50.8] - 2026-02-01
 
-### Added
+### 新增
 
-- Added `maxRetryDelayMs` option to `AgentOptions` to cap server-requested retry delays. Passed through to the underlying stream function. ([#1123](https://github.com/badlogic/pi-mono/issues/1123))
+- 新增`maxRetryDelayMs` option to `AgentOptions` to cap server-requested retry delays. Passed through to the underlying stream function. ([#1123](https://github.com/badlogic/pi-mono/issues/1123))
 
 ## [0.50.7] - 2026-01-31
 
@@ -510,7 +510,7 @@
 
 ## [0.38.0] - 2026-01-08
 
-### Added
+### 新增
 
 - `thinkingBudgets` option on `Agent` and `AgentOptions` to customize token budgets per thinking level ([#529](https://github.com/badlogic/pi-mono/pull/529) by [@melihmucuk](https://github.com/melihmucuk))
 
@@ -526,7 +526,7 @@
 
 ## [0.37.3] - 2026-01-06
 
-### Added
+### 新增
 
 - `sessionId` option on `Agent` to forward session identifiers to LLM providers for session-based caching.
 
@@ -536,7 +536,7 @@
 
 ## [0.37.0] - 2026-01-05
 
-### Fixed
+### 修复
 
 - `minimal` thinking level now maps to `minimal` reasoning effort instead of being treated as `low`.
 
@@ -560,7 +560,7 @@
 
 ## [0.32.0] - 2026-01-03
 
-### Breaking Changes
+### 破坏性变更
 
 - **Queue API replaced with steer/followUp**: The `queueMessage()` method has been split into two methods with different delivery semantics ([#403](https://github.com/badlogic/pi-mono/issues/403)):
   - `steer(msg)`: Interrupts the agent mid-run. Delivered after current tool execution, skips remaining tools.
@@ -572,7 +572,7 @@
   - `clearMessageQueue()` → `clearSteeringQueue()`, `clearFollowUpQueue()`, `clearAllQueues()`
   - `setQueueMode()`/`getQueueMode()` → `setSteeringMode()`/`getSteeringMode()` and `setFollowUpMode()`/`getFollowUpMode()`
 
-### Fixed
+### 修复
 
 - `prompt()` and `continue()` now throw if called while the agent is already streaming, preventing race conditions and corrupted state. Use `steer()` or `followUp()` to queue messages during streaming, or `await` the previous call.
 
@@ -580,7 +580,7 @@
 
 ## [0.31.0] - 2026-01-02
 
-### Breaking Changes
+### 破坏性变更
 
 - **Transport abstraction removed**: `ProviderTransport`, `AppTransport`, and `AgentTransport` interface have been removed. Use the `streamFn` option directly for custom streaming implementations.
 
@@ -597,7 +597,7 @@
 
 - **Agent loop moved from `@mariozechner/pi-ai`**: The `agentLoop`, `agentLoopContinue`, and related types have moved to this package. Import from `@mariozechner/pi-agent-core` instead.
 
-### Added
+### 新增
 
 - `streamFn` option on `Agent` for custom stream implementations. Default uses `streamSimple` from pi-ai.
 
@@ -609,7 +609,7 @@
 
 - New exported types: `AgentLoopConfig`, `AgentContext`, `AgentTool`, `AgentToolResult`, `AgentToolUpdateCallback`, `StreamFn`.
 
-### Changed
+### 变更
 
 - `Agent` constructor now has all options optional (empty options use defaults).
 

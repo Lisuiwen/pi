@@ -1,3 +1,4 @@
+/** 模块职责：实现 packages/ai/src\providers\xai.ts 相关的模型、协议或工具逻辑。 */
 import { openAICompletionsApi } from "../api/openai-completions.lazy.ts";
 import { openAIResponsesApi } from "../api/openai-responses.lazy.ts";
 import { envApiKeyAuth, lazyOAuth } from "../auth/helpers.ts";
@@ -25,3 +26,4 @@ export function xaiProvider(): Provider<"openai-completions" | "openai-responses
 		},
 	});
 }
+/** 模块职责：实现 packages/ai/src\providers\xai.ts 相关的模型、协议或工具逻辑。 */

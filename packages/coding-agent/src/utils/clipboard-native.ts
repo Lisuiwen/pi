@@ -1,3 +1,6 @@
+/**
+ * 模块职责：实现 coding-agent 源码模块「utils\clipboard-native.ts」，负责相关命令行、会话、工具或基础设施逻辑。
+ */
 import { createRequire } from "module";
 import { dirname, join } from "path";
 import { pathToFileURL } from "url";

@@ -1,3 +1,4 @@
+/** 模块职责：实现 packages/agent/src\harness\messages.ts 的 Agent 运行时逻辑。 */
 import type { ImageContent, Message, TextContent } from "@earendil-works/pi-ai";
 import type { AgentMessage } from "../types.ts";
 

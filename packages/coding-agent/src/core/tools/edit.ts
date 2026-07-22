@@ -1,3 +1,6 @@
+/**
+ * 模块职责：实现 coding-agent 源码模块「core\tools\edit.ts」，负责相关命令行、会话、工具或基础设施逻辑。
+ */
 import type { AgentTool } from "@earendil-works/pi-agent-core";
 import { Box, Container, Spacer, Text } from "@earendil-works/pi-tui";
 import { constants } from "fs";
@@ -59,24 +62,24 @@ type LegacyEditToolInput = EditToolInput & {
 };
 
 export interface EditToolDetails {
-	/** Display-oriented diff of the changes made */
+	/** 面向显示的变更差异 */
 	diff: string;
-	/** Standard unified patch of the changes made */
+	/** 变更的标准统一补丁 */
 	patch: string;
-	/** Line number of the first change in the new file (for editor navigation) */
+	/** 新文件中首处变更的行号（用于编辑器导航） */
 	firstChangedLine?: number;
 }
 
 /**
- * Pluggable operations for the edit tool.
- * Override these to delegate file editing to remote systems (for example SSH).
+ * edit 工具的可插拔操作。
+ * 可覆盖这些操作，将文件编辑委托给远程系统（例如 SSH）。
  */
 export interface EditOperations {
-	/** Read file contents as a Buffer */
+	/** 以 Buffer 读取文件内容 */
 	readFile: (absolutePath: string) => Promise<Buffer>;
-	/** Write content to a file */
+	/** 将内容写入文件 */
 	writeFile: (absolutePath: string, content: string) => Promise<void>;
-	/** Check if file is readable and writable (throw if not) */
+	/** 检查文件是否可读写（不可读写时抛出异常） */
 	access: (absolutePath: string) => Promise<void>;
 }
 
@@ -87,7 +90,7 @@ const defaultEditOperations: EditOperations = {
 };
 
 export interface EditToolOptions {
-	/** Custom operations for file editing. Default: local filesystem */
+	/** 文件编辑使用的自定义操作。默认使用本地文件系统。 */
 	operations?: EditOperations;
 }
 
@@ -98,7 +101,7 @@ function prepareEditArguments(input: unknown): EditToolInput {
 
 	const args = input as Record<string, unknown>;
 
-	// Some models (Opus 4.6, GLM-5.1) send edits as a JSON string instead of an array
+	// 某些模型（Opus 4.6、GLM-5.1）会将 edits 作为 JSON 字符串而非数组发送
 	if (typeof args.edits === "string") {
 		try {
 			const parsed = JSON.parse(args.edits);
@@ -310,17 +313,16 @@ export function createEditToolDefinition(
 			const absolutePath = resolveToCwd(path, cwd);
 
 			return withFileMutationQueue(absolutePath, async () => {
-				// Do not reject from an abort event listener here: that would release the
-				// mutation queue while an in-flight filesystem operation may still finish.
-				// Checking signal.aborted after each await observes the same aborts while
-				// keeping the queue locked until the current operation has settled.
+				// 不要在取消事件监听器中直接 reject：这会释放修改队列，
+				// 而执行中的文件系统操作仍可能完成。每次 await 后检查 signal.aborted，
+				// 既能发现同样的取消操作，也能让队列保持锁定直到当前操作结束。
 				const throwIfAborted = (): void => {
 					if (signal?.aborted) throw new Error("Operation aborted");
 				};
 
 				throwIfAborted();
 
-				// Check if file exists.
+				// 检查文件是否存在。
 				try {
 					await ops.access(absolutePath);
 				} catch (error: unknown) {
@@ -331,12 +333,12 @@ export function createEditToolDefinition(
 				}
 				throwIfAborted();
 
-				// Read the file.
+				// 读取文件。
 				const buffer = await ops.readFile(absolutePath);
 				const rawContent = buffer.toString("utf-8");
 				throwIfAborted();
 
-				// Strip BOM before matching. The model will not include an invisible BOM in oldText.
+				// 匹配前移除 BOM；模型不会在 oldText 中包含不可见的 BOM。
 				const { bom, text: content } = stripBom(rawContent);
 				const originalEnding = detectLineEnding(content);
 				const normalizedContent = normalizeToLF(content);

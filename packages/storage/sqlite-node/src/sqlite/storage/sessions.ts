@@ -1,3 +1,7 @@
+/**
+ * 模块职责：实现 packages/storage/sqlite-node/src/sqlite/storage/sessions.ts 中的核心功能。
+ */
+
 import { SessionError } from "@earendil-works/pi-agent-core";
 import type { SqliteSessionMetadata } from "../types.ts";
 

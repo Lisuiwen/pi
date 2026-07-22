@@ -1,3 +1,7 @@
+/**
+ * 模块职责：实现 packages/storage/sqlite-node/src/sqlite/repo.ts 中的核心功能。
+ */
+
 import type { Session, SessionStorage, SessionTreeEntry } from "@earendil-works/pi-agent-core";
 import {
 	createSessionId,
@@ -40,6 +44,9 @@ async function cleanupSessionStorage(storage: SessionStorage): Promise<void> {
 	}
 }
 
+/**
+ * 提供 SQLite 会话仓库的读写和事务操作。
+ */
 export class SqliteSessionRepo implements SqliteSessionRepoApi {
 	private readonly env: SqliteSessionRepoEnv;
 	private readonly sqlite: SqliteDatabaseFactory;

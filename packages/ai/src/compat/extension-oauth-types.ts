@@ -1,19 +1,20 @@
+/** 模块职责：实现 packages/ai/src\compat\extension-oauth-types.ts 相关的模型、协议或工具逻辑。 */
 import type { OAuthCredentials } from "../auth/types.ts";
 
-/** Legacy extension OAuth prompt. */
+/** 旧版扩展的 OAuth 输入提示。 */
 export interface OAuthPrompt {
 	message: string;
 	placeholder?: string;
 	allowEmpty?: boolean;
 }
 
-/** Legacy extension OAuth authorization link. */
+/** 旧版扩展的 OAuth 授权链接。 */
 export interface OAuthAuthInfo {
 	url: string;
 	instructions?: string;
 }
 
-/** Legacy extension OAuth device-code notification. */
+/** 旧版扩展的 OAuth 设备码通知。 */
 export interface OAuthDeviceCodeInfo {
 	userCode: string;
 	verificationUri: string;
@@ -31,7 +32,7 @@ export interface OAuthSelectPrompt {
 	options: OAuthSelectOption[];
 }
 
-/** Callback surface retained only for coding-agent extension compatibility. */
+/** 仅为兼容 coding-agent 扩展而保留的回调接口。 */
 export interface OAuthLoginCallbacks {
 	onAuth(info: OAuthAuthInfo): void;
 	onDeviceCode(info: OAuthDeviceCodeInfo): void;
@@ -43,3 +44,4 @@ export interface OAuthLoginCallbacks {
 }
 
 export type { OAuthCredentials };
+/** 模块职责：实现 packages/ai/src\compat\extension-oauth-types.ts 相关的模型、协议或工具逻辑。 */

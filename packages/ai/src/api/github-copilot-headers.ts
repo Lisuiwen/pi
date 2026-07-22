@@ -1,13 +1,14 @@
+/** 模块职责：实现 packages/ai/src\api\github-copilot-headers.ts 相关的模型、协议或工具逻辑。 */
 import type { Message } from "../types.ts";
 
-// Copilot expects X-Initiator to indicate whether the request is user-initiated
-// or agent-initiated (e.g. follow-up after assistant/tool messages).
+// Copilot 要求用 X-Initiator 标明该请求是由用户发起
+// 还是由 agent 发起（例如 assistant/tool 消息后的后续请求）。
 export function inferCopilotInitiator(messages: Message[]): "user" | "agent" {
 	const last = messages[messages.length - 1];
 	return last && last.role !== "user" ? "agent" : "user";
 }
 
-// Copilot requires Copilot-Vision-Request header when sending images
+// 发送图片时，Copilot 要求带上 Copilot-Vision-Request 头
 export function hasCopilotVisionInput(messages: Message[]): boolean {
 	return messages.some((msg) => {
 		if (msg.role === "user" && Array.isArray(msg.content)) {
@@ -35,3 +36,4 @@ export function buildCopilotDynamicHeaders(params: {
 
 	return headers;
 }
+/** 模块职责：实现 packages/ai/src\api\github-copilot-headers.ts 相关的模型、协议或工具逻辑。 */

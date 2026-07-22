@@ -1,6 +1,7 @@
+/** 模块职责：实现 packages/ai/src\utils\event-stream.ts 相关的模型、协议或工具逻辑。 */
 import type { AssistantMessage, AssistantMessageEvent } from "../types.ts";
 
-// Generic event stream class for async iteration
+// 供异步迭代使用的通用事件流类。
 export class EventStream<T, R = T> implements AsyncIterable<T> {
 	private queue: T[] = [];
 	private waiting: ((value: IteratorResult<T>) => void)[] = [];
@@ -26,7 +27,7 @@ export class EventStream<T, R = T> implements AsyncIterable<T> {
 			this.resolveFinalResult(this.extractResult(event));
 		}
 
-		// Deliver to waiting consumer or queue it
+		// 优先交给正在等待的消费者，否则进入队列。
 		const waiter = this.waiting.shift();
 		if (waiter) {
 			waiter({ value: event, done: false });
@@ -40,7 +41,7 @@ export class EventStream<T, R = T> implements AsyncIterable<T> {
 		if (result !== undefined) {
 			this.resolveFinalResult(result);
 		}
-		// Notify all waiting consumers that we're done
+		// 通知所有等待中的消费者：流已结束。
 		while (this.waiting.length > 0) {
 			const waiter = this.waiting.shift()!;
 			waiter({ value: undefined as any, done: true });
@@ -82,7 +83,8 @@ export class AssistantMessageEventStream extends EventStream<AssistantMessageEve
 	}
 }
 
-/** Factory function for AssistantMessageEventStream (for use in extensions) */
+/** `AssistantMessageEventStream` 的工厂函数（供扩展使用）。 */
 export function createAssistantMessageEventStream(): AssistantMessageEventStream {
 	return new AssistantMessageEventStream();
 }
+/** 模块职责：实现 packages/ai/src\utils\event-stream.ts 相关的模型、协议或工具逻辑。 */

@@ -1,3 +1,7 @@
+/**
+ * 模块职责：实现 packages/server/src/types.ts 中的核心功能。
+ */
+
 export type InstanceStatus = "starting" | "online" | "stopping" | "stopped" | "error";
 
 export interface MachineRecord {

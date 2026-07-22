@@ -1,3 +1,4 @@
+/** 模块职责：实现 packages/ai/src\providers\huggingface.ts 相关的模型、协议或工具逻辑。 */
 import { openAICompletionsApi } from "../api/openai-completions.lazy.ts";
 import { envApiKeyAuth } from "../auth/helpers.ts";
 import { createProvider, type Provider } from "../models.ts";
@@ -13,3 +14,4 @@ export function huggingfaceProvider(): Provider<"openai-completions"> {
 		api: openAICompletionsApi(),
 	});
 }
+/** 模块职责：实现 packages/ai/src\providers\huggingface.ts 相关的模型、协议或工具逻辑。 */

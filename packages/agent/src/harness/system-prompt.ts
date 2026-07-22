@@ -1,3 +1,4 @@
+/** 模块职责：实现 packages/agent/src\harness\system-prompt.ts 的 Agent 运行时逻辑。 */
 import type { Skill } from "./types.ts";
 
 export function formatSkillsForSystemPrompt(skills: Skill[]): string {

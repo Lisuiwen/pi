@@ -1,3 +1,7 @@
+/**
+ * 模块职责：实现 packages/server/src/ipc/client.ts 中的核心功能。
+ */
+
 import { createConnection } from "node:net";
 import { getSocketPath } from "../config.ts";
 import { encodeMessage, parseResponseLine, type ServerRequest, type ServerResponse } from "./protocol.ts";

@@ -1,3 +1,4 @@
+/** 模块职责：实现 packages/ai/src\providers\azure-openai-responses.ts 相关的模型、协议或工具逻辑。 */
 import { azureOpenAIResponsesApi } from "../api/azure-openai-responses.lazy.ts";
 import { envApiKeyAuth } from "../auth/helpers.ts";
 import { createProvider, type Provider } from "../models.ts";
@@ -12,3 +13,4 @@ export function azureOpenAIResponsesProvider(): Provider<"azure-openai-responses
 		api: azureOpenAIResponsesApi(),
 	});
 }
+/** 模块职责：实现 packages/ai/src\providers\azure-openai-responses.ts 相关的模型、协议或工具逻辑。 */

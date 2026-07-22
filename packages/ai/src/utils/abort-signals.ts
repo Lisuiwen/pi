@@ -1,3 +1,4 @@
+/** 模块职责：实现 packages/ai/src\utils\abort-signals.ts 相关的模型、协议或工具逻辑。 */
 export interface CombinedAbortSignal {
 	signal?: AbortSignal;
 	cleanup: () => void;
@@ -39,3 +40,4 @@ export function combineAbortSignals(signals: readonly (AbortSignal | undefined)[
 		},
 	};
 }
+/** 模块职责：实现 packages/ai/src\utils\abort-signals.ts 相关的模型、协议或工具逻辑。 */

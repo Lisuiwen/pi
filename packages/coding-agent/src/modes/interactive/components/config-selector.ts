@@ -1,4 +1,7 @@
 /**
+ * 模块职责：实现 coding-agent 源码模块「modes\interactive\components\config-selector.ts」，负责相关命令行、会话、工具或基础设施逻辑。
+ */
+/**
  * TUI component for managing package resources (enable/disable)
  */
 
@@ -598,7 +601,7 @@ class ResourceList implements Component, Focusable {
 			packages[pkgIndex] = pkg;
 		}
 
-		// Get the resource array for this type
+		// 获取 resource array for this type
 		const arrayKey = item.resourceType as "extensions" | "skills" | "prompts" | "themes";
 		const current = (pkg[arrayKey] ?? []) as string[];
 

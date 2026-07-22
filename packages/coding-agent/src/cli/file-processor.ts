@@ -1,4 +1,7 @@
 /**
+ * 模块职责：实现 coding-agent 源码模块「cli\file-processor.ts」，负责相关命令行、会话、工具或基础设施逻辑。
+ */
+/**
  * Process @file CLI arguments into text content and image attachments
  */
 

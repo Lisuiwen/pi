@@ -1,3 +1,4 @@
+/** 模块职责：实现 packages/ai/src\utils\uuid.ts 相关的模型、协议或工具逻辑。 */
 let lastTimestamp = -Infinity;
 let sequence = 0;
 
@@ -11,7 +12,7 @@ function fillRandomBytes(bytes: Uint8Array<ArrayBuffer>): void {
 	}
 }
 
-/** Generate a time-ordered UUIDv7. */
+/** 生成按时间有序的 UUIDv7。 */
 export function uuidv7(): string {
 	const random = new Uint8Array(16);
 	fillRandomBytes(random);
@@ -46,3 +47,4 @@ export function uuidv7(): string {
 	const hex = Array.from(bytes, (byte) => byte.toString(16).padStart(2, "0"));
 	return `${hex.slice(0, 4).join("")}-${hex.slice(4, 6).join("")}-${hex.slice(6, 8).join("")}-${hex.slice(8, 10).join("")}-${hex.slice(10, 16).join("")}`;
 }
+/** 模块职责：实现 packages/ai/src\utils\uuid.ts 相关的模型、协议或工具逻辑。 */

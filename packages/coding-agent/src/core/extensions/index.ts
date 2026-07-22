@@ -1,5 +1,8 @@
 /**
- * Extension system for lifecycle events and custom tools.
+ * 模块职责：实现 coding-agent 源码模块「core\extensions\index.ts」，负责相关命令行、会话、工具或基础设施逻辑。
+ */
+/**
+ * 用于生命周期事件和自定义工具的扩展系统。
  */
 
 export type { SlashCommandInfo, SlashCommandSource } from "../slash-commands.ts";
@@ -24,14 +27,14 @@ export type {
 	AgentEndEvent,
 	AgentSettledEvent,
 	AgentStartEvent,
-	// Re-exports
+	// 重新导出
 	AgentToolResult,
 	AgentToolUpdateCallback,
 	AppendEntryHandler,
-	// App keybindings (for custom editors)
+	// 应用快捷键（供自定义编辑器使用）
 	AppKeybinding,
 	AutocompleteProviderFactory,
-	// Events - Tool (ToolCallEvent types)
+	// 事件——工具（ToolCallEvent 类型）
 	BashToolCallEvent,
 	BashToolResultEvent,
 	BeforeAgentStartEvent,
@@ -40,11 +43,11 @@ export type {
 	BeforeProviderRequestEvent,
 	BeforeProviderRequestEventResult,
 	BuildSystemPromptOptions,
-	// Context
+	// 上下文
 	CompactOptions,
-	// Events - Agent
+	// 事件——Agent
 	ContextEvent,
-	// Event Results
+	// 事件结果
 	ContextEventResult,
 	ContextUsage,
 	CustomToolCallEvent,
@@ -52,7 +55,7 @@ export type {
 	EditorFactory,
 	EditToolCallEvent,
 	EditToolResultEvent,
-	// Message and Entry Rendering
+	// 消息与条目渲染
 	EntryRenderer,
 	EntryRenderOptions,
 	ExecOptions,
@@ -65,14 +68,14 @@ export type {
 	ExtensionCommandContextActions,
 	ExtensionContext,
 	ExtensionContextActions,
-	// Errors
+	// 错误
 	ExtensionError,
 	ExtensionEvent,
 	ExtensionFactory,
 	ExtensionFlag,
 	ExtensionHandler,
 	ExtensionMode,
-	// Runtime
+	// 运行时
 	ExtensionRuntime,
 	ExtensionShortcut,
 	ExtensionUIContext,
@@ -87,7 +90,7 @@ export type {
 	GrepToolCallEvent,
 	GrepToolResultEvent,
 	InlineExtension,
-	// Events - Input
+	// 事件——输入
 	InputEvent,
 	InputEventResult,
 	InputSource,
@@ -95,7 +98,7 @@ export type {
 	LoadExtensionsResult,
 	LsToolCallEvent,
 	LsToolResultEvent,
-	// Events - Message
+	// 事件——消息
 	MessageEndEvent,
 	MessageRenderer,
 	MessageRenderOptions,
@@ -108,17 +111,17 @@ export type {
 	ProjectTrustEventDecision,
 	ProjectTrustEventResult,
 	ProjectTrustHandler,
-	// Provider Registration
+	// 提供商注册
 	ProviderConfig,
 	ProviderModelConfig,
 	ReadToolCallEvent,
 	ReadToolResultEvent,
-	// Commands
+	// 命令
 	RegisteredCommand,
 	RegisteredTool,
 	ReplacedSessionContext,
 	ResolvedCommand,
-	// Events - Resources
+	// 事件——资源
 	ResourcesDiscoverEvent,
 	ResourcesDiscoverResult,
 	SendMessageHandler,
@@ -135,7 +138,7 @@ export type {
 	SessionEvent,
 	SessionInfoChangedEvent,
 	SessionShutdownEvent,
-	// Events - Session
+	// 事件——会话
 	SessionStartEvent,
 	SessionTreeEvent,
 	SetActiveToolsHandler,
@@ -143,14 +146,14 @@ export type {
 	SetModelHandler,
 	SetThinkingLevelHandler,
 	TerminalInputHandler,
-	// Events - Tool
+	// 事件——工具
 	ToolCallEvent,
 	ToolCallEventResult,
-	// Tools
+	// 工具
 	ToolDefinition,
-	// Events - Tool Execution
+	// 事件——工具执行
 	ToolExecutionEndEvent,
-	// Tool execution mode
+	// 工具执行模式
 	ToolExecutionMode,
 	ToolExecutionStartEvent,
 	ToolExecutionUpdateEvent,
@@ -161,7 +164,7 @@ export type {
 	TreePreparation,
 	TurnEndEvent,
 	TurnStartEvent,
-	// Events - User Bash
+	// 事件——用户 Bash
 	UserBashEvent,
 	UserBashEventResult,
 	WidgetPlacement,
@@ -169,7 +172,7 @@ export type {
 	WriteToolCallEvent,
 	WriteToolResultEvent,
 } from "./types.ts";
-// Type guards
+// 类型守卫
 export {
 	defineTool,
 	isBashToolResult,

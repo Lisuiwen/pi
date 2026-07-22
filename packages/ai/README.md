@@ -1,10 +1,10 @@
 # @earendil-works/pi-ai
 
-Unified LLM API with provider collections, automatic auth resolution, token and cost tracking, and simple context persistence and hand-off to other models mid-session.
+统一的 LLM API，提供提供商集合、自动身份验证解析、令牌与成本跟踪，以及简单的上下文持久化和会话中途切换到其他模型的能力。
 
-**Note**: This library only includes models that support tool calling (function calling), as this is essential for agentic workflows.
+**注意**：此库仅包含支持工具调用（函数调用）的模型，因为这是 Agent 工作流的基础。
 
-## Table of Contents
+## 目录
 
 - [Supported Providers](#supported-providers)
 - [Installation](#installation)
@@ -54,7 +54,7 @@ Unified LLM API with provider collections, automatic auth resolution, token and 
 - [Development](#development)
 - [License](#license)
 
-## Supported Providers
+## 支持的提供商
 
 - **OpenAI**
 - **Ant Ling**
@@ -87,17 +87,17 @@ Unified LLM API with provider collections, automatic auth resolution, token and 
 - **Xiaomi MiMo** (defaults to API billing endpoint, with separate Token Plan providers for `cn`/`ams`/`sgp` regions)
 - **Any OpenAI-compatible API**: Ollama, vLLM, LM Studio, etc.
 
-## Installation
+## 安装
 
 ```bash
 npm install @earendil-works/pi-ai
 ```
 
-TypeBox exports are re-exported from `@earendil-works/pi-ai`: `Type`, `Static`, and `TSchema`.
+`@earendil-works/pi-ai` 重新导出 TypeBox 的 `Type`、`Static` 和 `TSchema`。
 
-## Quick Start
+## 快速开始
 
-You build a `Models` collection of providers and stream through it. The quickest start registers every built-in provider; apps that care about bundle size register individual providers instead (see [Provider Factories](#provider-factories) and [Bundling and Tree Shaking](#bundling-and-tree-shaking)).
+你需要构建一个由提供商组成的 `Models` 集合，并通过它进行流式调用。最快的方式是注册所有内置提供商；关注包体积的应用则可单独注册所需提供商（参见[提供商工厂](#provider-factories)和[打包与 Tree Shaking](#bundling-and-tree-shaking)）。
 
 ```typescript
 import { Type, type Context, type Tool } from '@earendil-works/pi-ai';
@@ -223,15 +223,15 @@ for (const block of response.content) {
 }
 ```
 
-Snippets in the rest of this README assume a `models` collection set up like this (with the relevant providers registered).
+本 README 其余示例均假设已按上述方式设置 `models` 集合（并注册了相关提供商）。
 
-## Providers and Models
+## 提供商与模型
 
-A **provider** is the runtime unit: it owns its model catalog, its auth (API key resolution, OAuth flows), and its stream behavior. A `Models` collection holds providers and routes every request to the provider that owns the model.
+**提供商**是运行时单元：它拥有自己的模型目录、身份验证（API 密钥解析、OAuth 流程）和流式行为。`Models` 集合持有多个提供商，并将每个请求路由到拥有目标模型的提供商。
 
-Providers internally share **API implementations** (the wire protocols): Anthropic models use `anthropic-messages`, OpenAI uses `openai-responses`, while xAI, Groq, Cerebras, OpenRouter, and most others share `openai-completions`. Mixed-API providers (GitHub Copilot, OpenCode Zen) dispatch per model.
+提供商在内部共享 **API 实现**（线路协议）：Anthropic 模型使用 `anthropic-messages`，OpenAI 使用 `openai-responses`，而 xAI、Groq、Cerebras、OpenRouter 及大多数其他提供商共享 `openai-completions`。混合 API 提供商（GitHub Copilot、OpenCode Zen）会按模型分派。
 
-### Provider Factories
+### 提供商工厂
 
 For apps that only need specific providers, there is one factory per built-in provider, each a subpath import that pulls only that provider's catalog:
 
@@ -247,9 +247,9 @@ models.setProvider(anthropicProvider());
 models.setProvider(openrouterProvider());
 ```
 
-Provider factories import their model catalog and a lazy API wrapper. They do not import other providers. With bundler code splitting, SDK implementations (`@anthropic-ai/sdk`, `openai`, `@google/genai`, etc.) stay in lazy chunks loaded on the first request to a model of that API.
+提供商工厂会导入其模型目录和延迟 API 包装器，不会导入其他提供商。借助打包器代码分割，SDK 实现（`@anthropic-ai/sdk`、`openai`、`@google/genai` 等）会保留在延迟分块中，并在首次请求该 API 的模型时加载。
 
-### All Built-in Providers
+### 所有内置提供商
 
 For apps that want everything (as in Quick Start):
 
@@ -259,9 +259,9 @@ import { builtinModels } from '@earendil-works/pi-ai/providers/all';
 const models = builtinModels(); // a Models collection with every built-in provider registered
 ```
 
-This imports all catalogs and every built-in provider factory. It is the heavy, explicit entrypoint. `builtinModels()` accepts the same options as `createModels()` (`credentials`, `authContext`); `builtinProviders()` returns the provider array if you want to register them on your own collection.
+这会导入所有目录和每个内置提供商工厂，是重量级的显式入口。`builtinModels()` 接受与 `createModels()` 相同的选项（`credentials`、`authContext`）；如果想在自己的集合中注册提供商，可使用 `builtinProviders()` 返回提供商数组。
 
-### Querying Models
+### 查询模型
 
 Reads are synchronous and return the last-known lists:
 
@@ -294,7 +294,7 @@ if (m && hasApi(m, 'anthropic-messages')) {
 }
 ```
 
-### Static Catalog Reads
+### 读取静态目录
 
 For tooling that wants the generated built-in catalog with full literal typing (provider and model IDs auto-complete), independent of any collection:
 
@@ -306,7 +306,7 @@ const providers = getBuiltinProviders();
 const anthropic = getBuiltinModels('anthropic');
 ```
 
-### Dynamic Providers
+### 动态提供商
 
 Providers may have dynamic model lists (a llama.cpp server, a live OpenRouter listing). Reads stay sync; fetching is an explicit async verb:
 
@@ -317,13 +317,13 @@ await models.refresh();                  // refresh all providers concurrently, 
 const fresh = models.getModel('llamacpp', 'qwen3-30b');
 ```
 
-Static built-in providers are no-ops for `refresh()`. See [createProvider()](#createprovider) for building a dynamic provider.
+静态内置提供商调用 `refresh()` 时不会执行任何操作。构建动态提供商请参见 [createProvider()](#createprovider)。
 
-## Auth
+## 身份验证
 
-Every provider owns its auth: how API keys resolve (stored credentials, environment variables, ambient sources like AWS profiles or gcloud ADC) and, where supported, OAuth login/refresh flows.
+每个提供商都管理自己的身份验证：包括 API 密钥解析（已存储凭据、环境变量、AWS 配置文件或 gcloud ADC 等环境来源），以及支持时的 OAuth 登录/刷新流程。
 
-### How Auth Resolves
+### 身份验证解析方式
 
 When you call `models.stream()`, the collection resolves auth through the owning provider and merges it into the request. Explicit per-request values always win:
 
@@ -351,7 +351,7 @@ if (modelAuth) {
 
 Both overloads resolve credentials, refresh expired OAuth when necessary, and may return an auth-derived `apiKey`, `headers`, or `baseUrl`. `getAuth()` resolves `undefined` for unconfigured providers and rejects with `ModelsError` when something is actually broken (`"oauth"`: token refresh failed, credential preserved for re-login; `"auth"`: key resolution or credential store failure). Request paths surface the same failures as stream errors.
 
-### Transforming Request Headers
+### 转换请求标头
 
 `Models.stream()`, `complete()`, `streamSimple()`, and `completeSimple()` accept a Models-only `transformHeaders` option. It runs once after provider auth, `model.headers`, and explicit `options.headers` have been merged, but before provider dispatch:
 
@@ -375,7 +375,7 @@ Header names are merged case-insensitively. Explicit headers override auth/model
 
 `transformHeaders` belongs to `Models`, not `Provider`. A `Models` implementation must consume it and remove it before calling `Provider.stream*()`. Provider implementations continue receiving ordinary `ApiStreamOptions` or `SimpleStreamOptions` and never handle the transform themselves. Use this option instead of calling `getAuth(model)` before `stream*()`, which would resolve request auth twice.
 
-### Credential Store
+### 凭据存储
 
 Stored credentials (API keys entered interactively, OAuth tokens) live in a `CredentialStore` — one type-tagged credential per provider. pi-ai ships an in-memory default; apps inject persistent storage:
 
@@ -402,7 +402,7 @@ const credential = {
 } as const;
 ```
 
-### Environment Variables
+### 环境变量
 
 Built-in providers resolve these env vars (Node.js; in browsers pass `apiKey` explicitly):
 
@@ -444,11 +444,11 @@ Built-in providers resolve these env vars (Node.js; in browsers pass `apiKey` ex
 
 Amazon Bedrock resolves ambient AWS credentials (`AWS_PROFILE`, access key pairs, `AWS_BEARER_TOKEN_BEDROCK`, ECS task roles, web identity tokens); its provider-owned login flow supports bearer tokens, AWS profiles, and the existing credential chain. Vertex AI resolves either an explicit key or gcloud Application Default Credentials plus project/location, with a provider-owned login flow for API keys, ADC, and service-account files.
 
-## Tools
+## 工具
 
-Tools enable LLMs to interact with external systems. This library uses TypeBox schemas for type-safe tool definitions with automatic validation using TypeBox's built-in validator and value conversion utilities. TypeBox schemas can be serialized and deserialized as plain JSON, making them ideal for distributed systems.
+工具使 LLM 能够与外部系统交互。本库使用 TypeBox 模式以类型安全的方式定义工具，并通过 TypeBox 内置验证器和值转换工具自动校验。TypeBox 模式可作为普通 JSON 序列化和反序列化，非常适合分布式系统。
 
-### Defining Tools
+### 定义工具
 
 ```typescript
 import { Type, type Tool, StringEnum } from '@earendil-works/pi-ai';
@@ -478,7 +478,7 @@ const bookMeetingTool: Tool = {
 };
 ```
 
-### Handling Tool Calls
+### 处理工具调用
 
 Tool results use content blocks and can include both text and images:
 
@@ -526,7 +526,7 @@ context.messages.push({
 });
 ```
 
-### Streaming Tool Calls with Partial JSON
+### 流式传输部分 JSON 的工具调用
 
 During streaming, tool call arguments are progressively parsed as they arrive. This enables real-time UI updates before the complete arguments are available:
 
@@ -570,7 +570,7 @@ for await (const event of s) {
 - At minimum, `arguments` will be an empty object `{}`, never `undefined`
 - The Google provider does not support function call streaming. Instead, you will receive a single `toolcall_delta` event with the full arguments.
 
-### Validating Tool Arguments
+### 验证工具参数
 
 When implementing your own tool execution loop, use `validateToolCall` to validate arguments before passing them to your tools:
 
@@ -604,7 +604,7 @@ for await (const event of s) {
 }
 ```
 
-### Complete Event Reference
+### 完整事件参考
 
 All streaming events emitted during assistant message generation:
 
@@ -625,9 +625,9 @@ All streaming events emitted during assistant message generation:
 
 Streaming events for different content blocks are not guaranteed to be contiguous. Providers may emit deltas for text, thinking, and tool calls in the same upstream chunk, and pi may surface corresponding events interleaved, for example `text_start`, `text_delta`, `toolcall_start`, `text_delta`, `toolcall_delta`. Consumers must use `contentIndex` to associate each delta/end event with its block and must not assume that a block's `*_start`/`*_delta`/`*_end` sequence is uninterrupted by events for other blocks.
 
-## Image Input
+## 图像输入
 
-Models with vision capabilities can process images. You can check if a model supports images via the `input` property. If you pass images to a non-vision model, they are silently ignored.
+具备视觉能力的模型可以处理图像。可通过 `input` 属性检查模型是否支持图像。向不支持视觉的模型传入图像时，图像会被静默忽略。
 
 ```typescript
 import { readFileSync } from 'fs';
@@ -661,11 +661,11 @@ for (const block of response.content) {
 }
 ```
 
-## Image Generation
+## 图像生成
 
 Image generation uses a separate API surface from text/chat generation, mirroring the chat-side design: an `ImagesModels` collection holds `ImagesProvider`s, reads are sync, and auth resolves through the owning provider. Image generation is a one-shot API: `generateImages()` waits for the provider response and returns the final `AssistantImages` result — do not use the chat/stream APIs for it.
 
-### Basic Image Generation
+### 基础图像生成
 
 ```typescript
 import { builtinImagesModels } from '@earendil-works/pi-ai/providers/all';
@@ -726,7 +726,7 @@ console.log(model.input);   // ['text', 'image']
 console.log(model.output);  // ['image'] or ['image', 'text']
 ```
 
-### Notes and Limitations
+### 注意事项与限制
 
 - Image models live in `ImagesModels` collections, chat models in `Models` collections; the two are separate surfaces.
 - Use `generateImages()`, not the chat/stream APIs.
@@ -738,11 +738,11 @@ console.log(model.output);  // ['image'] or ['image', 'text']
 - If you want a model to analyze images in a conversation or call tools, use the regular chat APIs with a model that supports image input.
 - At the moment, image generation is available through only one provider, OpenRouter.
 
-## Thinking/Reasoning
+## 思考/推理
 
-Many models support thinking/reasoning capabilities where they can show their internal thought process. You can check if a model supports reasoning via the `reasoning` property. If you pass reasoning options to a non-reasoning model, they are silently ignored.
+许多模型支持思考/推理能力，可以展示其内部思考过程。可通过 `reasoning` 属性检查模型是否支持推理。向不支持推理的模型传入推理选项时，这些选项会被静默忽略。
 
-### Unified Interface (streamSimple/completeSimple)
+### 统一接口（streamSimple/completeSimple）
 
 ```typescript
 // Many models across providers support thinking/reasoning
@@ -775,7 +775,7 @@ for (const block of response.content) {
 
 `xhigh` and `max` are model-specific, opt-in levels. Use `getSupportedThinkingLevels(model)` to determine whether a concrete model exposes either level; models such as GPT-5.6 can expose both.
 
-### Provider-Specific Options (stream/complete)
+### 提供商专属选项（stream/complete）
 
 `models.stream()`/`complete()` accept the owning API's full option set. Use `hasApi()` to narrow a dynamically looked-up model to its API for full option typing:
 
@@ -812,7 +812,7 @@ if (hasApi(googleModel, 'google-generative-ai')) {
 }
 ```
 
-### Streaming Thinking Content
+### 流式传输思考内容
 
 When streaming, thinking content is delivered through specific events:
 
@@ -834,7 +834,7 @@ for await (const event of s) {
 }
 ```
 
-## Stop Reasons
+## 停止原因
 
 Every `AssistantMessage` includes a `stopReason` field that indicates how the generation ended:
 
@@ -846,7 +846,7 @@ Every `AssistantMessage` includes a `stopReason` field that indicates how the ge
 
 `AssistantMessage` may also include `responseId`, a provider-specific upstream response or message identifier when the underlying API exposes one. Do not assume it is always present across providers.
 
-## Error Handling
+## 错误处理
 
 Request failures never throw out of the stream functions: when a request ends with an error (including aborts and tool call validation errors), the streaming API emits an error event and the final message carries the details:
 
@@ -872,7 +872,7 @@ if (message.stopReason === 'error' || message.stopReason === 'aborted') {
 
 Auth failures (no key configured, OAuth refresh failed, unknown provider) surface the same way: as a stream error with `stopReason: "error"`.
 
-### Aborting Requests
+### 中止请求
 
 The abort signal allows you to cancel in-progress requests. Aborted requests have `stopReason === 'aborted'`:
 
@@ -906,7 +906,7 @@ if (response.stopReason === 'aborted') {
 }
 ```
 
-### Continuing After Abort
+### 中止后继续
 
 Aborted messages can be added to the conversation context and continued in subsequent requests:
 
@@ -931,7 +931,7 @@ context.messages.push({ role: 'user', content: 'Please continue', timestamp: Dat
 const continuation = await models.complete(model, context);
 ```
 
-### Debugging Provider Payloads
+### 调试提供商负载
 
 Use the `onPayload` callback to inspect the request payload sent to the provider. This is useful for debugging request formatting issues or provider validation errors.
 
@@ -945,7 +945,7 @@ const response = await models.complete(model, context, {
 
 The callback is supported by `stream`, `complete`, `streamSimple`, and `completeSimple`.
 
-## Custom Providers
+## 自定义提供商
 
 ### createProvider()
 
@@ -1083,7 +1083,7 @@ const ollamaReasoningModel: Model<'openai-completions'> = {
 };
 ```
 
-### Calling API Implementations Directly
+### 直接调用 API 实现
 
 The API implementations are importable on their own. Each module exports exactly `stream` and `streamSimple` with that API's full option typing. Direct calls bypass provider auth — pass `apiKey` explicitly:
 
@@ -1113,7 +1113,7 @@ Built-in API implementations live under `./api/<api-id>`:
 
 Importing an implementation module loads its SDK. The `./api/<id>.lazy` wrappers (used by the provider factories) defer that load to the first request when the runtime or bundler supports dynamic import chunking. Legacy raw API subpaths from older releases (`./anthropic`, `./google`, `./mistral`, `./openai-completions`, ...) were removed; use `@earendil-works/pi-ai/api/<api-id>`.
 
-### OpenAI Compatibility Settings
+### OpenAI 兼容性设置
 
 The `openai-completions` API is implemented by many providers with minor differences. By default, the library auto-detects compatibility settings based on `baseUrl` for a small set of known OpenAI-compatible providers (Cerebras, xAI, Chutes, DeepSeek, NVIDIA NIM, Together AI, zAi, OpenCode, Cloudflare Workers AI, etc.). For custom proxies or unknown endpoints, you can override these settings via the `compat` field. For `openai-responses` models, the compat field supports Responses-specific flags.
 
@@ -1151,7 +1151,7 @@ If `compat` is not set, the library falls back to URL-based detection. If `compa
 - **Custom inference servers**: May use non-standard field names
 - **Self-hosted endpoints**: May have different feature support
 
-## Faux Provider for Tests
+## 测试用 Faux 提供商
 
 `fauxProvider()` builds an in-memory provider with scripted responses for tests and demos:
 
@@ -1238,9 +1238,9 @@ Notes:
 - By default, each streamed chunk is emitted on its own microtask. Set `tokensPerSecond` to pace chunk delivery in real time.
 - The intended use is one deterministic scripted flow per handle. If you need independent concurrent flows, create separate faux providers with distinct `provider` ids.
 
-## Cross-Provider Handoffs
+## 跨提供商切换
 
-The library supports seamless handoffs between different LLM providers within the same conversation. This allows you to switch models mid-conversation while preserving context, including thinking blocks, tool calls, and tool results.
+本库支持在同一对话中于不同 LLM 提供商之间无缝切换。你可以在保留上下文（包括思考块、工具调用和工具结果）的同时中途切换模型。
 
 When messages from one provider are sent to a different provider, the library automatically transforms them for compatibility:
 
@@ -1278,9 +1278,9 @@ context.messages.push({ role: 'user', content: 'What was the original question?'
 const geminiResponse = await models.complete(gemini, context);
 ```
 
-All providers can handle messages from other providers — text, tool calls and results (including images), thinking blocks (transformed to tagged text), and aborted messages with partial content. This enables flexible workflows: start with a fast model, switch to a more capable one for complex reasoning, or maintain continuity across provider outages.
+所有提供商都能处理其他提供商的消息——文本、工具调用及结果（包括图像）、思考块（会转换为带标签的文本），以及包含部分内容的中止消息。这支持灵活工作流：先使用快速模型，再切换到更强模型进行复杂推理，或在提供商中断期间保持连续性。
 
-## Context Serialization
+## 上下文序列化
 
 The `Context` object can be easily serialized and deserialized using standard JSON methods, making it simple to persist conversations, implement chat history, or transfer contexts between services:
 
@@ -1311,11 +1311,11 @@ const newModel = models.getModel('anthropic', 'claude-3-5-haiku-20241022')!;
 const continuation = await models.complete(newModel, restored);
 ```
 
-Models are plain serializable data too — no functions or implementations attached — so persisting "which model was this conversation using" is a `JSON.stringify` away.
+模型同样是可直接序列化的普通数据，不附带函数或实现，因此持久化“此对话使用了哪个模型”只需调用一次 `JSON.stringify`。
 
 > **Note**: If the context contains images (encoded as base64 as shown in the Image Input section), those will also be serialized.
 
-## Browser Usage
+## 浏览器使用
 
 The library supports browser environments. The core entrypoint and provider factories are side-effect free and bundle cleanly. Environment variables are not available in browsers, so pass API keys explicitly — or inject a `CredentialStore` (e.g. localStorage-backed) and let provider auth resolve from stored credentials:
 
@@ -1342,7 +1342,7 @@ Browser compatibility notes:
 - OAuth login flows are Node-only. They are lazy-loaded behind bundler-opaque imports, so registering an OAuth-capable provider does not pull Node-only code into a browser bundle — only actually logging in would.
 - Use a server-side proxy or backend service if you need Bedrock or OAuth-based auth from a web app.
 
-## Bundling and Tree Shaking
+## 打包与 Tree Shaking
 
 For small bundles, import only the providers you need:
 
@@ -1396,7 +1396,7 @@ setBedrockProviderModule(bedrockProviderModule);
 
 That explicit override bundles the AWS SDK. Without it, Bedrock's opaque runtime import expects the package's Bedrock implementation file to be available at runtime.
 
-### Provider-Scoped Environment Overrides
+### 提供商范围的环境变量覆盖
 
 Pass `env` in stream options to scope provider configuration to a request. Values in `env` are used before process environment variables for provider auth and configuration such as Cloudflare account IDs, Azure OpenAI settings, Vertex project/location, Bedrock settings, `PI_CACHE_RETENTION`, and `HTTP_PROXY`/`HTTPS_PROXY`.
 
@@ -1415,7 +1415,7 @@ const response = await models.complete(model, context, {
 
 Use this when one process needs different provider settings per request, or when ambient environment variables should not leak into a provider call.
 
-## OAuth Providers
+## OAuth 提供商
 
 Several providers support OAuth authentication instead of static API keys:
 
@@ -1481,7 +1481,7 @@ export GOOGLE_APPLICATION_CREDENTIALS="/path/to/service-account.json"
 
 Official docs: [Application Default Credentials](https://cloud.google.com/docs/authentication/application-default-credentials)
 
-### CLI Login
+### CLI 登录
 
 The quickest way to authenticate:
 
@@ -1493,7 +1493,7 @@ npx @earendil-works/pi-ai list               # list available providers
 
 Credentials are saved to `auth.json` in the current directory.
 
-### Programmatic OAuth
+### 编程式 OAuth
 
 Built-in login and refresh flows are private provider implementations. Use provider-owned `OAuthAuth`, which composes with `CredentialStore` and gets locked auto-refresh through `Models`. The `@earendil-works/pi-ai/oauth` entry point retains only type declarations required by coding-agent extension OAuth compatibility.
 
@@ -1505,7 +1505,7 @@ Provider notes:
 
 **GitHub Copilot**: If you get "The requested model is not supported" error, enable the model manually in VS Code: open Copilot Chat, click the model selector, select the model (warning icon), and click "Enable".
 
-## Migrating from the Old Global API
+## 从旧版全局 API 迁移
 
 Older versions exposed a global API: `stream()`/`complete()` dispatching on `model.api` via a global registry, sync `getModel()`/`getModels()`/`getProviders()` catalog reads, `registerApiProvider()`, `getEnvApiKey()`, and per-API lazy stream functions. That surface lives unchanged on the **compat entrypoint**:
 
@@ -1529,9 +1529,9 @@ Compat is a strict superset of the root entrypoint, so a file can switch its imp
 | `streamAnthropic(model, ctx, opts)` | `stream` from `@earendil-works/pi-ai/api/anthropic-messages`, or a provider in a collection |
 | `registerFauxProvider()` | `fauxProvider()` + `models.setProvider()` |
 
-## Development
+## 开发
 
-### Adding a New Provider
+### 添加新提供商
 
 Adding a new LLM provider requires changes across multiple files. The layered layout: API implementations live in `src/api/`, provider factories in `src/providers/`, stable generated catalog wrappers live in `src/providers/<id>.models.ts`, and `src/models.generated.ts` registers them. This checklist covers all necessary steps:
 
@@ -1614,10 +1614,10 @@ Update `packages/ai/README.md`:
 Add an entry to `packages/ai/CHANGELOG.md` under `## [Unreleased]`:
 
 ```markdown
-### Added
+### 新增
 - Added support for [Provider Name] provider ([#PR](link) by [@author](link))
 ```
 
-## License
+## 许可证
 
 MIT

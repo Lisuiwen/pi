@@ -1,21 +1,22 @@
+/** 模块职责：实现 packages/ai/src\models-store.ts 相关的模型、协议或工具逻辑。 */
 import type { Api, Model } from "./types.ts";
 
 export interface ModelsStoreEntry {
 	models: readonly Model<Api>[];
-	/** Unix timestamp from the remote catalog's Last-Modified header. */
+	/** 远端目录 `Last-Modified` 响应头对应的 Unix 时间戳。 */
 	lastModified?: number;
-	/** Unix timestamp of the last completed remote check. */
+	/** 最近一次远端检查完成时的 Unix 时间戳。 */
 	checkedAt?: number;
 }
 
-/** Persistent model catalogs keyed by provider ID. */
+/** 以提供商 ID 为键的持久化模型目录存储。 */
 export interface ModelsStore {
 	read(providerId: string): Promise<ModelsStoreEntry | undefined>;
 	write(providerId: string, entry: ModelsStoreEntry): Promise<void>;
 	delete(providerId: string): Promise<void>;
 }
 
-/** ModelsStore scoped to one provider. Providers cannot access other providers' catalogs. */
+/** 绑定到单个提供商的 `ModelsStore` 视图。提供商不能访问其他提供商的目录。 */
 export interface ProviderModelsStore {
 	read(): Promise<ModelsStoreEntry | undefined>;
 	write(entry: ModelsStoreEntry): Promise<void>;
@@ -38,3 +39,4 @@ export class InMemoryModelsStore implements ModelsStore {
 		this.entries.delete(providerId);
 	}
 }
+/** 模块职责：实现 packages/ai/src\models-store.ts 相关的模型、协议或工具逻辑。 */

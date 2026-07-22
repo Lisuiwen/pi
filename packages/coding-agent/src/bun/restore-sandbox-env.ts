@@ -1,4 +1,7 @@
 /**
+ * 模块职责：实现 coding-agent 源码模块「bun\restore-sandbox-env.ts」，负责相关命令行、会话、工具或基础设施逻辑。
+ */
+/**
  * Workaround for https://github.com/oven-sh/bun/issues/27802
  *
  * Bun compiled binaries have an empty `process.env` when running inside
@@ -7,7 +10,7 @@
  *
  * Keep this in sync with getBunSandboxEnvValue() in
  * packages/ai/src/utils/provider-env.ts. The ai package duplicates the lookup
- * for direct consumers that do not go through this coding-agent entrypoint.
+ * for direct consumers that do not go through this 编码代理 entrypoint.
  */
 
 import { readFileSync } from "node:fs";

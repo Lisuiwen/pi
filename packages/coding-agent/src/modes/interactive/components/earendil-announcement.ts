@@ -1,3 +1,6 @@
+/**
+ * 模块职责：实现 coding-agent 源码模块「modes\interactive\components\earendil-announcement.ts」，负责相关命令行、会话、工具或基础设施逻辑。
+ */
 import * as fs from "node:fs";
 import { Container, Image, Spacer, Text } from "@earendil-works/pi-tui";
 import { getBundledInteractiveAssetPath } from "../../../config.ts";

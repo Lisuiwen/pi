@@ -1,5 +1,6 @@
+/** 模块职责：实现 packages/ai/src\auth\oauth\github-copilot.ts 相关的模型、协议或工具逻辑。 */
 /**
- * GitHub Copilot OAuth flow
+ * GitHub Copilot 的 OAuth 流程。
  */
 
 import { GITHUB_COPILOT_MODELS } from "../../providers/github-copilot.models.ts";
@@ -61,26 +62,26 @@ function getUrls(domain: string): {
 }
 
 /**
- * Parse the proxy-ep from a Copilot token and convert to API base URL.
- * Token format: tid=...;exp=...;proxy-ep=proxy.individual.githubcopilot.com;...
- * Returns API URL like https://api.individual.githubcopilot.com
+ * 从 Copilot 令牌中解析 `proxy-ep`，并换算成 API 基础 URL。
+ * 令牌格式示例：`tid=...;exp=...;proxy-ep=proxy.individual.githubcopilot.com;...`
+ * 返回值形如 `https://api.individual.githubcopilot.com`。
  */
 function getBaseUrlFromToken(token: string): string | null {
 	const match = token.match(/proxy-ep=([^;]+)/);
 	if (!match) return null;
 	const proxyHost = match[1];
-	// Convert proxy.xxx to api.xxx
+	// 将 `proxy.xxx` 转成 `api.xxx`。
 	const apiHost = proxyHost.replace(/^proxy\./, "api.");
 	return `https://${apiHost}`;
 }
 
 function getGitHubCopilotBaseUrl(token?: string, enterpriseDomain?: string): string {
-	// If we have a token, extract the base URL from proxy-ep
+	// 若已有令牌，则优先从 `proxy-ep` 中提取基础 URL。
 	if (token) {
 		const urlFromToken = getBaseUrlFromToken(token);
 		if (urlFromToken) return urlFromToken;
 	}
-	// Fallback for enterprise or if token parsing fails
+	// 企业实例或令牌解析失败时使用回退地址。
 	if (enterpriseDomain) return `https://copilot-api.${enterpriseDomain}`;
 	return "https://api.individual.githubcopilot.com";
 }
@@ -171,8 +172,8 @@ async function startDeviceFlow(domain: string): Promise<DeviceCodeResponse> {
 		throw new Error("Invalid device code response fields");
 	}
 
-	// The verification URI is opened in the user's browser and to prevent `open` from
-	// opening an executable or similar, we force it to be a URL.
+	// 该验证地址会在用户浏览器中打开；为避免 `open` 打开可执行文件等非 URL 内容，
+	// 这里强制要求它必须是一个 URL。
 	let parsedUri: URL;
 	try {
 		parsedUri = new URL(verificationUri);
@@ -277,7 +278,7 @@ async function refreshGitHubCopilotAccessToken(
 }
 
 /**
- * Refresh GitHub Copilot token
+ * 刷新 GitHub Copilot 令牌。
  */
 async function refreshGitHubCopilotToken(refreshToken: string, enterpriseDomain?: string): Promise<OAuthCredential> {
 	const credentials = await refreshGitHubCopilotAccessToken(refreshToken, enterpriseDomain);
@@ -288,8 +289,8 @@ async function refreshGitHubCopilotToken(refreshToken: string, enterpriseDomain?
 }
 
 /**
- * Enable a model for the user's GitHub Copilot account.
- * This is required for some models (like Claude, Grok) before they can be used.
+ * 为用户的 GitHub Copilot 账号启用某个模型。
+ * 某些模型（如 Claude、Grok）必须先完成这一步才能使用。
  */
 async function enableGitHubCopilotModel(token: string, modelId: string, enterpriseDomain?: string): Promise<boolean> {
 	const baseUrl = getGitHubCopilotBaseUrl(token, enterpriseDomain);
@@ -314,8 +315,8 @@ async function enableGitHubCopilotModel(token: string, modelId: string, enterpri
 }
 
 /**
- * Enable all known GitHub Copilot models that may require policy acceptance.
- * Called after successful login to ensure all models are available.
+ * 启用所有已知且可能需要策略确认的 GitHub Copilot 模型。
+ * 在登录成功后调用，以尽量保证模型都可用。
  */
 async function enableAllGitHubCopilotModels(token: string, enterpriseDomain?: string): Promise<void> {
 	const models = Object.values(GITHUB_COPILOT_MODELS);
@@ -369,7 +370,7 @@ export const githubCopilotOAuth: OAuthAuth = {
 	login: loginGitHubCopilot,
 	refresh: (credential) => refreshGitHubCopilotToken(credential.refresh, copilotEnterpriseDomain(credential)),
 
-	/** Derive the credential-specific proxy endpoint for each request. */
+	/** 为每次请求推导该凭据专属的代理端点。 */
 	async toAuth(credential) {
 		return {
 			apiKey: credential.access,
@@ -377,3 +378,4 @@ export const githubCopilotOAuth: OAuthAuth = {
 		};
 	},
 };
+/** 模块职责：实现 packages/ai/src\auth\oauth\github-copilot.ts 相关的模型、协议或工具逻辑。 */

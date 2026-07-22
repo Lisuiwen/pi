@@ -1,4 +1,7 @@
 /**
+ * 模块职责：实现 coding-agent 源码模块「core\timings.ts」，负责相关命令行、会话、工具或基础设施逻辑。
+ */
+/**
  * Central timing instrumentation for startup profiling.
  * Enable with PI_TIMING=1 environment variable.
  */

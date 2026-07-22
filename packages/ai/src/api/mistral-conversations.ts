@@ -1,3 +1,4 @@
+/** 模块职责：实现 packages/ai/src\api\mistral-conversations.ts 相关的模型、协议或工具逻辑。 */
 import { Mistral } from "@mistralai/mistralai";
 import type {
 	ChatCompletionStreamRequest,
@@ -32,7 +33,7 @@ const MISTRAL_TOOL_CALL_ID_LENGTH = 9;
 const MAX_MISTRAL_ERROR_BODY_CHARS = 4000;
 
 /**
- * Provider-specific options for the Mistral API.
+ * Mistral API 的 provider 专用选项。
  */
 type MistralReasoningEffort = "none" | "high";
 
@@ -43,7 +44,7 @@ export interface MistralOptions extends StreamOptions {
 }
 
 /**
- * Stream responses from Mistral using `chat.stream`.
+ * 使用 `chat.stream` 流式获取 Mistral 响应。
  */
 export const stream: StreamFunction<"mistral-conversations", MistralOptions> = (
 	model: Model<"mistral-conversations">,
@@ -61,7 +62,7 @@ export const stream: StreamFunction<"mistral-conversations", MistralOptions> = (
 				throw new Error(`No API key for provider: ${model.provider}`);
 			}
 
-			// Intentionally per-request: avoids shared SDK mutable state across concurrent consumers.
+			// 故意按请求创建：避免并发消费者之间共享 SDK 的可变状态。
 			const mistral = new Mistral({
 				apiKey,
 				serverURL: model.baseUrl,
@@ -91,7 +92,7 @@ export const stream: StreamFunction<"mistral-conversations", MistralOptions> = (
 			stream.end();
 		} catch (error) {
 			for (const block of output.content) {
-				// partialArgs is only a streaming scratch buffer; never persist it.
+				// partialArgs 只是流式处理期间的临时缓冲区，绝不能持久化。
 				delete (block as { partialArgs?: string }).partialArgs;
 			}
 			output.stopReason = options?.signal?.aborted ? "aborted" : "error";
@@ -105,7 +106,7 @@ export const stream: StreamFunction<"mistral-conversations", MistralOptions> = (
 };
 
 /**
- * Maps provider-agnostic `SimpleStreamOptions` to Mistral options.
+ * 将与 provider 无关的 `SimpleStreamOptions` 映射为 Mistral 选项。
  */
 export const streamSimple: StreamFunction<"mistral-conversations", SimpleStreamOptions> = (
 	model: Model<"mistral-conversations">,
@@ -224,8 +225,8 @@ function buildRequestOptions(model: Model<"mistral-conversations">, options?: Mi
 	if (model.headers) Object.assign(headers, model.headers);
 	if (options?.headers) Object.assign(headers, options.headers);
 
-	// Mistral infrastructure uses `x-affinity` for KV-cache reuse (prefix caching).
-	// Respect explicit caller-provided header values.
+	// Mistral 基础设施使用 `x-affinity` 复用 KV cache（前缀缓存）。
+	// 需尊重调用方显式提供的 header 值。
 	if (shouldUsePromptCaching(options) && !headers["x-affinity"]) {
 		headers["x-affinity"] = options.sessionId;
 	}
@@ -326,8 +327,8 @@ async function consumeChatStream(
 
 	for await (const event of mistralStream) {
 		const chunk = event.data;
-		// Mistral's streamed CompletionChunk carries an id field. Keep the first non-empty one,
-		// mirroring how OpenAI-style streaming exposes a stable response identifier per stream.
+		// Mistral 的流式 CompletionChunk 带有 id 字段。保留第一个非空值，
+		// 与 OpenAI 风格流式接口为每条流暴露稳定响应标识的行为保持一致。
 		output.responseId ||= chunk.id;
 
 		if (chunk.usage) {
@@ -470,8 +471,8 @@ async function consumeChatStream(
 		if (block.type !== "toolCall") continue;
 		const toolBlock = block as ToolCall & { partialArgs?: string };
 		toolBlock.arguments = parseStreamingJson<Record<string, unknown>>(toolBlock.partialArgs);
-		// Finalize in-place and strip the scratch buffer so replay only
-		// carries parsed arguments.
+		// 就地完成收尾并移除临时缓冲区，这样重放时只会
+		// 携带已解析的参数。
 		delete toolBlock.partialArgs;
 		stream.push({
 			type: "toolcall_end",
@@ -662,3 +663,4 @@ function mapChatStopReason(reason: string | null): StopReason {
 			return "stop";
 	}
 }
+/** 模块职责：实现 packages/ai/src\api\mistral-conversations.ts 相关的模型、协议或工具逻辑。 */

@@ -1,3 +1,4 @@
+/** 模块职责：实现 packages/ai/src\providers\google-vertex.ts 相关的模型、协议或工具逻辑。 */
 import { googleVertexApi } from "../api/google-vertex.lazy.ts";
 import type { ApiKeyAuth } from "../auth/types.ts";
 import { createProvider, type Provider } from "../models.ts";
@@ -6,9 +7,9 @@ import { GOOGLE_VERTEX_MODELS } from "./google-vertex.models.ts";
 const VERTEX_ADC_PATH = "~/.config/gcloud/application_default_credentials.json";
 
 /**
- * Vertex accepts an explicit API key or Application Default Credentials
- * (`gcloud auth application-default login`). ADC additionally requires
- * project and location env vars, which the implementation reads itself.
+ * Vertex 支持显式 API key，或使用 Application Default Credentials
+ *（`gcloud auth application-default login`）。ADC 还需要提供 project 和
+ * location 环境变量，由具体实现自行读取。
  */
 const vertexAuth: ApiKeyAuth = {
 	name: "Google Cloud credentials",
@@ -91,3 +92,4 @@ export function googleVertexProvider(): Provider<"google-vertex"> {
 		api: googleVertexApi(),
 	});
 }
+/** 模块职责：实现 packages/ai/src\providers\google-vertex.ts 相关的模型、协议或工具逻辑。 */

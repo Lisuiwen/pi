@@ -1,3 +1,4 @@
+/** 模块职责：实现 packages/agent/src\harness\skills.ts 的 Agent 运行时逻辑。 */
 import ignore from "ignore";
 import { parse } from "yaml";
 import { type ExecutionEnv, type FileInfo, type Result, type Skill, toError } from "./types.ts";
@@ -15,15 +16,15 @@ export type SkillDiagnosticCode =
 	| "parse_failed"
 	| "invalid_metadata";
 
-/** Warning produced while loading skills. */
+/** 加载技能时产生的警告。 */
 export interface SkillDiagnostic {
-	/** Diagnostic severity. Currently only warnings are emitted. */
+	/** 诊断严重级别。目前仅发出警告。 */
 	type: "warning";
-	/** Stable diagnostic code. */
+	/** 稳定的诊断代码。 */
 	code: SkillDiagnosticCode;
-	/** Human-readable diagnostic message. */
+	/** 可读的诊断消息。 */
 	message: string;
-	/** Path associated with the diagnostic. */
+	/** 与诊断关联的路径。 */
 	path: string;
 }
 
@@ -34,17 +35,17 @@ interface SkillFrontmatter {
 	[key: string]: unknown;
 }
 
-/** Format a skill invocation prompt, optionally appending additional user instructions. */
+/** 格式化技能调用提示，并可选择追加用户指令。 */
 export function formatSkillInvocation(skill: Skill, additionalInstructions?: string): string {
 	const skillBlock = `<skill name="${skill.name}" location="${skill.filePath}">\nReferences are relative to ${dirnameEnvPath(skill.filePath)}.\n\n${skill.content}\n</skill>`;
 	return additionalInstructions ? `${skillBlock}\n\n${additionalInstructions}` : skillBlock;
 }
 
 /**
- * Load skills from one or more directories.
+ * 从一个或多个目录加载技能。
  *
- * Traverses directories recursively, loads `SKILL.md` files, loads direct root `.md` files as skills, honors ignore files,
- * and returns diagnostics for invalid skill files. Missing input directories are skipped.
+ * 递归遍历目录，加载 `SKILL.md`，将根目录直属 `.md` 文件作为技能加载，并遵循忽略文件；
+ * 无效技能文件会返回诊断，缺失的输入目录会被跳过。
  */
 export async function loadSkills(
 	env: ExecutionEnv,
@@ -75,10 +76,10 @@ export async function loadSkills(
 }
 
 /**
- * Load skills from source-tagged directories.
+ * 从带来源标记的目录加载技能。
  *
- * Source values are preserved exactly and attached to every loaded skill and diagnostic. The agent package does not
- * interpret source values; applications define their own provenance shape.
+ * 来源值会原样保留，并附加到每个已加载技能和诊断上。
+ * agent 包不解释来源值；应用自行定义其来源结构。
  */
 export async function loadSourcedSkills<TSource, TSkill extends Skill = Skill>(
 	env: ExecutionEnv,

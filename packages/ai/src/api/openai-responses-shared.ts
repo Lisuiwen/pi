@@ -1,3 +1,4 @@
+/** 模块职责：实现 packages/ai/src\api\openai-responses-shared.ts 相关的模型、协议或工具逻辑。 */
 import type OpenAI from "openai";
 import type {
 	Tool as OpenAITool,
@@ -36,7 +37,7 @@ import { sanitizeSurrogates } from "../utils/sanitize-unicode.ts";
 import { transformMessages } from "./transform-messages.ts";
 
 // =============================================================================
-// Utilities
+// 工具函数
 // =============================================================================
 
 function encodeTextSignatureV1(id: string, phase?: TextSignatureV1["phase"]): string {
@@ -59,7 +60,7 @@ function parseTextSignature(
 				return { id: parsed.id };
 			}
 		} catch {
-			// Fall through to legacy plain-string handling.
+			// 继续走旧版纯字符串处理逻辑。
 		}
 	}
 	return { id: signature };
@@ -90,7 +91,7 @@ export interface ConvertResponsesToolsOptions {
 type OpenAIFunctionTool = Extract<OpenAITool, { type: "function" }>;
 
 // =============================================================================
-// Message conversion
+// 消息转换
 // =============================================================================
 
 export function convertResponsesMessages<TApi extends Api>(
@@ -120,7 +121,7 @@ export function convertResponsesMessages<TApi extends Api>(
 		const normalizedCallId = normalizeIdPart(callId);
 		const isForeignToolCall = source.provider !== model.provider || source.api !== model.api;
 		let normalizedItemId = isForeignToolCall ? buildForeignResponsesItemId(itemId) : normalizeIdPart(itemId);
-		// OpenAI Responses API requires item id to start with "fc"
+		// OpenAI Responses API 要求 item id 以 "fc" 开头
 		if (!normalizedItemId.startsWith("fc_")) {
 			normalizedItemId = normalizeIdPart(`fc_${normalizedItemId}`);
 		}
@@ -188,7 +189,7 @@ export function convertResponsesMessages<TApi extends Api>(
 					const fallbackMessageId =
 						textBlockIndex === 0 ? `msg_pi_${msgIndex}` : `msg_pi_${msgIndex}_${textBlockIndex}`;
 					textBlockIndex++;
-					// OpenAI requires id to be max 64 characters
+					// OpenAI 要求 id 最长为 64 个字符
 					let msgId = parsedSignature?.id;
 					if (!msgId) {
 						msgId = fallbackMessageId;
@@ -208,9 +209,9 @@ export function convertResponsesMessages<TApi extends Api>(
 					const [callId, itemIdRaw] = toolCall.id.split("|");
 					let itemId: string | undefined = itemIdRaw;
 
-					// For different-model messages, set id to undefined to avoid pairing validation.
-					// OpenAI tracks which fc_xxx IDs were paired with rs_xxx reasoning items.
-					// By omitting the id, we avoid triggering that validation (like cross-provider does).
+					// 对于不同模型的消息，将 id 设为 undefined 以避免配对校验。
+					// OpenAI 会跟踪哪些 fc_xxx ID 与 rs_xxx reasoning item 配对。
+					// 省略 id 后，就不会触发这项校验（与跨 provider 处理一致）。
 					if (isDifferentModel && itemId?.startsWith("fc_")) {
 						itemId = undefined;
 					}
@@ -300,7 +301,7 @@ export function convertResponsesMessages<TApi extends Api>(
 }
 
 // =============================================================================
-// Tool conversion
+// 工具转换
 // =============================================================================
 
 export function convertResponsesTools(tools: readonly Tool[], options?: ConvertResponsesToolsOptions): OpenAITool[] {
@@ -318,7 +319,7 @@ export function convertResponsesTools(tools: readonly Tool[], options?: ConvertR
 }
 
 // =============================================================================
-// Stream processing
+// 流处理
 // =============================================================================
 
 type StreamingToolCall = ToolCall & { partialJson: string };
@@ -389,10 +390,10 @@ export async function processResponsesStream<TApi extends Api>(
 	const getOrCreateSlot = (outputIndex: number, item: ResponseOutputItem): ResponsesOutputSlot | undefined => {
 		return outputSlots.get(outputIndex) ?? createSlot(outputIndex, item);
 	};
-	// Azure OpenAI can omit reasoning.encrypted_content from response.output_item.done
-	// and provide it only in response.completed.response.output. Backfill the
-	// persisted reasoning signature from the terminal response to keep store:false
-	// multi-turn replay stateless. See https://github.com/earendil-works/pi/issues/6409.
+	// Azure OpenAI 可能会在 response.output_item.done 中省略 reasoning.encrypted_content，
+	// 仅在 response.completed.response.output 中提供它。这里从最终响应中回填
+	// 已持久化的 reasoning signature，以保持 store:false
+	// 多轮重放的无状态特性。参见 https://github.com/earendil-works/pi/issues/6409。
 	const backfillReasoningSignatures = (responseOutput: ResponseOutputItem[]): void => {
 		for (const item of responseOutput) {
 			if (item.type !== "reasoning" || !item.encrypted_content) continue;
@@ -422,7 +423,7 @@ export async function processResponsesStream<TApi extends Api>(
 			const cachedTokens = inputDetails?.cached_tokens || 0;
 			const cacheWriteTokens = inputDetails?.cache_write_tokens || 0;
 			output.usage = {
-				// OpenAI includes cached and cache-write tokens in input_tokens, so subtract both.
+				// OpenAI 会把缓存读取和缓存写入 token 都算进 input_tokens，因此两者都要扣除。
 				input: Math.max(0, (response.usage.input_tokens || 0) - cachedTokens - cacheWriteTokens),
 				output: response.usage.output_tokens || 0,
 				cacheRead: cachedTokens,
@@ -439,7 +440,7 @@ export async function processResponsesStream<TApi extends Api>(
 				: (response?.service_tier ?? options.serviceTier);
 			options.applyServiceTierPricing(output.usage, serviceTier);
 		}
-		// Map status to stop reason
+		// 将 status 映射为 stop reason
 		output.stopReason = mapStopReason(response?.status);
 		if (output.content.some((b) => b.type === "toolCall") && output.stopReason === "stop") {
 			output.stopReason = "toolUse";
@@ -559,8 +560,8 @@ export async function processResponsesStream<TApi extends Api>(
 				outputSlots.delete(event.output_index);
 			} else if (item.type === "function_call" && slot?.type === "toolCall") {
 				slot.block.arguments = parseStreamingJson(item.arguments || slot.block.partialJson || "{}");
-				// Finalize in-place and strip the scratch buffer so replay only
-				// carries parsed arguments.
+				// 就地完成收尾并移除临时缓冲区，这样重放时只会
+				// 携带已解析的参数。
 				delete (slot.block as { partialJson?: string }).partialJson;
 				stream.push({
 					type: "toolcall_end",
@@ -601,7 +602,7 @@ function mapStopReason(status: OpenAI.Responses.ResponseStatus | undefined): Sto
 		case "failed":
 		case "cancelled":
 			return "error";
-		// These two are wonky ...
+		// 这两个值有点古怪……
 		case "in_progress":
 		case "queued":
 			return "stop";
@@ -611,3 +612,4 @@ function mapStopReason(status: OpenAI.Responses.ResponseStatus | undefined): Sto
 		}
 	}
 }
+/** 模块职责：实现 packages/ai/src\api\openai-responses-shared.ts 相关的模型、协议或工具逻辑。 */

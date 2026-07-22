@@ -1,3 +1,4 @@
+/** 模块职责：实现 packages/ai/src\api\google-generative-ai.ts 相关的模型、协议或工具逻辑。 */
 import {
 	type GenerateContentConfig,
 	type GenerateContentParameters,
@@ -44,7 +45,7 @@ export interface GoogleOptions extends StreamOptions {
 	};
 }
 
-// Counter for generating unique tool call IDs
+// 用于生成唯一工具调用 ID 的计数器
 let toolCallCounter = 0;
 
 export const stream: StreamFunction<"google-generative-ai", GoogleOptions> = (
@@ -91,8 +92,8 @@ export const stream: StreamFunction<"google-generative-ai", GoogleOptions> = (
 			const blocks = output.content;
 			const blockIndex = () => blocks.length - 1;
 			for await (const chunk of googleStream) {
-				// @google/genai documents GenerateContentResponse.responseId as an output-only field
-				// used to identify each response. Keep the first non-empty one from the stream.
+				// @google/genai 将 GenerateContentResponse.responseId 说明为只读输出字段，
+				// 用于标识每个响应。这里保留流中的第一个非空值。
 				output.responseId ||= chunk.responseId;
 				const candidate = chunk.candidates?.[0];
 				if (candidate?.content?.parts) {
@@ -178,7 +179,7 @@ export const stream: StreamFunction<"google-generative-ai", GoogleOptions> = (
 								currentBlock = null;
 							}
 
-							// Generate unique ID if not provided or if it's a duplicate
+							// 如果未提供 ID 或出现重复，则生成唯一 ID
 							const providedId = part.functionCall.id;
 							const needsNewId =
 								!providedId || output.content.some((b) => b.type === "toolCall" && b.id === providedId);
@@ -265,7 +266,7 @@ export const stream: StreamFunction<"google-generative-ai", GoogleOptions> = (
 			stream.push({ type: "done", reason: output.stopReason, message: output });
 			stream.end();
 		} catch (error) {
-			// Remove internal index property used during streaming
+			// 移除流式处理中使用的内部索引属性
 			for (const block of output.content) {
 				if ("index" in block) {
 					delete (block as { index?: number }).index;
@@ -374,7 +375,7 @@ function buildParams(
 	if (options.thinking?.enabled && model.reasoning) {
 		const thinkingConfig: ThinkingConfig = { includeThoughts: true };
 		if (options.thinking.level !== undefined) {
-			// Cast to any since our GoogleThinkingLevel mirrors Google's ThinkingLevel enum values
+			// 转成 any，因为我们的 GoogleThinkingLevel 与 Google 的 ThinkingLevel 枚举值保持一致
 			thinkingConfig.thinkingLevel = options.thinking.level as any;
 		} else if (options.thinking.budgetTokens !== undefined) {
 			thinkingConfig.thinkingBudget = options.thinking.budgetTokens;
@@ -416,9 +417,9 @@ function isGemini3FlashModel(model: Model<"google-generative-ai">): boolean {
 }
 
 function getDisabledThinkingConfig(model: Model<"google-generative-ai">): ThinkingConfig {
-	// Google docs: Gemini 3.1 Pro cannot disable thinking, and Gemini 3 Flash / Flash-Lite
-	// do not support full thinking-off either. For Gemini 3 models, use the lowest supported
-	// thinkingLevel without includeThoughts so hidden thinking remains invisible to pi.
+	// 根据 Google 文档：Gemini 3.1 Pro 无法禁用 thinking，Gemini 3 Flash / Flash-Lite
+	// 也不支持完全关闭 thinking。对于 Gemini 3 模型，使用支持的最低 thinkingLevel，
+	// 且不传 includeThoughts，这样隐藏的 thinking 就不会暴露给 pi。
 	if (isGemini3ProModel(model)) {
 		return { thinkingLevel: "LOW" as any };
 	}
@@ -429,7 +430,7 @@ function getDisabledThinkingConfig(model: Model<"google-generative-ai">): Thinki
 		return { thinkingLevel: "MINIMAL" as any };
 	}
 
-	// Gemini 2.x supports disabling via thinkingBudget = 0.
+	// Gemini 2.x 支持通过 thinkingBudget = 0 禁用 thinking。
 	return { thinkingBudget: 0 };
 }
 
@@ -507,3 +508,4 @@ function getGoogleBudget(
 
 	return -1;
 }
+/** 模块职责：实现 packages/ai/src\api\google-generative-ai.ts 相关的模型、协议或工具逻辑。 */

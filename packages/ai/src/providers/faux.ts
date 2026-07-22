@@ -1,3 +1,4 @@
+/** 模块职责：实现 packages/ai/src\providers\faux.ts 相关的模型、协议或工具逻辑。 */
 import { createProvider, type Provider } from "../models.ts";
 import type {
 	AssistantMessage,
@@ -508,7 +509,7 @@ export function createFauxCore(options: RegisterFauxProviderOptions) {
 }
 
 /**
- * Faux provider for tests built on explicit `Models` collections:
+ * 用于测试的 Faux provider，基于显式创建的 `Models` 集合：
  *
  * ```ts
  * const faux = fauxProvider();
@@ -536,3 +537,4 @@ export function fauxProvider(options: RegisterFauxProviderOptions = {}): FauxPro
 		getPendingResponseCount: core.getPendingResponseCount,
 	};
 }
+/** 模块职责：实现 packages/ai/src\providers\faux.ts 相关的模型、协议或工具逻辑。 */

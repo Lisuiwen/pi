@@ -1,3 +1,6 @@
+/**
+ * 模块职责：实现 coding-agent 源码模块「utils\changelog.ts」，负责相关命令行、会话、工具或基础设施逻辑。
+ */
 import path from "node:path";
 import { existsSync, readFileSync } from "fs";
 
@@ -168,7 +171,7 @@ export function parseChangelog(changelogPath: string): ChangelogEntry[] {
 }
 
 /**
- * Compare versions. Returns: -1 if v1 < v2, 0 if v1 === v2, 1 if v1 > v2
+ * Compare versions. 返回: -1 if v1 < v2, 0 if v1 === v2, 1 if v1 > v2
  */
 export function compareVersions(v1: ChangelogEntry, v2: ChangelogEntry): number {
 	if (v1.major !== v2.major) return v1.major - v2.major;

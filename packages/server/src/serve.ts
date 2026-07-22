@@ -1,3 +1,7 @@
+/**
+ * 模块职责：实现 packages/server/src/serve.ts 中的核心功能。
+ */
+
 import { existsSync, mkdirSync, unlinkSync } from "node:fs";
 import { dirname } from "node:path";
 import { getSocketPath } from "./config.ts";
@@ -72,6 +76,6 @@ export async function serve(): Promise<void> {
 	});
 
 	await new Promise<void>(() => {
-		// Keep the process alive until a signal or fatal error triggers shutdown.
+		// 保持进程运行，直到收到信号或致命错误触发关闭。
 	});
 }

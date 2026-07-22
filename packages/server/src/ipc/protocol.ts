@@ -1,3 +1,7 @@
+/**
+ * 模块职责：实现 packages/server/src/ipc/protocol.ts 中的核心功能。
+ */
+
 import type {
 	AgentSessionEvent,
 	RpcCommand,
@@ -127,15 +131,24 @@ export type ResponseFor<T extends ServerRequest> = T extends { type: infer K }
 		: ErrorResponse
 	: ErrorResponse;
 
+/**
+ * 将协议消息编码为可传输的行格式。
+ */
 export function encodeMessage(message: ProtocolMessage): string {
 	return `${JSON.stringify(message)}\n`;
 }
 
+/**
+ * 解析客户端发送的请求行。
+ */
 export function parseRequestLine(line: string): ServerRequest {
 	const value = JSON.parse(line) as ServerRequest;
 	return value;
 }
 
+/**
+ * 解析服务器返回的响应行。
+ */
 export function parseResponseLine(line: string): ServerResponse {
 	const value = JSON.parse(line) as ServerResponse;
 	return value;

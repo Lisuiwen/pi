@@ -1,14 +1,14 @@
-# Changelog
+# 变更日志
 
-## [Unreleased]
+## [未发布]
 
 ## [0.81.1] - 2026-07-21
 
 ## [0.81.0] - 2026-07-21
 
-### Changed
+### 变更
 
-- Renamed the orchestrator workspace package and internal server references to server ([#6898](https://github.com/earendil-works/pi/pull/6898) by [@cristinaponcela](https://github.com/cristinaponcela)).
+- 将编排器工作区包及内部服务器引用重命名为 server ([#6898](https://github.com/earendil-works/pi/pull/6898) by [@cristinaponcela](https://github.com/cristinaponcela)).
 
 ## [0.80.10] - 2026-07-16
 

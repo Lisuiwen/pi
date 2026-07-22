@@ -1,3 +1,4 @@
+/** 模块职责：实现 packages/ai/src\providers\cloudflare-ai-gateway.ts 相关的模型、协议或工具逻辑。 */
 import { anthropicMessagesApi } from "../api/anthropic-messages.lazy.ts";
 import { openAICompletionsApi } from "../api/openai-completions.lazy.ts";
 import { openAIResponsesApi } from "../api/openai-responses.lazy.ts";
@@ -21,3 +22,4 @@ export function cloudflareAIGatewayProvider(): Provider<
 		},
 	});
 }
+/** 模块职责：实现 packages/ai/src\providers\cloudflare-ai-gateway.ts 相关的模型、协议或工具逻辑。 */

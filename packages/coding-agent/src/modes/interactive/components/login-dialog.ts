@@ -1,3 +1,6 @@
+/**
+ * 模块职责：实现 coding-agent 源码模块「modes\interactive\components\login-dialog.ts」，负责相关命令行、会话、工具或基础设施逻辑。
+ */
 import type { AuthInfoLink, OAuthDeviceCodeInfo } from "@earendil-works/pi-ai";
 import { Container, type Focusable, getKeybindings, Input, Spacer, Text, type TUI } from "@earendil-works/pi-tui";
 import { openBrowser } from "../../../utils/open-browser.ts";
@@ -149,7 +152,7 @@ export class LoginDialogComponent extends Container implements Focusable {
 
 	/**
 	 * Called by onPrompt callback - show prompt and wait for input
-	 * Note: Does NOT clear content, appends to existing (preserves URL from showAuth)
+	 * 注意： Does NOT clear content, appends to existing (preserves URL from showAuth)
 	 */
 	showPrompt(message: string, placeholder?: string): Promise<string> {
 		this.contentContainer.addChild(new Spacer(1));

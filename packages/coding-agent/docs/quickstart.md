@@ -1,8 +1,8 @@
-# Quickstart
+# 快速开始
 
-This page gets you from install to a useful first pi session.
+本页将带你完成安装，并运行一个可用的 pi 首次会话。
 
-## Install
+## 安装
 
 Pi is distributed as an npm package:
 
@@ -12,7 +12,7 @@ npm install -g --ignore-scripts @earendil-works/pi-coding-agent
 
 `--ignore-scripts` disables dependency lifecycle scripts during install. Pi does not require install scripts for normal npm installs.
 
-### Uninstall
+### 卸载
 
 Use the package manager that installed pi. The curl installer uses npm globally, so curl and npm installs are removed with npm:
 
@@ -39,11 +39,11 @@ cd /path/to/project
 pi
 ```
 
-## Authenticate
+## 认证
 
 Pi can use subscription providers through `/login`, or API-key providers through environment variables or the auth file.
 
-### Option 1: subscription login
+### 选项 1：订阅登录
 
 Start pi and run:
 
@@ -53,7 +53,7 @@ Start pi and run:
 
 Then select a provider. Built-in subscription logins include Claude Pro/Max, ChatGPT Plus/Pro (Codex), and GitHub Copilot.
 
-### Option 2: API key
+### 选项 2：API 密钥
 
 Set an API key before launching pi:
 
@@ -66,7 +66,7 @@ You can also run `/login` and select an API-key provider to store the key in `~/
 
 See [Providers](providers.md) for all supported providers, environment variables, and cloud-provider setup.
 
-## First session
+## 第一个会话
 
 Once pi starts, type a request and press Enter:
 
@@ -83,7 +83,7 @@ By default, pi gives the model four tools:
 
 Additional built-in read-only tools (`grep`, `find`, `ls`) are available through tool options. Pi runs in your current working directory and can modify files there. Use git or another checkpointing workflow if you want easy rollback.
 
-## Give pi project instructions
+## 为 pi 提供项目指令
 
 Pi loads context files at startup. Add an `AGENTS.md` file to tell it how to work in a project:
 
@@ -102,9 +102,9 @@ Pi loads:
 
 Restart pi, or run `/reload`, after changing context files.
 
-## Common things to try
+## 可以尝试的常用操作
 
-### Reference files
+### 引用文件
 
 Type `@` in the editor to fuzzy-search files, or pass files on the command line:
 
@@ -115,7 +115,7 @@ pi @src/app.ts @src/app.test.ts "Review these together"
 
 Images or text can be pasted with Ctrl+V (Alt+V on Windows); images can also be dragged into supported terminals.
 
-### Run shell commands
+### 运行 Shell 命令
 
 In interactive mode:
 
@@ -125,11 +125,11 @@ In interactive mode:
 
 The command output is sent to the model. Use `!!command` to run a command without adding its output to the model context.
 
-### Switch models
+### 切换模型
 
 Use `/model` or Ctrl+L to choose a model. Use Shift+Tab to cycle thinking level. Use Ctrl+P / Shift+Ctrl+P to cycle through scoped models.
 
-### Continue later
+### 稍后继续
 
 Sessions are saved automatically:
 
@@ -142,7 +142,7 @@ pi --session <path|id> # Open a specific session
 
 Inside pi, use `/resume`, `/new`, `/tree`, `/fork`, and `/clone` to manage sessions.
 
-### Non-interactive mode
+### 非交互模式
 
 For one-shot prompts:
 
@@ -154,7 +154,7 @@ pi -p @screenshot.png "What's in this image?"
 
 Use `--mode json` for JSON event output or `--mode rpc` for process integration.
 
-## Next steps
+## 后续步骤
 
 - [Using Pi](usage.md) - interactive mode, slash commands, sessions, context files, and CLI reference.
 - [Providers](providers.md) - authentication and model setup.

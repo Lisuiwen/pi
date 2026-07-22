@@ -1,4 +1,7 @@
 /**
+ * 模块职责：实现 coding-agent 源码模块「modes\interactive\components\bash-execution.ts」，负责相关命令行、会话、工具或基础设施逻辑。
+ */
+/**
  * Component for displaying bash command execution with streaming output.
  */
 
@@ -79,7 +82,7 @@ export class BashExecutionComponent extends Container {
 
 	appendOutput(chunk: string): void {
 		// Strip ANSI codes and normalize line endings
-		// Note: binary data is already sanitized in tui-renderer.ts executeBashCommand
+		// 注意： binary data is already sanitized in tui-renderer.ts executeBashCommand
 		const clean = stripAnsi(chunk).replace(/\r\n/g, "\n").replace(/\r/g, "\n");
 
 		// Append to output lines
@@ -124,7 +127,7 @@ export class BashExecutionComponent extends Container {
 			maxBytes: DEFAULT_MAX_BYTES,
 		});
 
-		// Get the lines to potentially display (after context truncation)
+		// 获取 lines to potentially display (after context truncation)
 		const availableLines = contextTruncation.content ? contextTruncation.content.split("\n") : [];
 
 		// Apply preview truncation based on expanded state
@@ -205,14 +208,14 @@ export class BashExecutionComponent extends Container {
 	}
 
 	/**
-	 * Get the raw output for creating BashExecutionMessage.
+	 * 获取 raw output for creating BashExecutionMessage.
 	 */
 	getOutput(): string {
 		return this.outputLines.join("\n");
 	}
 
 	/**
-	 * Get the command that was executed.
+	 * 获取 command that was executed.
 	 */
 	getCommand(): string {
 		return this.command;

@@ -1,29 +1,29 @@
-# Models architecture
+# Models 架构
 
-This document describes the target design for the next `pi-ai` model/provider refactor. It describes the desired shape, not the current implementation. It is intended to be complete enough to start implementing from a fresh session.
+本文档描述下一阶段 `pi-ai` 模型/提供商重构的目标设计，说明期望形态而非当前实现，内容应足以从全新会话开始实施。
 
-Goals:
+目标：
 
-- `Models` is a dumb runtime collection of providers.
-- Concrete providers own metadata, auth, model listing, and stream behavior.
-- API implementations live under `src/api/` and are reusable/lazy.
-- Concrete provider factories live under `src/providers/`.
-- Users can import only the providers they need.
-- Importing a provider must not eagerly import heavy SDKs.
-- Dynamic model lists are first-class: reads are sync (last-known list), fetching happens in an explicit async `refresh`.
-- `models.json` and extensions layer by wrapping providers, not by mutating provider internals ad hoc.
-- Old global APIs survive only in an explicit, temporary `/compat` entrypoint.
+- `Models` 是只负责运行时集合管理的提供商容器。
+- 具体提供商拥有元数据、认证、模型列表和流式行为。
+- API 实现在 `src/api/` 下，可复用且按需加载。
+- 具体提供商工厂位于 `src/providers/` 下。
+- 用户只能导入需要的提供商。
+- 导入提供商不能提前加载重量级 SDK。
+- 动态模型列表是一等能力：读取同步返回已知列表，抓取通过显式异步 `refresh` 完成。
+- `models.json` 和扩展通过包装提供商实现叠加，而不是临时修改提供商内部状态。
+- 旧全局 API 仅通过显式且临时的 `/compat` 入口保留。
 
-Non-goals for the immediate `pi-ai` pass:
+本阶段 `pi-ai` 的非目标：
 
-- Do not migrate coding-agent `ModelRegistry` yet.
-- Do not keep the stream/API registry inside `Models`.
-- Do not implement web OAuth flows yet.
-- Image generation mirrors the chat-side design (`ImagesModels`/`ImagesProvider` in `images-models.ts`); the old global image API (`images.ts`, `images-api-registry.ts`) lives on compat.
+- 暂不迁移 coding-agent 的 `ModelRegistry`。
+- 不在 `Models` 内保留流式/API 注册表。
+- 暂不实现 Web OAuth 流程。
+- 图像生成镜像聊天侧设计（`images-models.ts` 中的 `ImagesModels`/`ImagesProvider`）；旧全局图像 API（`images.ts`、`images-api-registry.ts`）保留在 compat 中。
 
-## Package layout
+## 包布局
 
-Target source layout:
+目标源码布局：
 
 ```txt
 packages/ai/src/
@@ -80,11 +80,11 @@ packages/ai/src/
 - `providers/all`
 - `compat`
 
-Provider, API, and compat entrypoints are explicit subpath exports.
+提供商、API 和 compat 入口均通过明确的子路径导出。
 
-## Public usage
+## 公共用法
 
-Minimal provider usage:
+最小提供商用法：
 
 ```ts
 import { createModels } from "@earendil-works/pi-ai";
@@ -99,7 +99,7 @@ if (!model) throw new Error("model not found");
 const response = await models.complete(model, context);
 ```
 
-Multiple providers:
+多个提供商：
 
 ```ts
 const models = createModels();
@@ -107,7 +107,7 @@ models.setProvider(openaiProvider());
 models.setProvider(openrouterProvider());
 ```
 
-All built-ins, explicitly heavy metadata entrypoint:
+显式加载全部内置元数据的入口：
 
 ```ts
 import { builtinModels } from "@earendil-works/pi-ai/providers/all";
@@ -115,11 +115,11 @@ import { builtinModels } from "@earendil-works/pi-ai/providers/all";
 const models = builtinModels();
 ```
 
-`providers/all` may import all provider metadata/catalogs. It still must not eagerly import SDK implementations; provider streams use lazy wrappers.
+`providers/all` 可以导入全部提供商元数据/目录，但仍不能提前导入 SDK 实现；提供商流式方法使用惰性包装器。
 
-## Core runtime: Models
+## 核心运行时：Models
 
-`Models` is a provider collection plus auth application and stream convenience. No stream registry, no auth resolver strategy object.
+`Models` 是提供商集合，负责应用认证并提供流式便捷方法；不包含流式注册表或认证解析策略对象。
 
 ```ts
 export function createModels(options?: {
@@ -178,7 +178,7 @@ export interface MutableModels extends Models {
 }
 ```
 
-Removed concepts:
+已移除的概念：
 
 ```txt
 no Models.setStreamFunctions() / getStreamFunctions()
@@ -187,11 +187,11 @@ no Models.provider(id) builder, no setModel/upsertModel/patchModel lifecycle
 no ModelAuthResolver / setAuthResolver — resolution policy is fixed, store is injected
 ```
 
-If an app needs different auth policy, it wraps providers (wrap auth methods or `getModels`) or passes explicit request auth in stream options.
+如果应用需要不同认证策略，应包装提供商（包装认证方法或 `getModels`），或在流选项中传入显式请求认证。
 
-## Provider
+## 提供商
 
-A provider is the concrete runtime unit. It owns id/name/base metadata, auth methods, model listing, and stream behavior.
+提供商是具体的运行时单元，拥有 id/name/base 元数据、认证方法、模型列表和流式行为。
 
 `Provider` is generic over the APIs its models use. Concrete factories declare what they emit (`openaiProvider(): Provider<"openai-responses" | "openai-completions">`), giving typed model lists to direct factory users. A `Models` collection holds providers as `Provider<Api>`.
 
@@ -223,13 +223,13 @@ export interface Provider<TApi extends Api = Api> {
 }
 ```
 
-There is no `Provider.api` field. `model.api` carries API identity; the provider dispatches internally (see `createProvider()`).
+不存在 `Provider.api` 字段。`model.api` 携带 API 标识，提供商在内部完成分发（参见 `createProvider()`）。
 
 `Model.api` remains: existing metadata and tests use it, it is useful for diagnostics, and provider construction uses it for API implementation selection. But `Models` never dispatches on it; the provider does.
 
-### Typed stream options
+### 类型化流选项
 
-Full stream options are API-specific. `Model<TApi>` pays off by deriving the option type from the API:
+完整流选项与 API 相关。`Model<TApi>` 可以根据 API 推导选项类型：
 
 ```ts
 // types.ts — type-only imports from API impl modules are erased, so this is tree-shake safe
@@ -250,11 +250,11 @@ export type ApiStreamOptions<TApi extends Api> = TApi extends keyof ApiOptionsMa
   : StreamOptions & Record<string, unknown>;
 ```
 
-Custom api strings fall back to the generic shape.
+自定义 API 字符串回退到通用结构。
 
-### Typed model narrowing
+### 类型化模型收窄
 
-Runtime model lists are dynamic, so `models.getModel()`/`getModels()` honestly return `Model<Api>`. Typing improves at three points:
+运行时模型列表是动态的，因此 `models.getModel()`/`getModels()` 如实返回 `Model<Api>`。以下三个位置可以增强类型：
 
 1. **`hasApi()` type guard** — runtime-checked narrowing for dynamic lookups (no blind casts):
 
@@ -271,34 +271,34 @@ Runtime model lists are dynamic, so `models.getModel()`/`getModels()` honestly r
 
 3. **`Provider<TApi>` factories** — typed model lists when using a provider directly, without a `Models` collection.
 
-Deliberately not done: tying `models.getModel(provider, ...)` to typed provider/model ids would require statically knowing which providers are installed in a mutable runtime collection. The harness path (`streamSimple` + `SimpleStreamOptions`) is API-agnostic and unaffected.
+有意不做的事情：将 `models.getModel(provider, ...)` 绑定到类型化的提供商/模型 ID，需要静态知道可变运行时集合中安装了哪些提供商。Harness 路径（`streamSimple` + `SimpleStreamOptions`）与 API 无关，不受影响。
 
-For comparison: Vercel AI SDK attaches the implementation to the model object, which dissolves dispatch typing but makes models non-serializable (no sessions/RPC/catalogs as plain data), and its `providerOptions` bag is `Record<string, JSON>` checked only by `satisfies` convention. Plain-data models + provider-owned behavior keeps stronger typing where it matters.
+作为对比，Vercel AI SDK 将实现附加到模型对象，虽然消除了分发类型问题，却使模型不可序列化（会话、RPC 和目录无法作为普通数据使用）；其 `providerOptions` 包是 `Record<string, JSON>`，仅靠 `satisfies` 约定检查。普通数据模型加提供商自有行为，可以在关键位置保留更强的类型。
 
-### Name collision
+### 名称冲突
 
 `types.ts` currently exports `type Provider = KnownProvider | string` (a provider id). Rename that alias to `ProviderId` and fix call sites. The `Provider` interface above takes the name.
 
-## Provider model listing
+## 提供商模型列表
 
-Reads are sync; fetching is an explicit async verb. `Provider.getModels()` returns the current known list — the full catalog for static providers, the last-refreshed list for dynamic ones (llama.cpp, OpenRouter live listing). `refreshModels()` is where dynamic providers fetch.
+读取是同步的，抓取使用显式异步动词。`Provider.getModels()` 返回当前已知列表：静态提供商返回完整目录，动态提供商（llama.cpp、OpenRouter 实时列表）返回最近刷新列表。动态抓取在 `refreshModels()` 中完成。
 
-This split exists because a sync-or-async union (`Promise<T> | T`) invites latent sync assumptions that detonate on the first async provider, while async-only reads force every consumer (UI lists, extension `find`/`getAll` surfaces) through Promises for data that is almost always static. Sync reads + explicit refresh keeps the staleness visible and the contract single: `getModels()` = last known, `refresh()` = make it current. A fetched list is stale the moment it returns anyway; naming the refresh point is honest about it.
+这样拆分是因为同步/异步联合类型（`Promise<T> | T`）会埋下同步假设，遇到第一个异步提供商就可能崩溃；而仅异步读取会迫使所有消费者（UI 列表、扩展的 `find`/`getAll` 接口）为通常静态的数据使用 Promise。同步读取加显式刷新能让陈旧性可见，并保持单一契约：`getModels()` = 已知列表，`refresh()` = 更新为当前列表。抓取结果返回的瞬间也可能过时，因此明确刷新点更诚实。
 
-Apps own the refresh lifecycle: startup, registry reload, opening a model selector. Freshness-critical lookups are two-step: `await models.refresh("llamacpp"); models.getModel("llamacpp", id)`.
+应用负责刷新生命周期：启动、重新加载注册表、打开模型选择器。对新鲜度敏感的查找分两步执行：`await models.refresh("llamacpp"); models.getModel("llamacpp", id)`。
 
-Dynamic refresh must be side-effect-free discovery:
+动态刷新必须是无副作用的发现操作：
 
 ```txt
-OK: fetch /v1/models, enumerate local catalog, refresh cached remote model list
-Not OK: load model, download model, mutate server state, run request probe
+可以：获取 `/v1/models`、枚举本地目录、刷新缓存的远程模型列表
+不可以：加载模型、下载模型、修改服务器状态、执行请求探测
 ```
 
-Provider-specific model lifecycle (load/unload) belongs in app/provider-management commands, not in `refreshModels()`.
+提供商特有的模型生命周期（加载/卸载）应由应用或提供商管理命令负责，而不是放进 `refreshModels()`。
 
-## Streaming path
+## 流式路径
 
-`Models.stream()` finds the provider by `model.provider`, resolves auth, merges it into request options, and delegates:
+`Models.stream()` 根据 `model.provider` 查找提供商，解析认证，将认证合并到请求选项后委托执行：
 
 ```ts
 function stream(model, context, options) {
@@ -316,15 +316,15 @@ function stream(model, context, options) {
 }
 ```
 
-`stream()` returns `AssistantMessageEventStream` synchronously; async setup (auth resolution, lazy module load) happens inside the returned stream. The forwarding pattern already exists in today's `register-builtins.ts` (`createLazyStream`); extract it as `lazyStream()` in `src/api/lazy.ts`.
+`stream()` 同步返回 `AssistantMessageEventStream`；异步准备工作（认证解析、惰性模块加载）在返回的流内部完成。当前 `register-builtins.ts` 已有转发模式（`createLazyStream`），应将其提取为 `src/api/lazy.ts` 中的 `lazyStream()`。
 
-No request hot-path model canonicalization: `stream()` uses the supplied model object as-is. If an app wants fresh model metadata, it refreshes the provider and re-reads (`await models.refresh(p); models.getModel(p, id)`) before starting the turn.
+请求热路径不做模型规范化：`stream()` 原样使用传入的模型对象。若应用需要最新元数据，应在开始回合前刷新提供商并重新读取（`await models.refresh(p); models.getModel(p, id)`）。
 
-## API implementations under `src/api`
+## `src/api` 下的 API 实现
 
-An API implementation is reusable stream behavior. It is not a provider.
+API 实现是可复用的流式行为，不是提供商。
 
-Uniform export contract — every real implementation module exports exactly:
+统一导出契约——每个真实实现模块恰好导出：
 
 ```ts
 // src/api/anthropic-messages.ts — imports SDKs
@@ -347,20 +347,20 @@ export function lazyApi(load: () => Promise<ProviderStreams>): ProviderStreams;
 export const anthropicMessagesApi = (): ProviderStreams => lazyApi(() => import("./anthropic-messages.ts"));
 ```
 
-Import chain:
+导入链：
 
 ```txt
 provider module -> lazy API wrapper -> dynamic import(real API impl) -> SDK deps
 ```
 
-Notes:
+说明：
 
 - Bedrock keeps the node-only dynamic import trick (`importNodeOnlyProvider`, `.ts`/`.js` specifier rewrite) inside its lazy wrapper. `setBedrockProviderModule()` (used by the Bun build) moves into the bedrock lazy wrapper module.
 - Shared helper modules (`openai-responses-shared.ts`, `google-shared.ts`, `transform-messages.ts`, prompt-cache, copilot headers) move to `src/api/` alongside the implementations.
 
-## Shared API implementations across concrete providers
+## 具体提供商之间共享 API 实现
 
-Many concrete providers share an API implementation (OpenAI-completions: OpenRouter, Groq, Cerebras, xAI, ZAI, ...). They share lazy API objects by reference:
+许多具体提供商共享同一 API 实现（OpenAI completions：OpenRouter、Groq、Cerebras、xAI、ZAI 等），通过引用共享惰性 API 对象：
 
 ```ts
 import { openAICompletionsApi } from "../api/openai-completions.lazy.ts";
@@ -377,11 +377,11 @@ export function openrouterProvider(): Provider {
 }
 ```
 
-This copies Vercel AI SDK's useful property: users import concrete providers; shared protocol implementation is internal.
+这借鉴了 Vercel AI SDK 的优点：用户导入具体提供商，共享的协议实现保持内部化。
 
-## Auth
+## 认证
 
-Request auth output stays small:
+请求认证输出保持精简：
 
 ```ts
 export interface ModelAuth {
@@ -391,9 +391,9 @@ export interface ModelAuth {
 }
 ```
 
-If a value cannot be expressed as `apiKey`, `headers`, or `baseUrl`, it is provider config, not auth (Vertex project/location, Bedrock region/profile, Azure apiVersion are provider factory options).
+如果某个值无法表示为 `apiKey`、`headers` 或 `baseUrl`，它就属于提供商配置而非认证（Vertex project/location、Bedrock region/profile、Azure apiVersion 都是提供商工厂选项）。
 
-### Provider auth
+### 提供商认证
 
 `Provider.auth` has exactly two slots; real providers have at most one api-key path and at most one OAuth path, and the slot names carry the UI's oauth-vs-api-key split without a `kind` discriminant or method ids:
 
@@ -445,13 +445,13 @@ export interface AuthContext {
 }
 ```
 
-The `refresh`/`toAuth` split lets `Models` own the locked refresh pattern without closure gymnastics: refresh produces a credential, while `toAuth` derives request auth from whatever credential ends up stored.
+`refresh`/`toAuth` 的拆分让 `Models` 在无需复杂闭包的情况下负责加锁刷新：refresh 生成凭据，`toAuth` 根据最终存储的凭据推导请求认证。
 
-OAuth implementations use the provider-neutral `AuthInteraction` protocol directly. A callback-server flow issues a `manual_code` prompt racing the server and aborts the prompt when the callback wins, so the UI needs no provider-specific callback or static callback-server flag.
+OAuth 实现直接使用与提供商无关的 `AuthInteraction` 协议。回调服务器流程会发出与服务器竞争的 `manual_code` 提示，回调成功后中止提示，因此 UI 不需要提供商专用回调或静态回调服务器标记。
 
-### Credentials
+### 凭据
 
-One credential per provider, type-tagged — exactly the shape of today's auth.json (`type: "api_key" | "oauth"` per provider id):
+每个提供商一个带类型标签的凭据，形状与当前 `auth.json` 完全一致（每个 provider id 对应 `type: "api_key" | "oauth"`）：
 
 ```ts
 export interface ApiKeyCredential {
@@ -469,9 +469,9 @@ export type Credential = ApiKeyCredential | OAuthCredential;
 
 `ApiKeyCredential.env` stores provider-scoped environment/config values alongside or instead of a key. `ApiKeyAuth.resolve()` merges per field: `credential.key ?? env("CLOUDFLARE_API_KEY")`, `credential.env?.CLOUDFLARE_ACCOUNT_ID ?? env("CLOUDFLARE_ACCOUNT_ID")`, etc. The credential discriminator intentionally matches today's `auth.json` (`api_key`) so the file-backed store does not need lossy type translation.
 
-### Credential store
+### 凭据存储
 
-The app injects storage; `pi-ai` ships an in-memory default. Keyed by provider id, one credential per provider:
+应用注入存储；`pi-ai` 提供内存默认实现。按 provider id 索引，每个提供商一个凭据：
 
 ```ts
 export interface CredentialStore {
@@ -495,7 +495,7 @@ export interface CredentialStore {
 }
 ```
 
-There is deliberately no `set`: an unserialized write path invites read-modify-write races (login-during-refresh clobbering a fresh credential, double token refresh). Call sites:
+这里刻意不提供 `set`：未串行化的写入路径会引发读-改-写竞争（刷新期间登录覆盖新凭据、令牌重复刷新）。调用方应使用：
 
 ```ts
 await store.modify(pid, async () => credential);      // login: store this
@@ -504,9 +504,9 @@ await store.delete(pid);                               // logout
 // refresh RMW happens inside Models.getAuth
 ```
 
-Error semantics: `read` resolves `undefined` for missing entries; methods reject only on storage failure, and `Models` wraps such rejections in `ModelsError` code `"auth"`. Best-effort stores that serve an in-memory view and record persistence errors internally (today's AuthStorage behavior) are valid implementations.
+错误语义：缺少条目时 `read` 返回 `undefined`；方法仅在存储失败时拒绝，`Models` 会将此类拒绝包装为错误码为 `"auth"` 的 `ModelsError`。提供内存视图并在内部记录持久化错误的尽力而为存储（当前 AuthStorage 行为）也是有效实现。
 
-### Resolution policy (fixed)
+### 解析策略（固定）
 
 `Models.getAuth(model)` is a decision tree, not a loop. A stored credential owns the provider — ambient/env is consulted only when nothing is stored (AuthStorage parity: no silent env fallback after a failed refresh or for an unmatched credential type):
 
@@ -536,17 +536,17 @@ if (stored) {
 return provider.auth.apiKey?.resolve({ model, ctx, credential: undefined }); // ambient
 ```
 
-Properties:
+属性：
 
 - Double-checked locking, same as today's `refreshOAuthTokenWithLock`: valid tokens cost one `read` and zero locks; expired tokens lock, re-check under the lock, refresh once globally, persist before release.
 - Explicit request auth (stream options `apiKey`/`headers`) is merged per-field on top in `stream()`, winning over everything.
 - Refresh failure rejects with `ModelsError("oauth")`; the stored credential is untouched (preserved for retry). Request paths surface this as a stream error with the real cause ("run /login"); status/availability UIs catch the rejection and render "needs re-login" — documented contract on `getAuth`.
 
-### Replacing AuthStorage
+### 替换 AuthStorage
 
-The end state for coding-agent: AuthStorage is deleted; its capabilities map onto a `CredentialStore` implementation plus composition.
+coding-agent 的最终状态是删除 AuthStorage，其能力映射到 `CredentialStore` 实现及组合层。
 
-Today's `getApiKey` priority and its new home:
+当前 `getApiKey` 的优先级及迁移位置：
 
 | AuthStorage today | New design |
 |---|---|
@@ -569,9 +569,9 @@ status UI                  store.read(pid) + getAuth try/catch ("needs /login" o
 getOAuthProviders          presence of provider.auth.oauth across registered providers
 ```
 
-### Login callbacks
+### 登录回调
 
-One interface serves api-key and OAuth login:
+同一个接口同时服务 API key 和 OAuth 登录：
 
 ```ts
 export interface AuthInteraction {
@@ -598,9 +598,9 @@ export type AuthEvent =
 
 `prompt()` returns the entered/selected string (`select` returns the option id). Flows race a `manual_code` prompt against a callback server by setting `AuthPrompt.signal` and aborting the prompt when the callback wins.
 
-### OAuth attachment
+### OAuth 挂载
 
-Providers that support OAuth always attach it. There is no factory toggle: the flow is lazy-loaded, so advertising OAuth costs nothing until `login()`/`refresh()` actually runs, and a host that never logs in never loads it.
+支持 OAuth 的提供商始终挂载 OAuth。工厂没有开关：流程按需加载，在实际调用 `login()`/`refresh()` 之前不会产生开销；从不登录的宿主也永远不会加载它。
 
 ```ts
 export function anthropicProvider(): Provider {
@@ -630,11 +630,11 @@ export function lazyOAuth(input: {
 }): OAuthAuth;
 ```
 
-OAuth must not force Node-only code (`node:http`, `node:crypto`) into browser bundles: the dynamic import inside `lazyOAuth()` uses the same bundler-opaque variable-specifier trick as the bedrock lazy wrapper. Browser hosts never trigger the load (no stored node OAuth credentials, no login flow). If web OAuth lands later (sitegeist proved feasibility: Web Crypto PKCE, auth tab, fetch token exchange, device-code polling), it is just a different `OAuthAuth` implementation — no reserved option values.
+OAuth 不能将 Node 专用代码（`node:http`、`node:crypto`）带入浏览器包：`lazyOAuth()` 内的动态导入使用与 Bedrock 惰性包装器相同的打包器不透明变量说明符技巧。浏览器宿主不会触发加载（没有存储的 Node OAuth 凭据，也没有登录流程）。若将来加入 Web OAuth（sitegeist 已证明 Web Crypto PKCE、认证标签页、fetch 令牌交换和设备码轮询可行），它只需另一种 `OAuthAuth` 实现，无需保留特殊选项值。
 
-The built-in flows in `src/auth/oauth/` implement `OAuthAuth` and `AuthInteraction` directly while remaining Node-targeted and lazy-loaded. Copilot derives its credential-specific request endpoint through `toAuth().baseUrl`.
+`src/auth/oauth/` 中的内置流程直接实现 `OAuthAuth` 和 `AuthInteraction`，仍以 Node 为目标并按需加载。Copilot 通过 `toAuth().baseUrl` 推导特定凭据的请求端点。
 
-## Provider wrappers and models.json
+## 提供商包装器与 models.json
 
 `models.json` is a provider wrapper layer. It does not mutate providers in place:
 
@@ -655,13 +655,13 @@ function withProviderOverrides(base: Provider, overrides: ProviderOverrides): Pr
 }
 ```
 
-This composes with dynamic providers because `getModels()` delegates to the base source and `refreshModels()` passes through.
+这种方式可与动态提供商组合，因为 `getModels()` 委托给基础来源，`refreshModels()` 直接透传。
 
-Request-auth config from models.json (`$ENV`, `!command`, inline keys) remains app-owned sidecar state, surfaced either as explicit request auth or as a custom `ApiKeyAuth` the app sets on the wrapped provider's `auth.apiKey`.
+models.json 中的请求认证配置（`$ENV`、`!command`、内联密钥）仍由应用作为旁车状态管理，可作为显式请求认证提供，或由应用设置到包装提供商 `auth.apiKey` 上的自定义 `ApiKeyAuth`。
 
-## Custom providers: createProvider()
+## 自定义提供商：createProvider()
 
-One helper builds providers from parts; it handles both single-API and mixed-API providers:
+一个辅助函数即可从各部分构建提供商，同时处理单 API 和混合 API 提供商：
 
 ```ts
 export function createProvider(input: {
@@ -682,9 +682,9 @@ export function createProvider(input: {
 - Single `api`: all models stream through it.
 - Map `api`: `stream()`/`streamSimple()` dispatch on `model.api`; unknown api produces a stream error.
 
-Mixed-API custom providers must be supported (opencode Go/Zen-style providers expose models backed by different APIs under one provider id).
+必须支持混合 API 的自定义提供商（opencode Go/Zen 风格提供商会在同一个 provider id 下暴露由不同 API 支持的模型）。
 
-Built-in provider factories use `createProvider()` internally. models.json custom providers map onto it directly:
+内置提供商工厂内部使用 `createProvider()`；models.json 自定义提供商直接映射到它：
 
 ```json
 {
@@ -698,11 +698,11 @@ Built-in provider factories use `createProvider()` internally. models.json custo
 }
 ```
 
-## Compat entrypoint
+## Compat 入口
 
 `@earendil-works/pi-ai/compat` preserves the old global API surface until the coding-agent migration deletes it. New code never imports it.
 
-Old semantics being preserved: global `stream()` can still dispatch by `model.api` through the legacy api-registry for custom providers, mutated models, and tests/extensions that override a built-in API implementation.
+保留的旧语义：对于自定义提供商、被修改的模型以及覆盖内置 API 实现的测试/扩展，全局 `stream()` 仍可通过旧 api-registry 按 `model.api` 分发。
 
 - `stream/complete/streamSimple/completeSimple(model, ctx, opts)`: real built-in provider/model/api matches route through a singleton `builtinModels()` collection, so provider auth/env/baseUrl behavior is shared with the new runtime. Unknown providers, mutated models, or overridden API registrations fall back to api-registry dispatch plus `getEnvApiKey` injection.
 - The builtin api registration side effect moves from the root barrel into compat. It skips api ids that already have a registration, since compat may load after a test or extension has already registered an override. `registerApiProvider()/unregisterApiProviders()` keep feeding the compat-local registry; `resetApiProviders()` clears and re-registers builtins.
@@ -712,11 +712,11 @@ Old semantics being preserved: global `stream()` can still dispatch by `model.ap
 
 coding-agent (and the interim agent package) switch imports of these symbols from `@earendil-works/pi-ai` to `@earendil-works/pi-ai/compat` (import-path-only change) and are otherwise untouched until the ModelManager migration.
 
-Extension grace period: the coding-agent extension loader (jiti aliases + Bun `virtualModules`) resolves the `@earendil-works/pi-ai` ROOT specifier to the compat entrypoint. Existing user extensions using the old global API (`complete`, `getModel`, `registerApiProvider`, ...) keep working at runtime without changes; they break only when compat is removed at the ModelManager migration, with a migration guide in the changelog. Typechecking is the nudge: editors resolve the root to the slim core types, so extension sources that typecheck must import old globals from `/compat` — which is what the repo example extensions demonstrate.
+扩展兼容期内，coding-agent 扩展加载器（jiti 别名与 Bun `virtualModules`）会将 `@earendil-works/pi-ai` 根说明符解析到 compat 入口。现有使用旧全局 API（`complete`、`getModel`、`registerApiProvider` 等）的扩展无需修改即可运行；只有在 ModelManager 迁移中删除 compat 时才会失效，届时变更日志会提供迁移指南。类型检查会提示迁移：编辑器将根入口解析为精简核心类型，因此需要通过 `/compat` 导入旧全局 API，仓库示例扩展即如此。
 
-## Builtin static helpers
+## 内置静态辅助函数
 
-Typed, sync, generated-catalog-only helpers live with the catalogs (exported from `providers/all`):
+类型化、同步且仅基于生成目录的辅助函数与目录放在一起（从 `providers/all` 导出）：
 
 ```ts
 getBuiltinModel(provider, id)   // sync, typed overloads from generated catalog
@@ -724,13 +724,13 @@ getBuiltinModels(provider)      // sync
 getBuiltinProviders()           // sync
 ```
 
-Runtime lookup through a `Models` instance is sync over the last-known provider lists: `models.getModel(...)`. Freshness-critical callers run `await models.refresh(provider)` first.
+通过 `Models` 实例进行的运行时查找基于已知提供商列表同步完成：`models.getModel(...)`。对新鲜度敏感的调用方先执行 `await models.refresh(provider)`。
 
 Generated catalogs are split per provider (`providers/<id>.models.ts`) by updating `packages/ai/scripts/generate-models.ts`. If the generator change turns out too large for this pass, splitting may be deferred; `providers/all` and provider factories may temporarily import the monolithic `models.generated.ts`, relying on `sideEffects: false` for pruning.
 
-## Tree-shaking and lazy imports
+## Tree-shaking 与惰性导入
 
-Rules:
+规则：
 
 1. Main `@earendil-works/pi-ai` import is core-only.
 2. Provider modules import their catalog, auth helpers, and lazy API wrappers only.
@@ -758,9 +758,9 @@ Exports map sketch:
 }
 ```
 
-Browser smoke check (`scripts/check-browser-smoke.mjs`) must keep passing: bundling the core entrypoint (and any non-node provider entrypoint) must not pull `node:http`/`node:crypto`.
+浏览器冒烟检查（`scripts/check-browser-smoke.mjs`）必须持续通过：打包核心入口（以及任何非 Node 提供商入口）不能引入 `node:http`/`node:crypto`。
 
-## AgentHarness integration
+## AgentHarness 集成
 
 `AgentHarness` receives a `Models` instance.
 
@@ -770,7 +770,7 @@ Browser smoke check (`scripts/check-browser-smoke.mjs`) must keep passing: bundl
 - Request path never calls async `models.getModel()` to canonicalize; if model metadata needs refresh, the app updates the selected model before starting a turn.
 - Harness tests build `createModels()` and install the faux provider (`fauxProvider()` factory from `providers/faux`).
 
-## coding-agent next phase (not this pass)
+## coding-agent 下一阶段（不在本阶段）
 
 coding-agent builds providers in layers and binds them per session:
 
@@ -787,18 +787,18 @@ for (const provider of layeredProviders) sessionModels.setProvider(provider);
 
 coding-agent owns: `FileCredentialStore` + decorators replacing AuthStorage (see "Replacing AuthStorage"), models.json auth sidecar (`$ENV`, `!command`), command execution policy, provider status labels (from `AuthResult.source`), login/logout UI (driving `auth.{apiKey,oauth}.login()` with `prompt()/notify()`), extension lifecycle, provider-management slash commands.
 
-Current interim state:
+当前过渡状态：
 
 - `AgentHarness` already accepts a `Models` instance and uses it for turn streaming, compaction, and branch summaries.
 - coding-agent does not use `AgentHarness` yet; `AgentSession` still drives the low-level `Agent` with a `streamFn`.
 - coding-agent still uses legacy `AuthStorage` + `ModelRegistry` and imports old global pi-ai APIs through `@earendil-works/pi-ai/compat`.
 - The extension loader still aliases the pi-ai root to `/compat` as the runtime grace period for old extensions.
 
-## Implementation TODOs
+## 实现待办
 
-Check items off as they land. Keep this list current; it is the working state for resumed sessions.
+功能落地后勾选对应项。请保持列表最新，它是后续会话继续工作时的依据。
 
-### Phase 1 — core types/runtime
+### 阶段 1——核心类型/运行时
 
 - [x] Rename `types.ts` `Provider` alias to `ProviderId`; fix call sites.
 - [x] Add `ApiOptionsMap` and `ApiStreamOptions<TApi>` to `types.ts` (type-only imports).
@@ -806,7 +806,7 @@ Check items off as they land. Keep this list current; it is the working state fo
 - [x] `Models`/`MutableModels`/`createModels({ credentials?, authContext? })` with provider map, sync `getModel(s)` (per-provider failure isolation), explicit async `refresh(provider?)`, `getAuth` (decision tree, double-checked locked refresh), `stream/complete/streamSimple/completeSimple` with per-field auth merge. Tests: `packages/ai/test/models-runtime.test.ts`.
 - [x] Keep metadata helpers: `calculateCost`, `getSupportedThinkingLevels`, `clampThinkingLevel`, `modelsAreEqual`.
 
-### Phase 2 — `src/api/`
+### 阶段 2——`src/api/`
 
 - [x] Move stream implementations from `src/providers/` to `src/api/`, renamed by API id (`anthropic.ts` -> `api/anthropic-messages.ts`, etc.).
 - [x] Normalize each implementation module to export exactly `stream` and `streamSimple`.
@@ -815,7 +815,7 @@ Check items off as they land. Keep this list current; it is the working state fo
 - [x] Add `*.lazy.ts` wrappers per API; bedrock keeps node-only import trick and `setBedrockProviderModule()`.
 - [x] Delete `providers/register-builtins.ts`. Interim until Phase 5 compat: builtin api-registry registration lives in `stream.ts`; lazy API wrappers are exported from the root barrel.
 
-### Phase 3 — provider factories + catalogs
+### 阶段 3——提供商工厂与目录
 
 - [x] Auth helpers in `src/auth/helpers.ts`: `envApiKeyAuth()` (with secret-prompt `login`), `lazyOAuth()`. OAuth flow loads go through `auth/oauth/load.ts` (bundler-opaque dynamic import); the `OAuthAuth` exports it references land in Phase 4.
 - [x] `createProvider()` in `models.ts` (single + mixed `api` map, dispatch on `model.api`, unknown api -> stream error).
@@ -824,30 +824,30 @@ Check items off as they land. Keep this list current; it is the working state fo
 - [x] Faux provider factory (`fauxProvider()` in `providers/faux.ts`) for tests; legacy `registerFauxProvider()` kept until compat dies.
 - [x] Split generated catalogs per provider via `scripts/generate-models.ts` (`providers/<id>.models.ts`); `models.generated.ts` becomes a generated aggregator.
 
-### Phase 4 — OAuth adaptation
+### 阶段 4——OAuth 适配
 
 - [x] Built-in implementations live under `auth/oauth/` and implement `OAuthAuth` directly through `AuthInteraction.prompt()`/`notify()`. They are private provider implementations loaded lazily by provider factories.
 - [x] Callback-server flows race a `manual_code` prompt, aborted through `AuthPrompt.signal` once the flow settles. The public `oauth` subpath retains only coding-agent extension compatibility types.
 
-### Phase 5 — packaging
+### 阶段 5——打包
 
 - [x] `index.ts` core-only and side-effect free (no catalogs, no provider factories, no api-registry, no env-api-keys, no images, no OAuth, no compat). Typed catalog reads (`getBuiltin*`) implemented in `providers/all.ts`; `models.ts` no longer imports `models.generated.ts`.
 - [x] `compat.ts`: superset of index + old api-dispatch globals, deprecated `getModel/getModels/getProviders` aliases, lazy api wrappers + `setBedrockProviderModule`, `getEnvApiKey`, images. Registration side effect lives here (skip-if-present).
 - [x] Subpath exports map (`./compat`, `./providers/*`, `./api/*`); `sideEffects` array listing the effectful modules (`compat`, images registration) instead of `false`.
 - [x] Browser smoke (entry now imports old globals from `/compat`) + shrinkwrap checks green. Internal old-global imports switched to `/compat` already (42 files in agent/coding-agent/examples; vitest configs alias `/compat` to src; spawn-CLI tests resolve workspace dist, so `packages/ai` + `packages/agent` dists were rebuilt).
 
-### Phase 6 — AgentHarness
+### 阶段 6——AgentHarness
 
 - [x] `AgentHarnessOptions.models` required (`readonly models` on the harness); the harness stream path uses `models.streamSimple()`. `StreamFn` redefined structurally (no compat type dependency); `Models.streamSimple` satisfies it.
 - [x] Compaction/branch-summarization take the harness `Models` instance. `getApiKeyAndHeaders` is removed entirely — `Models` is the only auth path; per-request key resolution becomes provider auth on the collection. `compact()`/`generateSummary()`/`generateBranchSummary()` lose their explicit `apiKey`/`headers` parameters.
 - [x] Harness tests use `createModels()` + `fauxProvider()` with unique per-fake provider ids; no global api-registry state, no unregister bookkeeping.
 
-### Phase 7 — coding-agent bridge (minimal)
+### 阶段 7——coding-agent 桥接（最小实现）
 
 - [x] Switch old-global imports to `@earendil-works/pi-ai/compat` (landed with Phase 5; compat is a superset so the switch was path-only). Extension loader resolves the pi-ai root to compat as the runtime grace period.
 - [x] Everything else originally sketched here is gated on coding-agent actually streaming through a `Models` instance — coding-agent's `AgentSession` drives the low-level `Agent` via `streamFn`, not the harness — and moved to Phase 9.
 
-### Phase 8 — wrap-up
+### 阶段 8——收尾
 
 - [x] Update/add tests; run affected suites (tests landed with each phase; `./test.sh` green throughout).
 - [x] `packages/ai/CHANGELOG.md`: `### Breaking Changes` with migration guide (compat entrypoint, `Provider` -> `ProviderId`, api module moves) + `### Added` for the new Models/provider/auth API.
@@ -855,18 +855,18 @@ Check items off as they land. Keep this list current; it is the working state fo
 - [x] `packages/agent/CHANGELOG.md`: `### Breaking Changes` for required `AgentHarnessOptions.models`, compaction signature changes, structural `StreamFn`.
 - [x] `npm run check` clean.
 
-### Phase 9 — coding-agent on Models + CredentialStore (in scope)
+### 阶段 9——coding-agent 使用 Models 与 CredentialStore（范围内）
 
 coding-agent replaces AuthStorage and ModelRegistry's internals with `FileCredentialStore` + a `MutableModels` collection. AgentSession itself stays (AgentHarness adoption is pi 2.0); only its model/auth substrate swaps. Layering is strictly one-directional:
 
 ```txt
-FileCredentialStore (auth.json, locked, $ENV/!command resolution) + explicit --api-key overlay
+FileCredentialStore（auth.json、加锁、$ENV/!command 解析）+ 显式 --api-key 覆盖
         ↑
-MutableModels: builtin factories (wrapped per models.json config) + custom providers (models.json ∪ extensions)
+MutableModels：内置工厂（按 models.json 配置包装）+ 自定义提供商（models.json ∪ 扩展）
         ↑
-ModelRegistry: compatibility facade — sync last-known reads delegate to the collection; registerProvider/login/logout/status for extensions + UI
+ModelRegistry：兼容 facade——同步已知列表读取委托给集合；为扩展和 UI 提供 registerProvider/login/logout/status
         ↑
-AgentSession / sdk / interactive-mode (stream via models; await only auth/refresh paths)
+AgentSession / SDK / interactive-mode（通过 models 流式调用；仅在认证/刷新路径使用 await）
 ```
 
 Decisions:
@@ -933,18 +933,18 @@ Ordering for new sessions:
     - Update existing tests for sync last-known `ModelRegistry.getAll/find/getAvailable` plus explicit async refresh behavior.
     - Run targeted non-e2e suites plus tmux validation of login flows against real providers (Anthropic OAuth/API key, OpenAI Codex OAuth, GitHub Copilot OAuth, Cloudflare AI Gateway, Bedrock if credentials are available).
 
-### Phase 10 — compat deletion (pi 2.0 era, separate)
+### 阶段 10——删除 compat（pi 2.0 时代，单独进行）
 
 - [ ] AgentSession -> AgentHarness; the registry facade dies in favor of harness `Models`.
 - [ ] Move ALL internal `/compat` imports to the new API: every package's src, all tests, and the example extensions (examples then demonstrate the new API). Nothing inside the repo may import `/compat` at that point.
 - [ ] Delete `/compat`, `env-api-keys.ts`, the extension-loader root-to-compat alias, and the compat-local legacy API registry. The old OAuth registry/provider interface is already gone; the type-only `oauth` barrel remains for extension compatibility.
 
-### Deferred / follow-ups
+### 延后事项/后续工作
 
 - [ ] Web OAuth implementations (sitegeist-style) as an alternative `OAuthAuth`.
 - [x] Images API redesign: `ImagesModels`/`ImagesProvider`/`createImagesProvider` mirror the chat-side design (sync reads, explicit refresh, never-reject generation); auth resolution shared with the chat side via the free-standing `resolveProviderAuth()` in `auth/resolve.ts` (which also owns `ModelsError`; both collections pass their store/context as arguments — no resolver object). `openrouterImagesProvider()` factory + `builtinImagesProviders()`/`builtinImagesModels()` in `providers/all`; impl moved to `api/openrouter-images.ts` with a lazy wrapper. The old global image API (registry + `getImageModel*` + `generateImages`) stays on compat; `ImagesProvider` id alias in types.ts renamed to `ImagesProviderId` (mirror of `Provider` -> `ProviderId`).
 
-## Error behavior
+## 错误行为
 
 `undefined` means not found or not configured. Real failures reject or become stream errors.
 

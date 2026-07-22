@@ -1,4 +1,7 @@
 /**
+ * 模块职责：实现 coding-agent 源码模块「modes\rpc\rpc-mode.ts」，负责相关命令行、会话、工具或基础设施逻辑。
+ */
+/**
  * RPC mode: Headless operation with JSON stdin/stdout protocol.
  *
  * Used for embedding the agent in other applications.

@@ -1,10 +1,11 @@
+/** 模块职责：实现 packages/ai/src\auth\oauth\load.ts 相关的模型、协议或工具逻辑。 */
 import type { OAuthAuth } from "../types.ts";
 
 /**
- * Loads an OAuth flow module through a variable specifier so bundlers cannot
- * follow the import into Node-only flow code (`node:http` callback servers,
- * `node:crypto` PKCE). The `.ts`/`.js` rewrite keeps the trick working from
- * both source and built output.
+ * 通过变量形式的模块说明符加载 OAuth 流程模块，
+ * 让打包器无法继续静态跟踪到仅限 Node 的流程代码
+ * （如 `node:http` 回调服务器、`node:crypto` PKCE 实现）。
+ * `.ts`/`.js` 的改写确保这一技巧在源码态与构建产物中都能生效。
  */
 const importOAuthModule = (specifier: string): Promise<unknown> => {
 	const runtimeSpecifier = import.meta.url.endsWith(".js") ? specifier.replace(/\.ts$/, ".js") : specifier;
@@ -22,7 +23,7 @@ type OAuthFlowLoaders = {
 
 let bundledLoaders: OAuthFlowLoaders | undefined;
 
-/** Registers statically bundled OAuth flows for standalone Bun binaries. */
+/** 为独立的 Bun 二进制注册静态打包进去的 OAuth 流程。 */
 export function registerBundledOAuthFlowLoaders(loaders: OAuthFlowLoaders): void {
 	bundledLoaders = loaders;
 }
@@ -60,3 +61,4 @@ export const loadRadiusOAuth = async (options: { name: string; gateway: string }
 		}
 	).createRadiusOAuth(options);
 };
+/** 模块职责：实现 packages/ai/src\auth\oauth\load.ts 相关的模型、协议或工具逻辑。 */

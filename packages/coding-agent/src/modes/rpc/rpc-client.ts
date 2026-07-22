@@ -1,5 +1,8 @@
 /**
- * RPC Client for programmatic access to the coding agent.
+ * 模块职责：实现 coding-agent 源码模块「modes\rpc\rpc-client.ts」，负责相关命令行、会话、工具或基础设施逻辑。
+ */
+/**
+ * RPC Client for programmatic access to the 编码代理.
  *
  * Spawns the agent in RPC mode and provides a typed API for all operations.
  */
@@ -25,7 +28,7 @@ type DistributiveOmit<T, K extends keyof T> = T extends unknown ? Omit<T, K> : n
 type RpcCommandBody = DistributiveOmit<RpcCommand, "id">;
 
 export interface RpcClientOptions {
-	/** Path to the CLI entry point (default: searches for dist/cli.js) */
+	/** Path to the 命令行入口 (default: searches for dist/cli.js) */
 	cliPath?: string;
 	/** Working directory for the agent */
 	cwd?: string;
@@ -191,7 +194,7 @@ export class RpcClient {
 
 	/**
 	 * Send a prompt to the agent.
-	 * Returns immediately after sending; use onEvent() to receive streaming events.
+	 * 返回 immediately after sending; use onEvent() to receive streaming events.
 	 * Use waitForIdle() to wait for completion.
 	 */
 	async prompt(message: string, images?: ImageContent[]): Promise<void> {
@@ -406,7 +409,7 @@ export class RpcClient {
 	}
 
 	/**
-	 * Get the session entry tree.
+	 * 获取 session entry tree.
 	 */
 	async getTree(): Promise<{ tree: SessionTreeNode[]; leafId: string | null }> {
 		const response = await this.send({ type: "get_tree" });

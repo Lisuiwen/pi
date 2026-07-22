@@ -1,11 +1,15 @@
+/**
+ * 模块职责：实现 packages/storage/sqlite-node/src/sqlite/storage/shared.ts 中的核心功能。
+ */
+
 import type { SessionTreeEntry } from "@earendil-works/pi-agent-core";
 import { SessionError } from "@earendil-works/pi-agent-core";
 import { uuidv7 } from "@earendil-works/pi-ai";
 
 export function generateEntryId(byId: { has(id: string): boolean }): string {
 	for (let i = 0; i < 100; i++) {
-		// The uuidv7 prefix is timestamp-derived and nearly constant between calls,
-		// so short ids must come from the random tail.
+		// 该uuidv7 prefix is timestamp-derived and nearly constant between calls,
+		// 因此短 ID 必须来自随机尾部。
 		const id = uuidv7().slice(0, 8);
 		if (!byId.has(id)) return id;
 	}

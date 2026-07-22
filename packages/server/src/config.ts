@@ -1,3 +1,7 @@
+/**
+ * 模块职责：实现 packages/server/src/config.ts 中的核心功能。
+ */
+
 import { existsSync, readFileSync } from "node:fs";
 import { homedir } from "node:os";
 import { dirname, join } from "node:path";

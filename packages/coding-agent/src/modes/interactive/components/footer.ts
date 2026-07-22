@@ -1,3 +1,6 @@
+/**
+ * 模块职责：实现 coding-agent 源码模块「modes\interactive\components\footer.ts」，负责相关命令行、会话、工具或基础设施逻辑。
+ */
 import { isAbsolute, relative, resolve, sep } from "node:path";
 import { type Component, truncateToWidth, visibleWidth } from "@earendil-works/pi-tui";
 import type { AgentSession } from "../../../core/agent-session.ts";

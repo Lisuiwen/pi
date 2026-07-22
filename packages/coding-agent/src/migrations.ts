@@ -1,4 +1,7 @@
 /**
+ * 模块职责：实现 coding-agent 源码模块「migrations.ts」，负责相关命令行、会话、工具或基础设施逻辑。
+ */
+/**
  * One-time migrations that run on startup.
  */
 
@@ -217,7 +220,7 @@ function migrateToolsToBin(): void {
 
 /**
  * Check for deprecated hooks/ and tools/ directories.
- * Note: tools/ may contain fd/rg binaries extracted by pi, so only warn if it has other files.
+ * 注意： tools/ may contain fd/rg binaries extracted by pi, so only warn if it has other files.
  */
 function checkDeprecatedExtensionDirs(baseDir: string, label: string): string[] {
 	const hooksDir = join(baseDir, "hooks");

@@ -1,3 +1,4 @@
+/** 模块职责：实现 packages/ai/src\providers\cloudflare-workers-ai.ts 相关的模型、协议或工具逻辑。 */
 import { openAICompletionsApi } from "../api/openai-completions.lazy.ts";
 import { createProvider, type Provider } from "../models.ts";
 import { cloudflareWorkersAIAuth } from "./cloudflare-auth.ts";
@@ -13,3 +14,4 @@ export function cloudflareWorkersAIProvider(): Provider<"openai-completions"> {
 		api: cloudflareStreams(openAICompletionsApi()),
 	});
 }
+/** 模块职责：实现 packages/ai/src\providers\cloudflare-workers-ai.ts 相关的模型、协议或工具逻辑。 */

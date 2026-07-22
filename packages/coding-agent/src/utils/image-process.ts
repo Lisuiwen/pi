@@ -1,3 +1,6 @@
+/**
+ * 模块职责：实现 coding-agent 源码模块「utils\image-process.ts」，负责相关命令行、会话、工具或基础设施逻辑。
+ */
 import { convertImageBytesToPng } from "./image-convert.ts";
 import { formatDimensionNote, type ImageResizeOptions, resizeImage } from "./image-resize.ts";
 

@@ -1,3 +1,6 @@
+/**
+ * 模块职责：实现 coding-agent 源码模块「core\remote-catalog-provider.ts」，负责相关命令行、会话、工具或基础设施逻辑。
+ */
 import { stat } from "node:fs/promises";
 import type { Api, Model, ModelsStoreEntry, Provider } from "@earendil-works/pi-ai";
 import { VERSION } from "../config.ts";

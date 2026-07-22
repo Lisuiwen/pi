@@ -1,3 +1,6 @@
+/**
+ * 模块职责：实现 coding-agent 源码模块「modes\interactive\components\skill-invocation-message.ts」，负责相关命令行、会话、工具或基础设施逻辑。
+ */
 import { Box, Markdown, type MarkdownTheme, Text } from "@earendil-works/pi-tui";
 import type { ParsedSkillBlock } from "../../../core/agent-session.ts";
 import { getMarkdownTheme, theme } from "../theme/theme.ts";

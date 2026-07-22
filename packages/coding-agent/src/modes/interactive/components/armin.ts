@@ -1,4 +1,7 @@
 /**
+ * 模块职责：实现 coding-agent 源码模块「modes\interactive\components\armin.ts」，负责相关命令行、会话、工具或基础设施逻辑。
+ */
+/**
  * Armin says hi! A fun easter egg with animated XBM art.
  */
 
@@ -34,7 +37,7 @@ function getPixel(x: number, y: number): boolean {
 	return ((BITS[byteIndex] >> bitIndex) & 1) === 0;
 }
 
-// Get the character for a cell (2 vertical pixels packed)
+// 获取 character for a cell (2 vertical pixels packed)
 function getChar(x: number, row: number): string {
 	const upper = getPixel(x, row * 2);
 	const lower = getPixel(x, row * 2 + 1);

@@ -1,45 +1,45 @@
-# Keybindings
+# 键绑定
 
-All keyboard shortcuts can be customized via `~/.pi/agent/keybindings.json`. Each action can be bound to one or more keys.
+所有键盘快捷键都可通过 `~/.pi/agent/keybindings.json` 自定义。每个操作可以绑定一个或多个按键。
 
-The config file uses the same namespaced keybinding ids that pi uses internally and that extension authors use in `keyHint()` and injected `keybindings` managers.
+配置文件使用 pi 内部以及扩展作者在 `keyHint()` 和注入的 `keybindings` 管理器中使用的同一套命名空间键绑定 ID。
 
-Older configs using pre-namespaced ids such as `cursorUp` or `expandTools` are migrated automatically to the namespaced ids on startup.
+使用 `cursorUp` 或 `expandTools` 等旧版无命名空间 ID 的配置，会在启动时自动迁移为命名空间 ID。
 
-After editing `keybindings.json`, run `/reload` in pi to apply the changes without restarting the session.
+编辑 `keybindings.json` 后，在 pi 中运行 `/reload` 即可应用更改，无需重启会话。
 
-## Key Format
+## 按键格式
 
-`modifier+key` where modifiers are `ctrl`, `shift`, `alt` (combinable) and keys are:
+`modifier+key`，修饰键为 `ctrl`、`shift`、`alt`（可组合），按键包括：
 
-- **Letters:** `a-z`
-- **Digits:** `0-9`
-- **Special:** `escape`, `esc`, `enter`, `return`, `tab`, `space`, `backspace`, `delete`, `insert`, `clear`, `home`, `end`, `pageUp`, `pageDown`, `up`, `down`, `left`, `right`
-- **Function:** `f1`-`f12`
-- **Symbols:** `` ` ``, `-`, `=`, `[`, `]`, `\`, `;`, `'`, `,`, `.`, `/`, `!`, `@`, `#`, `$`, `%`, `^`, `&`, `*`, `(`, `)`, `_`, `+`, `|`, `~`, `{`, `}`, `:`, `<`, `>`, `?`
+- **字母：** `a-z`
+- **数字：** `0-9`
+- **特殊键：** `escape`, `esc`, `enter`, `return`, `tab`, `space`, `backspace`, `delete`, `insert`, `clear`, `home`, `end`, `pageUp`, `pageDown`, `up`, `down`, `left`, `right`
+- **功能键：** `f1`-`f12`
+- **符号：** `` ` ``, `-`, `=`, `[`, `]`, `\`, `;`, `'`, `,`, `.`, `/`, `!`, `@`, `#`, `$`, `%`, `^`, `&`, `*`, `(`, `)`, `_`, `+`, `|`, `~`, `{`, `}`, `:`, `<`, `>`, `?`
 
-Modifier combinations: `ctrl+shift+x`, `alt+ctrl+x`, `ctrl+shift+alt+x`, `ctrl+1`, etc.
+修饰键组合示例：`ctrl+shift+x`、`alt+ctrl+x`、`ctrl+shift+alt+x`、`ctrl+1` 等。
 
-## All Actions
+## 所有操作
 
-### TUI Editor Cursor Movement
+### TUI 编辑器光标移动
 
-| Keybinding id | Default | Description |
+| 键绑定 ID | 默认值 | 描述 |
 |--------|---------|-------------|
-| `tui.editor.cursorUp` | `up` | Move cursor up |
-| `tui.editor.cursorDown` | `down` | Move cursor down |
-| `tui.editor.cursorLeft` | `left`, `ctrl+b` | Move cursor left |
-| `tui.editor.cursorRight` | `right`, `ctrl+f` | Move cursor right |
-| `tui.editor.cursorWordLeft` | `alt+left`, `ctrl+left`, `alt+b` | Move cursor word left |
-| `tui.editor.cursorWordRight` | `alt+right`, `ctrl+right`, `alt+f` | Move cursor word right |
-| `tui.editor.cursorLineStart` | `home`, `ctrl+a` | Move to line start |
-| `tui.editor.cursorLineEnd` | `end`, `ctrl+e` | Move to line end |
-| `tui.editor.jumpForward` | `ctrl+]` | Jump forward to character |
-| `tui.editor.jumpBackward` | `ctrl+alt+]` | Jump backward to character |
-| `tui.editor.pageUp` | `pageUp` | Scroll up by page |
-| `tui.editor.pageDown` | `pageDown` | Scroll down by page |
+| `tui.editor.cursorUp` | `up` | 向上移动光标 |
+| `tui.editor.cursorDown` | `down` | 向下移动光标 |
+| `tui.editor.cursorLeft` | `left`, `ctrl+b` | 向左移动光标 |
+| `tui.editor.cursorRight` | `right`, `ctrl+f` | 向右移动光标 |
+| `tui.editor.cursorWordLeft` | `alt+left`, `ctrl+left`, `alt+b` | 按词向左移动光标 |
+| `tui.editor.cursorWordRight` | `alt+right`, `ctrl+right`, `alt+f` | 按词向右移动光标 |
+| `tui.editor.cursorLineStart` | `home`, `ctrl+a` | 移到行首 |
+| `tui.editor.cursorLineEnd` | `end`, `ctrl+e` | 移到行尾 |
+| `tui.editor.jumpForward` | `ctrl+]` | 向前跳转到字符 |
+| `tui.editor.jumpBackward` | `ctrl+alt+]` | 向后跳转到字符 |
+| `tui.editor.pageUp` | `pageUp` | 向上滚动一页 |
+| `tui.editor.pageDown` | `pageDown` | 向下滚动一页 |
 
-### TUI Editor Deletion
+### TUI 编辑器删除
 
 | Keybinding id | Default | Description |
 |--------|---------|-------------|
@@ -50,7 +50,7 @@ Modifier combinations: `ctrl+shift+x`, `alt+ctrl+x`, `ctrl+shift+alt+x`, `ctrl+1
 | `tui.editor.deleteToLineStart` | `ctrl+u` | Delete to line start |
 | `tui.editor.deleteToLineEnd` | `ctrl+k` | Delete to line end |
 
-### TUI Input
+### TUI 输入
 
 | Keybinding id | Default | Description |
 |--------|---------|-------------|
@@ -58,7 +58,7 @@ Modifier combinations: `ctrl+shift+x`, `alt+ctrl+x`, `ctrl+shift+alt+x`, `ctrl+1
 | `tui.input.submit` | `enter` | Submit input |
 | `tui.input.tab` | `tab` | Tab / autocomplete |
 
-### TUI Kill Ring
+### TUI 剪切环
 
 | Keybinding id | Default | Description |
 |--------|---------|-------------|
@@ -66,7 +66,7 @@ Modifier combinations: `ctrl+shift+x`, `alt+ctrl+x`, `ctrl+shift+alt+x`, `ctrl+1
 | `tui.editor.yankPop` | `alt+y` | Cycle through deleted text after yank |
 | `tui.editor.undo` | `ctrl+-` | Undo last edit |
 
-### TUI Clipboard and Selection
+### TUI 剪贴板与选择
 
 | Keybinding id | Default | Description |
 |--------|---------|-------------|
@@ -78,7 +78,7 @@ Modifier combinations: `ctrl+shift+x`, `alt+ctrl+x`, `ctrl+shift+alt+x`, `ctrl+1
 | `tui.select.confirm` | `enter` | Confirm selection |
 | `tui.select.cancel` | `escape`, `ctrl+c` | Cancel selection |
 
-### Application
+### 应用
 
 | Keybinding id | Default | Description |
 |--------|---------|-------------|
@@ -89,7 +89,7 @@ Modifier combinations: `ctrl+shift+x`, `alt+ctrl+x`, `ctrl+shift+alt+x`, `ctrl+1
 | `app.editor.external` | `ctrl+g` | Open in external editor (`externalEditor`, `$VISUAL`, `$EDITOR`, Notepad on Windows, or `nano` elsewhere) |
 | `app.clipboard.pasteImage` | `ctrl+v` (`alt+v` on Windows) | Paste image from clipboard |
 
-### Sessions
+### 会话
 
 | Keybinding id | Default | Description |
 |--------|---------|-------------|
@@ -104,7 +104,7 @@ Modifier combinations: `ctrl+shift+x`, `alt+ctrl+x`, `ctrl+shift+alt+x`, `ctrl+1
 | `app.session.delete` | `ctrl+d` | Delete session |
 | `app.session.deleteNoninvasive` | `ctrl+backspace` | Delete session when query is empty |
 
-### Models and Thinking
+### 模型与思考
 
 | Keybinding id | Default | Description |
 |--------|---------|-------------|
@@ -114,7 +114,7 @@ Modifier combinations: `ctrl+shift+x`, `alt+ctrl+x`, `ctrl+shift+alt+x`, `ctrl+1
 | `app.thinking.cycle` | `shift+tab` | Cycle thinking level |
 | `app.thinking.toggle` | `ctrl+t` | Collapse or expand thinking blocks |
 
-### Display and Message Queue
+### 显示与消息队列
 
 | Keybinding id | Default | Description |
 |--------|---------|-------------|
@@ -123,7 +123,7 @@ Modifier combinations: `ctrl+shift+x`, `alt+ctrl+x`, `ctrl+shift+alt+x`, `ctrl+1
 | `app.message.followUp` | `alt+enter` | Queue follow-up message |
 | `app.message.dequeue` | `alt+up` | Restore queued messages to editor |
 
-### Tree Navigation
+### 树导航
 
 | Keybinding id | Default | Description |
 |--------|---------|-------------|
@@ -139,9 +139,9 @@ Modifier combinations: `ctrl+shift+x`, `alt+ctrl+x`, `ctrl+shift+alt+x`, `ctrl+1
 | `app.tree.filter.cycleForward` | `ctrl+o` | Cycle tree filter forward |
 | `app.tree.filter.cycleBackward` | `shift+ctrl+o` | Cycle tree filter backward |
 
-### Scoped Models Selector
+### 作用域模型选择器
 
-Used inside the scoped models selector (opened via `/scoped-models`).
+用于作用域模型选择器（通过 `/scoped-models` 打开）。
 
 | Keybinding id | Default | Description |
 |--------|---------|-------------|
@@ -152,7 +152,7 @@ Used inside the scoped models selector (opened via `/scoped-models`).
 | `app.models.reorderUp` | `alt+up` | Move the selected model up in the cycle order |
 | `app.models.reorderDown` | `alt+down` | Move the selected model down in the cycle order |
 
-## Custom Configuration
+## 自定义配置
 
 Create `~/.pi/agent/keybindings.json`:
 
@@ -164,11 +164,11 @@ Create `~/.pi/agent/keybindings.json`:
 }
 ```
 
-Each action can have a single key or an array of keys. User config overrides defaults.
+每个操作可以设置单个按键或按键数组。用户配置会覆盖默认值。
 
-On native Windows, `app.suspend` has no default binding because Windows terminals do not support Unix job control. If you bind it manually, pi shows a status message instead of suspending. In WSL, the normal Linux `ctrl+z`/`fg` behavior still applies.
+在原生 Windows 上，`app.suspend` 没有默认绑定，因为 Windows 终端不支持 Unix 作业控制。如果手动绑定，pi 会显示状态消息而不是挂起。在 WSL 中，正常的 Linux `ctrl+z`/`fg` 行为仍然适用。
 
-### Emacs Example
+### Emacs 示例
 
 ```json
 {
@@ -184,7 +184,7 @@ On native Windows, `app.suspend` has no default binding because Windows terminal
 }
 ```
 
-### Vim Example
+### Vim 示例
 
 ```json
 {

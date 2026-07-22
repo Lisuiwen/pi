@@ -1,10 +1,11 @@
+/** 模块职责：实现 packages/ai/src\utils\deferred-tools.ts 相关的模型、协议或工具逻辑。 */
 import type { Context, Tool } from "../types.ts";
 
 type ToolNameNormalizer = (name: string) => string;
 
 const identityToolName: ToolNameNormalizer = (name) => name;
 
-/** Split current tools into prefix and transcript-loaded definitions. */
+/** 将当前工具拆分为前置可用工具与由对话记录加载的延迟工具。 */
 export function splitDeferredTools(
 	context: Context,
 	enabled: boolean,
@@ -37,3 +38,4 @@ export function splitDeferredTools(
 	}
 	return { immediate, deferred };
 }
+/** 模块职责：实现 packages/ai/src\utils\deferred-tools.ts 相关的模型、协议或工具逻辑。 */

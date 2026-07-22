@@ -1,13 +1,9 @@
+/** 模块职责：实现 packages/agent/src\stream-fn.ts 的 Agent 运行时逻辑。 */
 import type { StreamFn } from "./types.ts";
 
 let defaultStreamFn: StreamFn | undefined;
 
-/**
- * Configure the fallback used by Agent and low-level loops when callers omit streamFn.
- *
- * Hosts that provide a default model runtime can install its stream function here
- * without making pi-agent-core depend on a provider catalog or compatibility layer.
- */
+/** 配置调用方省略 streamFn 时，Agent 与底层循环使用的默认流函数。 */
 export function setDefaultStreamFn(streamFn: StreamFn | undefined): void {
 	defaultStreamFn = streamFn;
 }

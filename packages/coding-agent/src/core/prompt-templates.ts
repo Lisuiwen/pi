@@ -1,3 +1,6 @@
+/**
+ * 模块职责：实现 coding-agent 源码模块「core\prompt-templates.ts」，负责相关命令行、会话、工具或基础设施逻辑。
+ */
 import { existsSync, readdirSync, readFileSync, statSync } from "fs";
 import { basename, dirname, join, resolve, sep } from "path";
 import { CONFIG_DIR_NAME } from "../config.ts";
@@ -19,7 +22,7 @@ export interface PromptTemplate {
 
 /**
  * Parse command arguments respecting quoted strings (bash-style)
- * Returns array of arguments
+ * 返回 array of arguments
  */
 export function parseCommandArgs(argsString: string): string[] {
 	const args: string[] = [];
@@ -64,7 +67,7 @@ export function parseCommandArgs(argsString: string): string[] {
  * - ${@:N} for args from Nth onwards (bash-style slicing)
  * - ${@:N:L} for L args starting from Nth
  *
- * Note: Replacement happens on the template string only. Argument and default values
+ * 注意： Replacement happens on the template string only. Argument and default values
  * containing patterns like $1, $@, or $ARGUMENTS are NOT recursively substituted.
  */
 export function substituteArgs(content: string, args: string[]): string {
@@ -264,7 +267,7 @@ export function loadPromptTemplates(options: LoadPromptTemplatesOptions): Prompt
 
 /**
  * Expand a prompt template if it matches a template name.
- * Returns the expanded content or the original text if not a template.
+ * 返回 the expanded content or the original text if not a template.
  */
 export function expandPromptTemplate(text: string, templates: PromptTemplate[]): string {
 	if (!text.startsWith("/")) return text;

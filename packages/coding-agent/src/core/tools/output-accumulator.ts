@@ -1,3 +1,6 @@
+/**
+ * 模块职责：实现 coding-agent 源码模块「core\tools\output-accumulator.ts」，负责相关命令行、会话、工具或基础设施逻辑。
+ */
 import { randomBytes } from "node:crypto";
 import { createWriteStream, type WriteStream } from "node:fs";
 import { tmpdir } from "node:os";
@@ -26,11 +29,10 @@ function byteLength(text: string): number {
 }
 
 /**
- * Incrementally tracks streaming output with bounded memory.
+ * 使用有限内存增量跟踪流式输出。
  *
- * Appends decode chunks with a streaming UTF-8 decoder, keeps only a decoded
- * tail for display snapshots, and opens a temp file when the full output needs
- * to be preserved.
+ * 使用流式 UTF-8 解码器追加解码块，仅保留已解码的尾部用于显示快照，
+ * 并在需要保留完整输出时打开临时文件。
  */
 export class OutputAccumulator {
 	private readonly maxLines: number;

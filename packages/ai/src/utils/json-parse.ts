@@ -1,3 +1,4 @@
+/** 模块职责：实现 packages/ai/src\utils\json-parse.ts 相关的模型、协议或工具逻辑。 */
 import { parse as partialParse } from "partial-json";
 
 const VALID_JSON_ESCAPES = new Set(['"', "\\", "/", "b", "f", "n", "r", "t", "u"]);
@@ -25,9 +26,9 @@ function escapeControlCharacter(char: string): string {
 }
 
 /**
- * Repairs malformed JSON string literals by:
- * - escaping raw control characters inside strings
- * - doubling backslashes before invalid escape characters
+ * 修复格式错误的 JSON 字符串字面量，具体包括：
+ * - 转义字符串内部的原始控制字符
+ * - 在非法转义字符前将反斜杠补成双反斜杠
  */
 export function repairJson(json: string): string {
 	let repaired = "";
@@ -95,11 +96,11 @@ export function parseJsonWithRepair<T>(json: string): T {
 }
 
 /**
- * Attempts to parse potentially incomplete JSON during streaming.
- * Always returns a valid object, even if the JSON is incomplete.
+ * 尝试在流式输出过程中解析可能尚未完整的 JSON。
+ * 即使 JSON 不完整，也始终返回一个有效对象。
  *
- * @param partialJson The partial JSON string from streaming
- * @returns Parsed object or empty object if parsing fails
+ * @param partialJson 流式输出中的部分 JSON 字符串
+ * @returns 解析后的对象；若解析失败则返回空对象
  */
 export function parseStreamingJson<T = Record<string, unknown>>(partialJson: string | undefined): T {
 	if (!partialJson || partialJson.trim() === "") {
@@ -122,3 +123,4 @@ export function parseStreamingJson<T = Record<string, unknown>>(partialJson: str
 		}
 	}
 }
+/** 模块职责：实现 packages/ai/src\utils\json-parse.ts 相关的模型、协议或工具逻辑。 */

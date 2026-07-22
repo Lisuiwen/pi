@@ -1,3 +1,7 @@
+/**
+ * 模块职责：实现 packages/storage/sqlite-node/src/sqlite/storage/index.ts 中的核心功能。
+ */
+
 import type {
 	LeafEntry,
 	SessionEntryCursorOptions,
@@ -37,7 +41,7 @@ async function decodeEntryRows(entryRows: SessionEntryRow[]): Promise<{
 			entries.push(entry);
 			leafId = leafIdAfterEntry(entry);
 		} catch {
-			// Keep JSONL-like permissive resume behavior: skip malformed entries.
+			// 保持类似 JSONL 的宽松恢复行为：跳过格式错误的条目。
 		}
 	}
 	return { entries, leafId };
@@ -59,8 +63,8 @@ async function loadEntryRowsByIds(
 }
 
 async function loadActiveBranchId(db: SqliteDatabase, sessionId: string): Promise<string | null> {
-	// branch_entries includes leaf navigation entries for the active branch, so the
-	// newest branch_entries row identifies the branch that was most recently made active.
+	// branch_entries 包含活动分支的叶导航条目，因此
+	// 最新的 branch_entries 行标识最近激活的分支。
 	const row = await db
 		.prepare(
 			"SELECT branch_id FROM branch_entries WHERE session_id = ? ORDER BY entry_seq DESC, branch_id DESC LIMIT 1",
@@ -113,6 +117,9 @@ async function loadSqliteStorage(
 	};
 }
 
+/**
+ * 实现基于 SQLite 的会话树存储、分支导航与物化状态维护。
+ */
 export class SqliteSessionStorage implements SessionStorage<SqliteSessionMetadata> {
 	private readonly db: SqliteDatabase;
 	private readonly metadata: SqliteSessionMetadata;
@@ -145,9 +152,9 @@ export class SqliteSessionStorage implements SessionStorage<SqliteSessionMetadat
 
 	private async materializeBranch(leafId: string | null): Promise<void> {
 		const branchId = uuidv7();
-		// Rebuild the branch path only when branch membership changes: branch switch
+		// 仅在分支成员关系变化时重建分支路径: branch switch
 		// (leaf navigation) or a new fork from a parent that already has a child.
-		// Linear appends stay cheap and extend the active branch incrementally.
+		// 线性追加成本低，只需增量扩展活动分支。
 		const path = await this.getPathToRootOrCompactionEntries(leafId);
 		const entryRowsById = await loadEntryRowsByIds(
 			this.db,
@@ -169,7 +176,7 @@ export class SqliteSessionStorage implements SessionStorage<SqliteSessionMetadat
 			await this.materializeBranch(parentId);
 		}
 		// After a branch is materialized/resynced, subsequent linear appends only add the
-		// new tip entry. We do not rebuild the full branch on every append.
+		// 新的末端条目；不会在每次追加时重建整个分支。
 		if (!this.activeBranchId) {
 			throw invalidSession(`active branch missing for session ${this.metadata.id}`);
 		}
@@ -378,7 +385,7 @@ export class SqliteSessionStorage implements SessionStorage<SqliteSessionMetadat
 				this.byId.set(entry.id, entry);
 				entries.push(entry);
 			} catch {
-				// Keep JSONL-like permissive resume behavior: skip malformed entries.
+				// 保持类似 JSONL 的宽松恢复行为：跳过格式错误的条目。
 			}
 		}
 		return entries;

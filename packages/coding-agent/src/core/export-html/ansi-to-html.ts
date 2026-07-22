@@ -1,4 +1,7 @@
 /**
+ * 模块职责：实现 coding-agent 源码模块「core\export-html\ansi-to-html.ts」，负责相关命令行、会话、工具或基础设施逻辑。
+ */
+/**
  * ANSI escape code to HTML converter.
  *
  * Converts terminal ANSI color/style codes to HTML with inline styles.

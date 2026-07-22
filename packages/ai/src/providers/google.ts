@@ -1,3 +1,4 @@
+/** 模块职责：实现 packages/ai/src\providers\google.ts 相关的模型、协议或工具逻辑。 */
 import { googleGenerativeAIApi } from "../api/google-generative-ai.lazy.ts";
 import { envApiKeyAuth } from "../auth/helpers.ts";
 import { createProvider, type Provider } from "../models.ts";
@@ -13,3 +14,4 @@ export function googleProvider(): Provider<"google-generative-ai"> {
 		api: googleGenerativeAIApi(),
 	});
 }
+/** 模块职责：实现 packages/ai/src\providers\google.ts 相关的模型、协议或工具逻辑。 */

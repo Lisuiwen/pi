@@ -1,3 +1,4 @@
+/** 模块职责：实现 packages/agent/src\harness\utils\shell-output.ts 的 Agent 运行时逻辑。 */
 import { type ExecutionEnv, ExecutionError, err, ok, type Result, type ShellExecOptions, toError } from "../types.ts";
 import { DEFAULT_MAX_BYTES, truncateTail } from "./truncate.ts";
 

@@ -1,12 +1,12 @@
-# SDK Examples
+# SDK 示例
 
-Programmatic usage of pi-coding-agent via `createAgentSession()` and `createAgentSessionRuntime()`.
+通过 `createAgentSession()` 和 `createAgentSessionRuntime()` 以编程方式使用 pi-coding-agent。
 
-The runtime example shows how to build a recreate function that closes over process-global fixed inputs and recreates cwd-bound services and sessions as the active session cwd changes.
+运行时示例展示如何构建一个重建函数：捕获进程级固定输入，并在活动会话的 cwd 变化时重建绑定到 cwd 的服务和会话。
 
-## Examples
+## 示例
 
-| File | Description |
+| 文件 | 说明 |
 |------|-------------|
 | `01-minimal.ts` | Simplest usage with all defaults |
 | `02-custom-model.ts` | Select model and thinking level |
@@ -22,14 +22,14 @@ The runtime example shows how to build a recreate function that closes over proc
 | `12-full-control.ts` | Replace everything, no discovery |
 | `13-session-runtime.ts` | Manage runtime-backed session replacement |
 
-## Running
+## 运行
 
 ```bash
 cd packages/coding-agent
 npx tsx examples/sdk/01-minimal.ts
 ```
 
-## Quick Reference
+## 快速参考
 
 ```typescript
 import { getModel } from "@earendil-works/pi-ai";
@@ -101,9 +101,9 @@ session.subscribe((event) => {
 await session.prompt("Hello");
 ```
 
-## Options
+## 选项
 
-| Option | Default | Description |
+| 选项 | 默认值 | 说明 |
 |--------|---------|-------------|
 | `modelRuntime` | Runtime using `agentDir/auth.json` and `models.json` | Canonical model and authentication runtime |
 | `cwd` | `process.cwd()` | Working directory |
@@ -116,7 +116,7 @@ await session.prompt("Hello");
 | `sessionManager` | `SessionManager.create(cwd)` | Persistence |
 | `settingsManager` | `SettingsManager.create(cwd, agentDir)` | Settings overrides |
 
-## Events
+## 事件
 
 ```typescript
 session.subscribe((event) => {

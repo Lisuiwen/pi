@@ -1,3 +1,4 @@
+/** 模块职责：实现 packages/ai/src\providers\openrouter-images.ts 相关的模型、协议或工具逻辑。 */
 import { openrouterImagesApi } from "../api/openrouter-images.lazy.ts";
 import { envApiKeyAuth } from "../auth/helpers.ts";
 import { IMAGE_MODELS } from "../image-models.generated.ts";
@@ -12,3 +13,4 @@ export function openrouterImagesProvider(): ImagesProvider {
 		api: openrouterImagesApi(),
 	});
 }
+/** 模块职责：实现 packages/ai/src\providers\openrouter-images.ts 相关的模型、协议或工具逻辑。 */

@@ -1,102 +1,100 @@
-# Contributing to pi
+# 为 pi 做出贡献
 
-This guide exists to save both sides time.
+本指南的存在是为了节省双方的时间。
 
-## Philosophy
+## 理念
 
-First things first: **pi's core is minimal**.
+首先要做的事情是：**pi 的核心保持最小**。
 
-If your feature does not belong in the core, it should be an extension. PRs that bloat the core will likely be rejected.
+如果你的功能不属于核心，那么它应该是一个扩展。使核心膨胀的 PR 可能会被拒绝。
 
-Pi's core exists to be minimal and to be extensible so that it can be influenced and manipulated by extensions.  Even hook points for extensions however should be well considered and discussed to avoid adding unmaintainable bloat and complex interactions.
+ Pi 的核心是最小化和可扩展的，以便它可以受到扩展的影响和操纵。  然而，即使是扩展的挂钩点也应该充分考虑和讨论，以避免增加不可维护的膨胀和复杂的交互。
 
-## The One Rule
+## 一条规则
 
-**You must understand your code.** If you cannot explain what your changes do and how they interact with the rest of the system, your PR will be closed.
+**您必须理解您的代码。** 如果您无法解释您的更改的作用以及它们如何与系统的其余部分交互，您的 PR 将被关闭。
 
-Using AI to write code is fine. Submitting AI-generated slop without understanding it is not.
+可以使用 AI 编写代码，但不能提交自己无法理解的 AI 生成代码。
 
-If you use an agent, run it from the `pi` root directory so it picks up `AGENTS.md` automatically. Your agent must follow the rules and guidelines in that file.
+如果您使用代理，请从 `pi` 根目录运行它，以便它自动选择 `AGENTS.md`。您的代理人必须遵守该文件中的规则和指南。
 
-## Contribution Gate
+## 贡献门
 
-All issues and PRs from new contributors are auto-closed by default.
+默认情况下，新贡献者的所有问题和 PR 都会自动关闭。
 
-Issues submitted Friday through Sunday are not guaranteed to be reviewed.  If something is urgent, ask on Discord: https://discord.com/invite/3cU7Bz4UPx
+周五至周日提交的问题不保证会得到审核。如果有紧急情况，请在 Discord 上提问：https://discord.com/invite/3cU7Bz4UPx
 
-Maintainers review auto-closed issues daily and reopen worthwhile ones. Issues that do not meet the quality bar below will not be reopened or receive a reply.
+维护人员每天都会审查自动关闭的问题并重新打开有价值的问题。不符合以下质量标准的问题将不会重新打开或收到回复。
 
-Approval happens through maintainer replies on issues:
+批准通过维护者对问题的回复进行：
 
-- `lgtmi`: your future issues will not be auto-closed
-- `lgtm`: your future issues and PRs will not be auto-closed
+- `lgtmi` ：您未来的问题不会自动关闭
+- `lgtm` ：您未来的问题和 PR 不会自动关闭
 
-`lgtmi` does not grant rights to submit PRs. Only `lgtm` grants rights to submit PRs.
+ `lgtmi` 不授予提交 PR 的权利。只有 `lgtm` 授予提交 PR 的权利。
 
-## Quality Bar For Issues
+## 问题质量标准
 
-If you open an issue, you must use one of the two GitHub issue templates.
+如果您打开问题，则必须使用两个 GitHub 问题模板之一。
 
-If you open an issue, keep it short, concrete, and worth reading.
+如果您提出一个问题，请使其简短、具体且值得一读。
 
-- Keep it concise. If it does not fit on one screen, it is too long.
-- Write in your own voice (do not use an LLM to generate text, if you must, follow up with a clearly AI labeled comment).
-- State the bug or request clearly.
-- Explain why it matters.
-- If you want to implement the change yourself, say so.
+- 保持简洁。如果一个屏幕放不下，则说明它太长了。
+- 用你自己的声音写作（不要使用法学硕士来生成文本，如果必须的话，请跟进清晰的人工智能标记评论）。
+- 清楚地说明错误或请求。
+- 解释为什么它很重要。
+- 如果您想自己实施更改，请说出来。
 
-If the issue is real and written well, a maintainer may reopen it, reply `lgtmi`, or reply `lgtm`.
+如果问题是真实的并且写得很好，维护者可以重新打开它，回复 `lgtmi` 或回复 `lgtm` 。
 
-## Blocking
+## 阻塞
 
-If you ignore this document twice, or if you spam the tracker with agent-generated issues, your GitHub account will be permanently blocked.
+如果您两次忽略此文档，或者您向跟踪器发送了代理生成的问题的垃圾邮件，您的 GitHub 帐户将被永久阻止。
 
-If you send a large volume of issues through automation, your GitHub account will be permanently blocked. No taksies backsies.
+如果您通过自动化发送大量问题，您的 GitHub 帐户将被永久封禁，且不会撤销。
 
-## Before Submitting a PR
+## 提交 PR 之前
 
-Do not open a PR unless you have already been approved with `lgtm`.
+除非您已经获得 `lgtm` 的批准，否则请勿打开 PR。
 
-Before submitting a PR:
+提交 PR 之前：
 
 ```bash
 npm run check
 ./test.sh
 ```
+两者都必须通过。
 
-Both must pass.
+不要编辑 `CHANGELOG.md` 。变更日志条目由维护者添加。
 
-Do not edit `CHANGELOG.md`. Changelog entries are added by maintainers.
+如果您要向 `packages/ai` 添加新的提供程序，请参阅 `AGENTS.md` 以获取所需的测试。
 
-If you are adding a new provider to `packages/ai`, see `AGENTS.md` for required tests.
+## 问题？
 
-## Questions?
+在 [Discord](https://discord.com/invite/nKXTsAcmbT) 上询问。
 
-Ask on [Discord](https://discord.com/invite/nKXTsAcmbT).
+## 常见问题解答
 
-## FAQ
+### 为什么新问题和 PR 会自动关闭？
 
-### Why are new issues and PRs auto-closed?
+pi 收到的问题多于维护者可以负责任地实时审查的问题。许多报告不符合本指南中的质量标准或不遵循 CONTRIBUTING.md。有些是通过代理漫不经心地扔到存储库中的，而不是由提交它们的人审查和塑造。自动关闭会创建一个缓冲区，以便维护人员可以按照自己的时间表查看跟踪器并重新打开符合质量标准的问题。
 
-pi receives more issues than the maintainers can responsibly review in real time. Many reports do not meet the quality bar in this guide or do not follow CONTRIBUTING.md. Some are slung at the repository mindlessly via an agent instead of being reviewed and shaped by the person submitting them. Auto-closing creates a buffer so maintainers can review the tracker on their own schedule and reopen the issues that meet the quality bar.
+### 为什么周末问题的优先级较低？
 
-### Why are weekend issues lower priority?
+我们会在工作时间对追踪器进行分类。这意味着周末可能会积累更多问题。周五至周日提交的任何内容都可能会被错过，或者在周一审核队列中的优先级较低。如果问题很紧急，请在 Discord 上提问并提供简短版本、重现和相关日志。
 
-We triage the tracker during working hours. That means more issues can accumulate over the weekend. Anything submitted Friday through Sunday may be missed or given lower priority in the Monday review queue. If a problem is urgent, ask on Discord and include the short version, a repro, and the relevant logs.
+### 为什么有些问题没有得到回复？
 
-### Why do some issues get no reply?
+回复也是维护工作。低信号问题、报告不明确、重复以及不遵循本指南的问题可能会在不进行讨论的情况下关闭。这样可以为可重现的错误、深思熟虑的请求以及已完成工作以使报告具有可操作性的贡献者留出时间。
 
-A reply is maintenance work too. Low-signal issues, unclear reports, duplicates, and issues that do not follow this guide may be closed without discussion. This keeps time available for reproducible bugs, thoughtful requests, and contributors who have done the work to make their report actionable.
+### 为什么不让人工智能对一切进行分类？
 
-### Why not let AI triage everything?
+人工智能可以帮助对重复项进行分组、总结报告并发现缺失的信息。不信任它来做出最终的维护者决定。经过精心设计的人工智能生成的问题仍然可能是错误的、具有误导性的，或者调查起来成本高昂。人工审核仍然是最后一道关口。
 
-AI can help group duplicates, summarize reports, and spot missing information. It is not trusted to make final maintainer decisions. Polished AI-generated issues can still be wrong, misleading, or expensive to investigate. Human review remains the final gate.
+### 这对贡献者有敌意吗？
 
-### Is this hostile to contributors?
+不。它是防止倦怠和跟踪垃圾邮件的护栏。欢迎提出简短、具体、可重现的问题。欢迎深思熟虑的贡献。自动倾斜、权利和大量省力报告则不然。
 
-No. It is a guardrail against burnout and tracker spam. Short, concrete, reproducible issues are welcome. Thoughtful contributions are welcome. Automated slop, entitlement, and large volumes of low-effort reports are not.
+## 我在哪里可以了解计划？
 
-## Where can I learn about plans?
-
-Earendil uses RFCs to discuss larger changes.  Not all of them are public, but
-quite a few are.  They can be found at [rfc.earendil.com](https://rfc.earendil.com/keyword/pi/).
+Earendil 使用 RFC 讨论较大的变更。并非所有 RFC 都公开，但其中不少可以在 [rfc.earendil.com](https://rfc.earendil.com/keyword/pi/) 找到。

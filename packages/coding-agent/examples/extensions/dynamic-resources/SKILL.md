@@ -1,8 +1,8 @@
 ---
 name: dynamic-resources
-description: Example skill loaded from resources_discover
+description: 通过 resources_discover 加载的示例技能
 ---
 
-# Dynamic Resources Skill
+# 动态资源技能
 
-This skill is provided by the dynamic-resources extension.
+此技能由 dynamic-resources 扩展提供。

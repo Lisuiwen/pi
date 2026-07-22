@@ -1,4 +1,7 @@
 /**
+ * 模块职责：实现 coding-agent 源码模块「modes\interactive\components\daxnuts.ts」，负责相关命令行、会话、工具或基础设施逻辑。
+ */
+/**
  * POWERED BY DAXNUTS - Easter egg for OpenCode + Kimi K2.5
  *
  * A heartfelt tribute to dax (@thdxr) for providing free Kimi K2.5 access via OpenCode.

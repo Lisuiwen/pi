@@ -1,3 +1,7 @@
+/**
+ * 模块职责：实现 packages/storage/sqlite-node/src/sqlite/migrations.ts 中的核心功能。
+ */
+
 import { readFile } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
 import type { SqliteDatabase } from "./types.ts";

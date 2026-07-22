@@ -1,3 +1,6 @@
+/**
+ * 模块职责：实现 coding-agent 源码模块「core\model-runtime.ts」，负责相关命令行、会话、工具或基础设施逻辑。
+ */
 import { dirname, join } from "node:path";
 import {
 	type Api,
@@ -56,15 +59,15 @@ interface ModelRuntimeSnapshot {
 }
 
 export interface CreateModelRuntimeOptions {
-	/** Credential storage. Defaults to the file at authPath. */
+	/** 凭据存储。默认为 authPath 指向的文件。 */
 	credentials?: CredentialStore;
 	authPath?: string;
 	modelsPath?: string | null;
 	modelsStore?: ModelsStore;
 	modelsStorePath?: string;
-	/** Allow create() to refresh model catalogs over the network. Defaults to false. */
+	/** 是否允许 create() 通过网络刷新模型目录。默认为 false。 */
 	allowModelNetwork?: boolean;
-	/** Timeout for the create-time network model refresh. */
+	/** 创建阶段通过网络刷新模型时的超时时间。 */
 	modelRefreshTimeoutMs?: number;
 	catalogBaseUrl?: string;
 }
@@ -90,7 +93,7 @@ function mergeHeaders(
 	return merged;
 }
 
-/** Configured pi-ai Models collection used by coding-agent and SDK consumers. */
+/** 供 coding-agent 和 SDK 使用方使用的已配置 pi-ai Models 集合。 */
 export class ModelRuntime implements Models {
 	private readonly models: MutableModels;
 	private readonly credentials: RuntimeCredentials;
@@ -211,7 +214,7 @@ export class ModelRuntime implements Models {
 			return;
 		}
 		if (base && !this.config.getProvider(providerId) && !extension) {
-			// No overlays: use the builtin untouched so its auth/login/stream behavior is exact.
+			// 没有覆盖层：原样使用内置提供商，确保其认证、登录和流式行为完全不变。
 			this.models.setProvider(base);
 			this.compositionErrors.delete(providerId);
 			return;
@@ -285,12 +288,12 @@ export class ModelRuntime implements Models {
 		return tracked;
 	}
 
-	/** Coalesce concurrent readers onto the pending refresh. */
+	/** 将并发读取方合并到待完成的刷新操作中。 */
 	private refreshAvailability(): Promise<void> {
 		return this.availabilityRefresh ?? this.queueAvailabilityRefresh(undefined);
 	}
 
-	/** Mutations must not observe an in-flight refresh started before them. */
+	/** 变更操作不能观察到在其之前启动、仍未完成的刷新。 */
 	private forceRefreshAvailability(): Promise<void> {
 		return this.queueAvailabilityRefresh(this.availabilityRefresh);
 	}

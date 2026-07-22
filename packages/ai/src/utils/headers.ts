@@ -1,3 +1,4 @@
+/** 模块职责：实现 packages/ai/src\utils\headers.ts 相关的模型、协议或工具逻辑。 */
 import type { ProviderHeaders } from "../types.ts";
 
 export function headersToRecord(headers: Headers): Record<string, string> {
@@ -16,3 +17,4 @@ export function providerHeadersToRecord(headers: ProviderHeaders | undefined): R
 	}
 	return Object.keys(result).length > 0 ? result : undefined;
 }
+/** 模块职责：实现 packages/ai/src\utils\headers.ts 相关的模型、协议或工具逻辑。 */

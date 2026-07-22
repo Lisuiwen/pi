@@ -1,3 +1,4 @@
+/** 模块职责：实现 packages/agent/src\harness\session\memory-repo.ts 的 Agent 运行时逻辑。 */
 import { type Session, SessionError, type SessionMetadata, type SessionRepo } from "../types.ts";
 import { InMemorySessionStorage } from "./memory-storage.ts";
 import { createSessionId, createTimestamp, getEntriesToFork, toSession } from "./repo-utils.ts";

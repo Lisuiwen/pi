@@ -1,3 +1,4 @@
+/** 模块职责：实现 packages/ai/src\providers\cloudflare-stream.ts 相关的模型、协议或工具逻辑。 */
 import type { Api, Model, ProviderEnv, ProviderStreams } from "../types.ts";
 
 const CLOUDFLARE_ACCOUNT_ID = "CLOUDFLARE_ACCOUNT_ID";
@@ -15,8 +16,8 @@ export function resolveCloudflareModel<TApi extends Api>(
 }
 
 /**
- * Wrap an API implementation so Cloudflare account/gateway endpoint
- * placeholders materialize from the resolved provider env before dispatch.
+ * 包装 API 实现，使 Cloudflare account/gateway 端点中的占位符
+ * 在派发前根据解析后的 provider 环境变量完成替换。
  */
 export function cloudflareStreams(streams: ProviderStreams): ProviderStreams {
 	return {
@@ -26,3 +27,4 @@ export function cloudflareStreams(streams: ProviderStreams): ProviderStreams {
 			streams.streamSimple(resolveCloudflareModel(model, options?.env), context, options),
 	};
 }
+/** 模块职责：实现 packages/ai/src\providers\cloudflare-stream.ts 相关的模型、协议或工具逻辑。 */

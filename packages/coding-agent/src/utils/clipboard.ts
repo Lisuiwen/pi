@@ -1,3 +1,6 @@
+/**
+ * 模块职责：实现 coding-agent 源码模块「utils\clipboard.ts」，负责相关命令行、会话、工具或基础设施逻辑。
+ */
 import { execSync, spawn } from "child_process";
 import { platform } from "os";
 import { isWaylandSession } from "./clipboard-image.ts";

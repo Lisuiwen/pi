@@ -1,3 +1,4 @@
+/** 模块职责：实现 packages/agent/src\harness\session\repo-utils.ts 的 Agent 运行时逻辑。 */
 import { uuidv7 } from "@earendil-works/pi-ai";
 import {
 	type FileError,

@@ -1,28 +1,25 @@
-// Shared normalization for provider HTTP error objects.
+/** 模块职责：实现 packages/ai/src\utils\error-body.ts 相关的模型、协议或工具逻辑。 */
+// 统一规范化各提供商的 HTTP 错误对象。
 //
-// Endpoints behind a proxy / gateway may return a non-2xx response whose body
-// the provider SDK cannot fold into `error.message`. The SDK error object still
-// carries the HTTP status and the raw/parsed body, but under SDK-specific field
-// names. Provider catch blocks that read only `error.message` therefore drop
-// the body and surface opaque messages like `"403 status code (no body)"` or
-// collapse to `"Unknown: UnknownError"`.
+// 代理或网关后的端点可能返回非 2xx 响应，而提供商 SDK 无法将响应体并入 `error.message`。
+// SDK 错误对象仍包含 HTTP 状态和原始/解析后的响应体，但字段名因 SDK 而异。
+// 只读取 `error.message` 的 catch 逻辑会丢失响应体，产生“403 status code (no body)”等模糊信息，
+// 甚至退化为“Unknown: UnknownError”。
 //
-// `normalizeProviderError` probes the known SDK field shapes (Mistral,
-// `openai`, `@google/genai`, AWS Bedrock) and returns a struct each provider
-// composes into its display string. The `messageCarriesBody` flag captures the
-// Anthropic / `@google/genai` happy path where the SDK already folded the body
-// into the message, so providers can preserve it without double-printing.
+// `normalizeProviderError` 探测已知 SDK（Mistral、`openai`、`@google/genai`、AWS Bedrock）的字段形状，
+// 返回各提供商可拼接到展示文本中的结构。`messageCarriesBody` 标记 Anthropic / `@google/genai`
+// 的正常路径：SDK 已将响应体并入消息，提供商可直接保留而不重复输出。
 
 export const MAX_PROVIDER_ERROR_BODY_CHARS = 4000;
 
 export interface NormalizedProviderError {
-	/** HTTP status code, when one could be extracted from the SDK error object. */
+	/** 从 SDK 错误对象提取到的 HTTP 状态码（若存在）。 */
 	status?: number;
-	/** Raw HTTP body reason, already trimmed and truncated to the cap. */
+	/** 原始 HTTP 响应体中的原因文本，已裁剪首尾空白并按上限截断。 */
 	body?: string;
-	/** `error.message`, or `safeJsonStringify(error)` for a non-`Error` throw. */
+	/** `error.message`；若抛出的不是 `Error`，则为 `safeJsonStringify(error)`。 */
 	message: string;
-	/** True when `message` already contains the body (no separate body to add). */
+	/** 若 `message` 已包含响应体内容，则为 `true`（无需再额外拼接 body）。 */
 	messageCarriesBody: boolean;
 }
 
@@ -54,9 +51,9 @@ export function normalizeProviderError(error: unknown): NormalizedProviderError 
 }
 
 /**
- * Probe the HTTP status, first numeric hit wins, in SDK-field order:
- * `statusCode` (Mistral) → `status` (`openai`, `@google/genai`) →
- * `$metadata.httpStatusCode` (Bedrock) → `$response.statusCode` (Bedrock).
+ * 探测 HTTP 状态码，按 SDK 字段顺序命中第一个数值字段即返回：
+ * `statusCode`（Mistral）→ `status`（`openai`、`@google/genai`）→
+ * `$metadata.httpStatusCode`（Bedrock）→ `$response.statusCode`（Bedrock）。
  */
 function extractStatus(error: SdkErrorShape): number | undefined {
 	if (typeof error.statusCode === "number") return error.statusCode;
@@ -67,11 +64,11 @@ function extractStatus(error: SdkErrorShape): number | undefined {
 }
 
 /**
- * Probe the raw body reason, first usable hit wins, in SDK-field order:
- * `body` string (Mistral) → `error` parsed JSON body object (`openai` SDK's
- * `this.error`) → `$response.body` (Bedrock). Empty objects are treated as no
- * body so an empty parsed body does not surface as `"{}"`. The chosen body is
- * truncated to the cap.
+ * 探测原始响应体原因，按 SDK 字段顺序命中第一个可用值即返回：
+ * `body` 字符串（Mistral）→ `error` 解析后的 JSON 响应体对象
+ * （`openai` SDK 的 `this.error`）→ `$response.body`（Bedrock）。
+ * 空对象会被视为“没有响应体”，避免把空解析结果显示为 `"{}"`。
+ * 选中的响应体会按长度上限截断。
  */
 function extractBody(error: SdkErrorShape): string | undefined {
 	const bodyText = pickBodyText(error);
@@ -95,13 +92,12 @@ function isNonEmptyObject(value: unknown): boolean {
 }
 
 /**
- * Compose a display string from a normalized error. When the message already
- * carries the body (Anthropic / `@google/genai` happy path) or no body/status
- * was extracted, the message is returned unchanged. Otherwise the status and
- * body are surfaced, with an optional provider prefix.
+ * 根据规范化错误对象拼接展示字符串。若消息本身已包含响应体
+ * （Anthropic / `@google/genai` 的正常路径），或未提取到 body/status，
+ * 则原样返回消息；否则会展示状态码与响应体，并可选加上提供商前缀。
  *
- * - no prefix: `"<status>: <body>"`
- * - prefix:    `"<prefix> (<status>): <body>"`
+ * - 无前缀：`"<status>: <body>"`
+ * - 有前缀：`"<prefix> (<status>): <body>"`
  */
 export function formatProviderError(norm: NormalizedProviderError, prefix?: string): string {
 	if (norm.messageCarriesBody || norm.status === undefined || norm.body === undefined) {
@@ -125,3 +121,4 @@ export function safeJsonStringify(value: unknown): string {
 		return String(value);
 	}
 }
+/** 模块职责：实现 packages/ai/src\utils\error-body.ts 相关的模型、协议或工具逻辑。 */

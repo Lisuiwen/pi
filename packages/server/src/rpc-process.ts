@@ -1,3 +1,7 @@
+/**
+ * 模块职责：实现 packages/server/src/rpc-process.ts 中的核心功能。
+ */
+
 import { type ChildProcess, spawn } from "node:child_process";
 import { randomUUID } from "node:crypto";
 import { createRequire } from "node:module";

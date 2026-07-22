@@ -1,3 +1,6 @@
+/**
+ * 模块职责：实现 coding-agent 源码模块「package-manager-cli.ts」，负责相关命令行、会话、工具或基础设施逻辑。
+ */
 import { join } from "node:path";
 import { Markdown, type MarkdownTheme } from "@earendil-works/pi-tui";
 import chalk from "chalk";

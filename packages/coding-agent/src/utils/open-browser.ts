@@ -1,3 +1,6 @@
+/**
+ * 模块职责：实现 coding-agent 源码模块「utils\open-browser.ts」，负责相关命令行、会话、工具或基础设施逻辑。
+ */
 import { spawn } from "node:child_process";
 
 /**
@@ -15,7 +18,7 @@ export function openBrowser(target: string): void {
 				? ["rundll32", ["url.dll,FileProtocolHandler", target]]
 				: ["xdg-open", [target]];
 
-	// spawn reports launcher failures (for example, missing xdg-open) via an
+	// spawn reports launcher failures (例如， missing xdg-open) via an
 	// error event. Browser launch is best-effort: callers still present the target
 	// to the user, so keep the launcher failure from becoming a process crash.
 	spawn(cmd, args, { stdio: "ignore", detached: true })

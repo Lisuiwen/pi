@@ -1,3 +1,6 @@
+/**
+ * 模块职责：实现 coding-agent 源码模块「core\model-registry.ts」，负责相关命令行、会话、工具或基础设施逻辑。
+ */
 import type { Api, AuthResult, Model, Provider } from "@earendil-works/pi-ai";
 import type { ModelRuntime } from "./model-runtime.ts";
 import type { AuthStatus, ProviderConfigInput } from "./provider-composer.ts";

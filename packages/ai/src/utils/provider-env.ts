@@ -1,16 +1,17 @@
+/** 模块职责：实现 packages/ai/src\utils\provider-env.ts 相关的模型、协议或工具逻辑。 */
 import type { ProviderEnv } from "../types.ts";
 
 let procEnvCache: Map<string, string> | null = null;
 
 /**
- * Fallback for https://github.com/oven-sh/bun/issues/27802.
- * Bun compiled binaries can expose an empty process.env inside Linux sandboxes
- * even though /proc/self/environ contains the environment.
+ * 针对 https://github.com/oven-sh/bun/issues/27802 的回退逻辑。
+ * 某些 Linux 沙箱中的 Bun 编译产物会暴露一个空的 `process.env`，
+ * 即使 `/proc/self/environ` 实际上仍包含环境变量。
  *
- * This intentionally duplicates restoreSandboxEnv() in
- * packages/coding-agent/src/bun/restore-sandbox-env.ts. The ai package can be
- * used directly, without going through that entrypoint, so provider env lookup
- * must not depend on process.env having been patched.
+ * 这里有意复制 `packages/coding-agent/src/bun/restore-sandbox-env.ts`
+ * 中的 `restoreSandboxEnv()` 逻辑。`ai` 包可能被直接使用，
+ * 不一定经过那个入口，因此提供商环境变量解析不能依赖
+ * `process.env` 已被提前修补。
  */
 function getBunSandboxEnvValue(name: string): string | undefined {
 	if (typeof process === "undefined" || !process.versions?.bun || Object.keys(process.env).length > 0) {
@@ -31,7 +32,7 @@ function getBunSandboxEnvValue(name: string): string | undefined {
 				}
 			}
 		} catch {
-			// /proc/self/environ may not exist or may not be readable.
+			// `/proc/self/environ` 可能不存在，或当前进程无权读取。
 		}
 	}
 
@@ -39,8 +40,8 @@ function getBunSandboxEnvValue(name: string): string | undefined {
 }
 
 /**
- * Resolve a provider env value from scoped overrides, normal process.env, then
- * the duplicated Bun sandbox fallback for direct pi-ai consumers.
+ * 依次从作用域覆盖值、常规 `process.env`，以及为直接 `pi-ai`
+ * 使用方准备的 Bun 沙箱回退逻辑中解析提供商环境变量。
  */
 export function getProviderEnvValue(name: string, env?: ProviderEnv): string | undefined {
 	return (
@@ -50,3 +51,4 @@ export function getProviderEnvValue(name: string, env?: ProviderEnv): string | u
 		undefined
 	);
 }
+/** 模块职责：实现 packages/ai/src\utils\provider-env.ts 相关的模型、协议或工具逻辑。 */

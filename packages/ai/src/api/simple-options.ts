@@ -1,3 +1,4 @@
+/** 模块职责：实现 packages/ai/src\api\simple-options.ts 相关的模型、协议或工具逻辑。 */
 import type {
 	Api,
 	Context,
@@ -49,7 +50,7 @@ export function clampReasoning(effort: ThinkingLevel | undefined): Exclude<Think
 }
 
 export function adjustMaxTokensForThinking(
-	// Undefined means no explicit caller cap. Use the model cap and fit thinking inside it.
+	// undefined 表示调用方未显式限制上限。此时使用模型上限，并让 thinking 预算落在其内。
 	baseMaxTokens: number | undefined,
 	modelMaxTokens: number,
 	reasoningLevel: ThinkingLevel,
@@ -75,3 +76,4 @@ export function adjustMaxTokensForThinking(
 
 	return { maxTokens, thinkingBudget };
 }
+/** 模块职责：实现 packages/ai/src\api\simple-options.ts 相关的模型、协议或工具逻辑。 */

@@ -1,12 +1,12 @@
-> pi can create prompt templates. Ask it to build one for your workflow.
+> pi 可以创建提示词模板。让它为你的工作流构建一个模板。
 
-# Prompt Templates
+# 提示词模板
 
-Prompt templates are Markdown snippets that expand into full prompts. Type `/name` in the editor to invoke a template, where `name` is the filename without `.md`.
+提示词模板是可展开为完整提示词的 Markdown 片段。在编辑器中输入 `/name` 调用模板，其中 `name` 是去掉 `.md` 后缀的文件名。
 
-## Locations
+## 位置
 
-Pi loads prompt templates from:
+Pi 从以下位置加载提示词模板：
 
 - Global: `~/.pi/agent/prompts/*.md`
 - Project: `.pi/prompts/*.md` (only after the project is trusted)
@@ -14,9 +14,9 @@ Pi loads prompt templates from:
 - Settings: `prompts` array with files or directories
 - CLI: `--prompt-template <path>` (repeatable)
 
-Disable discovery with `--no-prompt-templates`.
+使用 `--no-prompt-templates` 禁用发现。
 
-## Format
+## 格式
 
 ```markdown
 ---
@@ -28,13 +28,13 @@ Review the staged changes (`git diff --cached`). Focus on:
 - Error handling gaps
 ```
 
-- The filename becomes the command name. `review.md` becomes `/review`.
-- `description` is optional. If missing, the first non-empty line is used.
-- `argument-hint` is optional. When set, the hint is displayed before the description in the autocomplete dropdown.
+- 文件名会成为命令名。例如 `review.md` 变为 `/review`。
+- `description` 可选。缺失时使用第一行非空文本。
+- `argument-hint` 可选。设置后，自动补全下拉框会在描述前显示提示。
 
-### Argument Hints
+### 参数提示
 
-Use `argument-hint` in frontmatter to show expected arguments in autocomplete. Use `<angle brackets>` for required arguments and `[square brackets]` for optional ones:
+在 frontmatter 中使用 `argument-hint`，即可在自动补全中显示预期参数。必需参数使用 `<尖括号>`，可选参数使用 `[方括号]`：
 
 ```markdown
 ---
@@ -52,9 +52,9 @@ This renders in the autocomplete dropdown as:
   cl   — Audit changelog entries before release
 ```
 
-## Usage
+## 用法
 
-Type `/` followed by the template name in the editor. Autocomplete shows available templates with descriptions.
+在编辑器中输入 `/` 加模板名。自动补全会显示可用模板及描述。
 
 ```
 /review                           # Expands review.md
@@ -62,9 +62,9 @@ Type `/` followed by the template name in the editor. Autocomplete shows availab
 /component Button "click handler" # Multiple arguments
 ```
 
-## Arguments
+## 参数
 
-Templates support positional arguments, defaults, and simple slicing:
+模板支持位置参数、默认值和简单切片：
 
 - `$1`, `$2`, ... positional args
 - `$@` or `$ARGUMENTS` for all args joined
@@ -82,7 +82,7 @@ description: Create a component
 Create a React component named $1 with features: $@
 ```
 
-Default values are useful for optional arguments:
+默认值适用于可选参数：
 
 ```markdown
 Summarize the current state in ${1:-7} bullet points.
@@ -90,7 +90,7 @@ Summarize the current state in ${1:-7} bullet points.
 
 Usage: `/component Button "onClick handler" "disabled support"`
 
-## Loading Rules
+## 加载规则
 
-- Template discovery in `prompts/` is non-recursive.
-- If you want templates in subdirectories, add them explicitly via `prompts` settings or a package manifest.
+- `prompts/` 中的模板发现不会递归子目录。
+- 如需使用子目录中的模板，请通过 `prompts` 设置或包清单显式添加。

@@ -1,3 +1,4 @@
+/** 模块职责：实现 packages/ai/src\providers\mistral.ts 相关的模型、协议或工具逻辑。 */
 import { mistralConversationsApi } from "../api/mistral-conversations.lazy.ts";
 import { envApiKeyAuth } from "../auth/helpers.ts";
 import { createProvider, type Provider } from "../models.ts";
@@ -13,3 +14,4 @@ export function mistralProvider(): Provider<"mistral-conversations"> {
 		api: mistralConversationsApi(),
 	});
 }
+/** 模块职责：实现 packages/ai/src\providers\mistral.ts 相关的模型、协议或工具逻辑。 */

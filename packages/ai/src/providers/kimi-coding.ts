@@ -1,3 +1,4 @@
+/** 模块职责：实现 packages/ai/src\providers\kimi-coding.ts 相关的模型、协议或工具逻辑。 */
 import { anthropicMessagesApi } from "../api/anthropic-messages.lazy.ts";
 import { envApiKeyAuth, lazyOAuth } from "../auth/helpers.ts";
 import { loadKimiCodingOAuth } from "../auth/oauth/load.ts";
@@ -21,3 +22,4 @@ export function kimiCodingProvider(): Provider<"anthropic-messages"> {
 		api: anthropicMessagesApi(),
 	});
 }
+/** 模块职责：实现 packages/ai/src\providers\kimi-coding.ts 相关的模型、协议或工具逻辑。 */

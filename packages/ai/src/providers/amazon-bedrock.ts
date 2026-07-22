@@ -1,12 +1,13 @@
+/** 模块职责：实现 packages/ai/src\providers\amazon-bedrock.ts 相关的模型、协议或工具逻辑。 */
 import { bedrockConverseStreamApi } from "../api/bedrock-converse-stream.lazy.ts";
 import type { ApiKeyAuth } from "../auth/types.ts";
 import { createProvider, type Provider } from "../models.ts";
 import { AMAZON_BEDROCK_MODELS } from "./amazon-bedrock.models.ts";
 
 /**
- * Bedrock accepts a bearer token or the AWS SDK's default credential chain.
- * The login flow can store a token/profile choice; resolve also detects ambient
- * AWS credentials without copying them into pi's credential store.
+ * Bedrock 支持使用 bearer token 或 AWS SDK 的默认凭证链。
+ * 登录流程可以存储 token 或 profile 选择；`resolve` 也会检测当前环境中的
+ * AWS 凭证，而不会把它们复制到 pi 的凭证存储中。
  */
 const bedrockAuth: ApiKeyAuth = {
 	name: "AWS credentials or bearer token",
@@ -80,3 +81,4 @@ export function amazonBedrockProvider(): Provider<"bedrock-converse-stream"> {
 		api: bedrockConverseStreamApi(),
 	});
 }
+/** 模块职责：实现 packages/ai/src\providers\amazon-bedrock.ts 相关的模型、协议或工具逻辑。 */

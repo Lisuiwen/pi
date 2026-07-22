@@ -1,3 +1,6 @@
+/**
+ * 模块职责：实现 coding-agent 源码模块「core\tools\file-mutation-queue.ts」，负责相关命令行、会话、工具或基础设施逻辑。
+ */
 import { realpath } from "node:fs/promises";
 import { resolve } from "node:path";
 
@@ -26,8 +29,8 @@ async function getMutationQueueKey(filePath: string): Promise<string> {
 }
 
 /**
- * Serialize file mutation operations targeting the same file.
- * Operations for different files still run in parallel.
+ * 串行执行针对同一文件的修改操作。
+ * 不同文件的操作仍会并行运行。
  */
 export async function withFileMutationQueue<T>(filePath: string, fn: () => Promise<T>): Promise<T> {
 	const registration = registrationQueue.then(async () => {

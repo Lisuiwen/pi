@@ -1,3 +1,7 @@
+/**
+ * 模块职责：实现 packages/server/src/radius.ts 中的核心功能。
+ */
+
 import { hostname, platform } from "node:os";
 import type { OAuthCredential } from "@earendil-works/pi-ai";
 import { readStoredCredential } from "@earendil-works/pi-coding-agent";

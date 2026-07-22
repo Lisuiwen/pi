@@ -1,3 +1,4 @@
+/** 模块职责：实现 packages/ai/src\providers\minimax.ts 相关的模型、协议或工具逻辑。 */
 import { anthropicMessagesApi } from "../api/anthropic-messages.lazy.ts";
 import { envApiKeyAuth } from "../auth/helpers.ts";
 import { createProvider, type Provider } from "../models.ts";
@@ -13,3 +14,4 @@ export function minimaxProvider(): Provider<"anthropic-messages"> {
 		api: anthropicMessagesApi(),
 	});
 }
+/** 模块职责：实现 packages/ai/src\providers\minimax.ts 相关的模型、协议或工具逻辑。 */

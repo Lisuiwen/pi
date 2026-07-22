@@ -1,3 +1,4 @@
+/** 模块职责：实现 packages/agent/src\harness\types.ts 的 Agent 运行时逻辑。 */
 import type {
 	ImageContent,
 	Model,
@@ -11,31 +12,31 @@ import type {
 import type { AgentEvent, AgentMessage, AgentTool, QueueMode, ThinkingLevel } from "../index.ts";
 import type { Session } from "./session/session.ts";
 
-/** Result of a fallible operation. Expected failures are returned as `ok: false` instead of thrown. */
+/** 可能失败的操作结果。预期内的失败以 `ok: false` 返回，而不是抛出。 */
 export type Result<TValue, TError> = { ok: true; value: TValue } | { ok: false; error: TError };
 
-/** Create a successful {@link Result}. */
+/** 创建成功的 {@link Result}。 */
 export function ok<TValue, TError>(value: TValue): Result<TValue, TError> {
 	return { ok: true, value };
 }
 
-/** Create a failed {@link Result}. */
+/** 创建失败的 {@link Result}。 */
 export function err<TValue, TError>(error: TError): Result<TValue, TError> {
 	return { ok: false, error };
 }
 
-/** Return the success value or throw the failure error. Intended for tests and explicit adapter boundaries. */
+/** 返回成功值，或抛出失败错误。用于测试和明确的适配器边界。 */
 export function getOrThrow<TValue, TError>(result: Result<TValue, TError>): TValue {
 	if (!result.ok) throw result.error;
 	return result.value;
 }
 
-/** Return the success value or `undefined`. Only object values are allowed to avoid truthiness bugs with primitives. */
+/** 返回成功值或 `undefined`。仅允许对象值，以避免原始值的真值判断错误。 */
 export function getOrUndefined<TValue extends object, TError>(result: Result<TValue, TError>): TValue | undefined {
 	return result.ok ? result.value : undefined;
 }
 
-/** Normalize unknown thrown values into Error instances before using them as typed error causes. */
+/** 将未知的抛出值规范化为 Error 实例，再作为带类型错误的 cause 使用。 */
 export function toError(error: unknown): Error {
 	if (error instanceof Error) return error;
 	if (typeof error === "string") return new Error(error);
@@ -47,76 +48,76 @@ export function toError(error: unknown): Error {
 }
 
 /**
- * Skill loaded from a `SKILL.md` file or provided by an application.
+ * 从 `SKILL.md` 文件加载或由应用提供的技能。
  *
- * `name`, `description`, and `filePath` are inserted into the system prompt in an XML-formatted block as suggested by agentskills.io.
- * Use {@link formatSkillsForSystemPrompt} to generate the spec-compatible system prompt block.
+ * `name`、`description` 和 `filePath` 会按 agentskills.io 的建议，以 XML 格式块插入系统提示。
+ * 使用 {@link formatSkillsForSystemPrompt} 生成兼容规范的系统提示块。
  */
 export interface Skill {
-	/** Stable skill name used for lookup and model-visible listings. */
+	/** 用于查找和模型可见列表的稳定技能名称。 */
 	name: string;
-	/** Short model-visible description of when to use the skill. */
+	/** 模型可见的简短说明，描述何时使用该技能。 */
 	description: string;
-	/** Full skill instructions. */
+	/** 完整的技能指令。 */
 	content: string;
-	/** Absolute path to the skill file. Used for model-visible location and resolving relative references. */
+	/** 技能文件的绝对路径，用于模型可见位置和解析相对引用。 */
 	filePath: string;
-	/** Exclude this skill from model-visible skill lists while still allowing explicit application invocation. */
+	/** 从模型可见技能列表中排除该技能，但仍允许应用显式调用。 */
 	disableModelInvocation?: boolean;
 }
 
-/** Prompt template that can be formatted into a prompt for explicit invocation. */
+/** 可格式化为提示并显式调用的提示模板。 */
 export interface PromptTemplate {
-	/** Stable template name used for lookup or application command routing. */
+	/** 用于查找或应用命令路由的稳定模板名称。 */
 	name: string;
-	/** Optional description for command lists or autocomplete. */
+	/** 用于命令列表或自动补全的可选说明。 */
 	description?: string;
-	/** Template content. Argument placeholders are formatted by `formatPromptTemplateInvocation`. */
+	/** 模板内容。参数占位符由 `formatPromptTemplateInvocation` 格式化。 */
 	content: string;
 }
 
-/** Resources made available to explicit invocation methods and system-prompt callbacks. */
+/** 提供给显式调用方法和系统提示回调的资源。 */
 export interface AgentHarnessResources<
 	TSkill extends Skill = Skill,
 	TPromptTemplate extends PromptTemplate = PromptTemplate,
 > {
-	/** Prompt templates available for explicit invocation. */
+	/** 可供显式调用的提示模板。 */
 	promptTemplates?: TPromptTemplate[];
-	/** Skills available to the model and explicit skill invocation. */
+	/** 可供模型使用和显式调用的技能。 */
 	skills?: TSkill[];
 }
 
-/** Curated provider request options owned by the harness and snapshotted per turn. */
+/** 由应用框架管理、并在每回合创建快照的提供商请求选项。 */
 export interface AgentHarnessStreamOptions {
-	/** Preferred transport forwarded to the stream function. */
+	/** 转发给流函数的首选传输方式。 */
 	transport?: Transport;
-	/** Provider request timeout in milliseconds. */
+	/** 提供商请求超时时间，单位为毫秒。 */
 	timeoutMs?: number;
-	/** Maximum provider retry attempts. */
+	/** 提供商请求的最大重试次数。 */
 	maxRetries?: number;
-	/** Optional cap for provider-requested retry delays. */
+	/** 提供商请求的重试延迟可选上限。 */
 	maxRetryDelayMs?: number;
-	/** Additional request headers merged with auth and lifecycle headers. */
+	/** 与认证及生命周期标头合并的附加请求标头。 */
 	headers?: Record<string, string>;
-	/** Provider metadata forwarded with requests. */
+	/** 随请求转发的提供商元数据。 */
 	metadata?: SimpleStreamOptions["metadata"];
-	/** Provider cache retention hint. */
+	/** 提供商缓存保留提示。 */
 	cacheRetention?: SimpleStreamOptions["cacheRetention"];
 }
 
-/** Per-request stream option patch returned by provider hooks. */
+/** 提供商钩子针对单次请求返回的流选项补丁。 */
 export interface AgentHarnessStreamOptionsPatch
 	extends Omit<Partial<AgentHarnessStreamOptions>, "headers" | "metadata"> {
-	/** Header patch. `undefined` values delete keys; explicit `headers: undefined` clears all headers. */
+	/** 标头补丁。值为 `undefined` 时删除对应键；显式设置 `headers: undefined` 会清空所有标头。 */
 	headers?: Record<string, string | undefined>;
-	/** Metadata patch. `undefined` values delete keys; explicit `metadata: undefined` clears all metadata. */
+	/** 元数据补丁。值为 `undefined` 时删除对应键；显式设置 `metadata: undefined` 会清空所有元数据。 */
 	metadata?: Record<string, unknown | undefined>;
 }
 
-/** Kind of filesystem object as addressed by a {@link FileSystem}. Symlinks are not followed automatically. */
+/** {@link FileSystem} 所寻址的文件系统对象类型。不会自动跟随符号链接。 */
 export type FileKind = "file" | "directory" | "symlink";
 
-/** Stable, backend-independent file error codes returned by {@link FileSystem} file operations. */
+/** {@link FileSystem} 文件操作返回的稳定、独立于后端的错误代码。 */
 export type FileErrorCode =
 	| "aborted"
 	| "not_found"
@@ -127,11 +128,11 @@ export type FileErrorCode =
 	| "not_supported"
 	| "unknown";
 
-/** Error returned by {@link FileSystem} file operations. */
+/** {@link FileSystem} 文件操作返回的错误。 */
 export class FileError extends Error {
-	/** Backend-independent error code. */
+	/** 独立于后端的错误代码。 */
 	public code: FileErrorCode;
-	/** Absolute addressed path associated with the failure, when available. */
+	/** 与失败关联的绝对寻址路径（如有）。 */
 	public path?: string;
 
 	constructor(code: FileErrorCode, message: string, path?: string, cause?: Error) {
@@ -142,7 +143,7 @@ export class FileError extends Error {
 	}
 }
 
-/** Stable, backend-independent execution error codes returned by {@link ExecutionEnv.exec}. */
+/** {@link ExecutionEnv.exec} 返回的稳定、独立于后端的执行错误代码。 */
 export type ExecutionErrorCode =
 	| "aborted"
 	| "timeout"
@@ -151,9 +152,9 @@ export type ExecutionErrorCode =
 	| "callback_error"
 	| "unknown";
 
-/** Error returned by {@link ExecutionEnv.exec}. */
+/** {@link ExecutionEnv.exec} 返回的错误。 */
 export class ExecutionError extends Error {
-	/** Backend-independent error code. */
+	/** 独立于后端的错误代码。 */
 	public code: ExecutionErrorCode;
 
 	constructor(code: ExecutionErrorCode, message: string, cause?: Error) {
@@ -163,12 +164,12 @@ export class ExecutionError extends Error {
 	}
 }
 
-/** Stable compaction error codes returned by compaction helpers. */
+/** 上下文压缩辅助函数返回的稳定错误代码。 */
 export type CompactionErrorCode = "aborted" | "summarization_failed" | "invalid_session" | "unknown";
 
-/** Error returned by compaction helpers. */
+/** 上下文压缩辅助函数返回的错误。 */
 export class CompactionError extends Error {
-	/** Backend-independent error code. */
+	/** 独立于后端的错误代码。 */
 	public code: CompactionErrorCode;
 
 	constructor(code: CompactionErrorCode, message: string, cause?: Error) {
@@ -178,12 +179,12 @@ export class CompactionError extends Error {
 	}
 }
 
-/** Stable branch-summary error codes returned by branch summarization helpers. */
+/** 分支摘要辅助函数返回的稳定错误代码。 */
 export type BranchSummaryErrorCode = "aborted" | "summarization_failed" | "invalid_session";
 
-/** Error returned by branch summarization helpers. */
+/** 分支摘要辅助函数返回的错误。 */
 export class BranchSummaryError extends Error {
-	/** Backend-independent error code. */
+	/** 独立于后端的错误代码。 */
 	public code: BranchSummaryErrorCode;
 
 	constructor(code: BranchSummaryErrorCode, message: string, cause?: Error) {
@@ -201,9 +202,9 @@ export type SessionErrorCode =
 	| "storage"
 	| "unknown";
 
-/** Error thrown by session storage, repositories, and session tree operations. */
+/** 会话存储、仓库和会话树操作抛出的错误。 */
 export class SessionError extends Error {
-	/** Session subsystem error code. */
+	/** 会话子系统错误代码。 */
 	public code: SessionErrorCode;
 
 	constructor(code: SessionErrorCode, message: string, cause?: Error) {
@@ -224,7 +225,7 @@ export type AgentHarnessErrorCode =
 	| "branch_summary"
 	| "unknown";
 
-/** Public AgentHarness failure with a stable top-level classification. */
+/** 具有稳定顶层分类的公开 AgentHarness 错误。 */
 export class AgentHarnessError extends Error {
 	public code: AgentHarnessErrorCode;
 
@@ -235,109 +236,109 @@ export class AgentHarnessError extends Error {
 	}
 }
 
-/** Metadata for one filesystem object in a {@link FileSystem}. */
+/** {@link FileSystem} 中一个文件系统对象的元数据。 */
 export interface FileInfo {
-	/** Basename of {@link path}. */
+	/** {@link path} 的基本名称。 */
 	name: string;
-	/** Absolute, syntactically normalized addressed path in the execution environment. Symlinks are not followed. */
+	/** 执行环境中经过语法规范化的绝对寻址路径。不跟随符号链接。 */
 	path: string;
-	/** Object kind. Symlink targets are not followed; use {@link FileSystem.canonicalPath} explicitly. */
+	/** 对象类型。不跟随符号链接目标；需要时显式使用 {@link FileSystem.canonicalPath}。 */
 	kind: FileKind;
-	/** Size in bytes for the addressed filesystem object. */
+	/** 所寻址文件系统对象的大小，单位为字节。 */
 	size: number;
-	/** Modification time as milliseconds since Unix epoch. */
+	/** 自 Unix 纪元起的修改时间，单位为毫秒。 */
 	mtimeMs: number;
 }
 
 /**
- * Filesystem capability used by the harness.
+ * 应用框架使用的文件系统能力。
  *
- * Paths passed to methods may be absolute or relative to {@link cwd}. Paths returned by file operations are addressed paths
- * in the filesystem namespace, but are not canonicalized through symlinks unless returned by {@link canonicalPath}.
+ * 传给方法的路径可以是绝对路径，也可以相对于 {@link cwd}。文件操作返回的是文件系统命名空间中的寻址路径，
+ * 除非由 {@link canonicalPath} 返回，否则不会通过符号链接规范化。
  *
- * Operation methods must never throw or reject. All filesystem failures, including unexpected backend failures, must be
- * encoded in the returned {@link Result}. Implementations must preserve this invariant.
+ * 操作方法不得抛出异常或拒绝 Promise。包括意外后端故障在内的所有文件系统失败，都必须编码在返回的
+ * {@link Result} 中。实现必须保持此约束。
  */
 export interface FileSystem {
-	/** Current working directory for relative paths. */
+	/** 相对路径所基于的当前工作目录。 */
 	cwd: string;
 
-	/** Return an absolute addressed path without requiring it to exist and without resolving symlinks. */
+	/** 返回绝对寻址路径，不要求路径存在，也不解析符号链接。 */
 	absolutePath(path: string, abortSignal?: AbortSignal): Promise<Result<string, FileError>>;
-	/** Join path segments in the filesystem namespace without requiring the result to exist. */
+	/** 在文件系统命名空间中连接路径片段，不要求结果存在。 */
 	joinPath(parts: string[], abortSignal?: AbortSignal): Promise<Result<string, FileError>>;
-	/** Read a UTF-8 text file. */
+	/** 读取 UTF-8 文本文件。 */
 	readTextFile(path: string, abortSignal?: AbortSignal): Promise<Result<string, FileError>>;
-	/** Read UTF-8 text lines. Implementations should stop once `maxLines` lines have been read. */
+	/** 读取 UTF-8 文本行。读取 `maxLines` 行后实现应停止。 */
 	readTextLines(
 		path: string,
 		options?: { maxLines?: number; abortSignal?: AbortSignal },
 	): Promise<Result<string[], FileError>>;
-	/** Read a binary file. */
+	/** 读取二进制文件。 */
 	readBinaryFile(path: string, abortSignal?: AbortSignal): Promise<Result<Uint8Array, FileError>>;
-	/** Create or overwrite a file, creating parent directories when supported. */
+	/** 创建或覆盖文件；后端支持时同时创建父目录。 */
 	writeFile(path: string, content: string | Uint8Array, abortSignal?: AbortSignal): Promise<Result<void, FileError>>;
-	/** Create or append to a file, creating parent directories when supported. */
+	/** 创建文件或向文件追加内容；后端支持时同时创建父目录。 */
 	appendFile(path: string, content: string | Uint8Array, abortSignal?: AbortSignal): Promise<Result<void, FileError>>;
-	/** Return metadata for the addressed path without following symlinks. */
+	/** 返回所寻址路径的元数据，不跟随符号链接。 */
 	fileInfo(path: string, abortSignal?: AbortSignal): Promise<Result<FileInfo, FileError>>;
-	/** List direct children of a directory without following symlinks. */
+	/** 列出目录的直属子项，不跟随符号链接。 */
 	listDir(path: string, abortSignal?: AbortSignal): Promise<Result<FileInfo[], FileError>>;
-	/** Return the canonical path for an existing path, resolving symlinks where supported. */
+	/** 返回现有路径的规范路径，并在支持时解析符号链接。 */
 	canonicalPath(path: string, abortSignal?: AbortSignal): Promise<Result<string, FileError>>;
-	/** Return false for missing paths. Other errors, such as permission failures, return a {@link FileError}. */
+	/** 路径不存在时返回 false；权限失败等其他错误返回 {@link FileError}。 */
 	exists(path: string, abortSignal?: AbortSignal): Promise<Result<boolean, FileError>>;
-	/** Create a directory. Defaults: `recursive: true`, no abort signal. */
+	/** 创建目录。默认值：`recursive: true`，无中止信号。 */
 	createDir(
 		path: string,
 		options?: { recursive?: boolean; abortSignal?: AbortSignal },
 	): Promise<Result<void, FileError>>;
-	/** Remove a file or directory. Defaults: `recursive: false`, `force: false`, no abort signal. */
+	/** 删除文件或目录。默认值：`recursive: false`、`force: false`，无中止信号。 */
 	remove(
 		path: string,
 		options?: { recursive?: boolean; force?: boolean; abortSignal?: AbortSignal },
 	): Promise<Result<void, FileError>>;
-	/** Create a temporary directory and return its absolute path. Defaults: `prefix: "tmp-"`, no abort signal. */
+	/** 创建临时目录并返回其绝对路径。默认值：`prefix: "tmp-"`，无中止信号。 */
 	createTempDir(prefix?: string, abortSignal?: AbortSignal): Promise<Result<string, FileError>>;
-	/** Create a temporary file and return its absolute path. Defaults: `prefix: ""`, `suffix: ""`, no abort signal. */
+	/** 创建临时文件并返回其绝对路径。默认值：`prefix: ""`、`suffix: ""`，无中止信号。 */
 	createTempFile(options?: {
 		prefix?: string;
 		suffix?: string;
 		abortSignal?: AbortSignal;
 	}): Promise<Result<string, FileError>>;
 
-	/** Release filesystem resources. Must be best-effort and must not throw or reject. */
+	/** 释放文件系统资源。必须尽力执行，且不得抛出异常或拒绝 Promise。 */
 	cleanup(): Promise<void>;
 }
 
-/** Options for {@link Shell.exec}. */
+/** {@link Shell.exec} 的选项。 */
 export interface ShellExecOptions {
-	/** Working directory for the command. Relative paths are resolved against {@link ExecutionEnv.cwd}. Defaults to {@link ExecutionEnv.cwd}. */
+	/** 命令工作目录。相对路径基于 {@link ExecutionEnv.cwd} 解析，默认为 {@link ExecutionEnv.cwd}。 */
 	cwd?: string;
-	/** Additional environment variables for the command. Values override the environment defaults. Defaults to no overrides. */
+	/** 命令的附加环境变量。其值会覆盖环境默认值，默认不覆盖。 */
 	env?: Record<string, string>;
-	/** Timeout in seconds. Implementations should return a timeout error when the command exceeds this duration. Defaults to no timeout. */
+	/** 超时时间，单位为秒。命令超过该时长时实现应返回超时错误，默认不超时。 */
 	timeout?: number;
-	/** Abort signal used to terminate the command. Defaults to no abort signal. */
+	/** 用于终止命令的中止信号，默认无中止信号。 */
 	abortSignal?: AbortSignal;
-	/** Called with stdout chunks as they are produced. */
+	/** 每当产生 stdout 数据块时调用。 */
 	onStdout?: (chunk: string) => void;
-	/** Called with stderr chunks as they are produced. */
+	/** 每当产生 stderr 数据块时调用。 */
 	onStderr?: (chunk: string) => void;
 }
 
-/** Shell execution capability used by the harness. */
+/** 应用框架使用的 shell 执行能力。 */
 export interface Shell {
-	/** Execute a shell command in {@link FileSystem.cwd} unless `options.cwd` is provided. */
+	/** 在 {@link FileSystem.cwd} 中执行 shell 命令，除非提供 `options.cwd`。 */
 	exec(
 		command: string,
 		options?: ShellExecOptions,
 	): Promise<Result<{ stdout: string; stderr: string; exitCode: number }, ExecutionError>>;
-	/** Release shell resources. Must be best-effort and must not throw or reject. */
+	/** 释放 shell 资源。必须尽力执行，且不得抛出异常或拒绝 Promise。 */
 	cleanup(): Promise<void>;
 }
 
-/** Filesystem and process execution environment used by the harness. */
+/** 应用框架使用的文件系统和进程执行环境。 */
 export interface ExecutionEnv extends FileSystem, Shell {}
 
 export interface SessionTreeEntryBase {
@@ -409,7 +410,7 @@ export interface LabelEntry extends SessionTreeEntryBase {
 }
 
 export interface SessionInfoEntry extends SessionTreeEntryBase {
-	type: "session_info"; // legacy name, kept for backwards compatibility
+	type: "session_info"; // 旧名称，为向后兼容而保留
 	name?: string;
 }
 
@@ -466,7 +467,7 @@ export interface SessionEntryCursorOptions {
 export interface SessionStorage<TMetadata extends SessionMetadata = SessionMetadata> {
 	getMetadata(): Promise<TMetadata>;
 	getLeafId(): Promise<string | null>;
-	/** Persist a leaf entry that records the active session-tree leaf. */
+	/** 持久化记录当前会话树叶节点的 leaf 条目。 */
 	setLeafId(leafId: string | null): Promise<void>;
 	createEntryId(): Promise<string>;
 	appendEntry(entry: SessionTreeEntry): Promise<void>;
@@ -751,7 +752,7 @@ export interface SessionBeforeTreeResult {
 	summary?: {
 		summary: string;
 		details?: unknown;
-		/** Usage from the LLM call that generated this summary, if available. */
+		/** 生成此摘要的 LLM 调用用量（如有）。 */
 		usage?: Usage;
 	};
 	customInstructions?: string;
@@ -797,7 +798,7 @@ export interface CompactResult {
 	summary: string;
 	firstKeptEntryId?: string;
 	tokensBefore: number;
-	/** Usage from the LLM call(s) that generated this summary, if available. */
+	/** 生成此摘要的 LLM 调用用量（如有）。 */
 	usage?: Usage;
 	retainedTail?: AgentMessage[];
 	details?: unknown;
@@ -869,15 +870,14 @@ export interface AgentHarnessOptions<
 	env: ExecutionEnv;
 	session: Session;
 	/**
-	 * Provider collection used for all model requests (turn streaming,
-	 * compaction, branch summarization). Auth resolves through the providers'
-	 * auth.
+	 * 所有模型请求（回合流式传输、上下文压缩、分支摘要）使用的提供商集合。
+	 * 认证通过各提供商自身的 auth 解析。
 	 */
 	models: Models;
 	tools?: TTool[];
 	/**
-	 * Concrete resources available to explicit invocation methods and system-prompt callbacks.
-	 * Applications own loading/reloading resources and should call `setResources()` with new values.
+	 * 提供给显式调用方法和系统提示回调的具体资源。
+	 * 应用负责加载或重新加载资源，并应使用新值调用 `setResources()`。
 	 */
 	resources?: AgentHarnessResources<TSkill, TPromptTemplate>;
 	systemPrompt?:
@@ -890,9 +890,9 @@ export interface AgentHarnessOptions<
 				activeTools: TTool[];
 				resources: AgentHarnessResources<TSkill, TPromptTemplate>;
 		  }) => string | Promise<string>);
-	/** Curated stream/provider request options. Snapshotted at turn start. */
+	/** 精选的流/提供商请求选项，在回合开始时创建快照。 */
 	streamOptions?: AgentHarnessStreamOptions;
-	/** Optional retry policy for generated compaction and branch-summary requests. */
+	/** 生成上下文压缩和分支摘要请求时使用的可选重试策略。 */
 	retry?: RetryPolicy;
 	model: Model<any>;
 	thinkingLevel?: ThinkingLevel;

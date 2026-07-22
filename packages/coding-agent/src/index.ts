@@ -1,3 +1,6 @@
+/**
+ * 模块职责：实现 coding-agent 源码模块「index.ts」，负责相关命令行、会话、工具或基础设施逻辑。
+ */
 // Core session management
 
 export { type Args, parseArgs } from "./cli/args.ts";

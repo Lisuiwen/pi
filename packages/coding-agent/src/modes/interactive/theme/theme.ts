@@ -1,3 +1,6 @@
+/**
+ * 模块职责：实现 coding-agent 源码模块「modes\interactive\theme\theme.ts」，负责相关命令行、会话、工具或基础设施逻辑。
+ */
 import * as fs from "node:fs";
 import * as path from "node:path";
 import type { ThinkingLevel } from "@earendil-works/pi-agent-core";
@@ -840,7 +843,7 @@ export function initTheme(themeName?: string, enableWatcher: boolean = false): v
 			startThemeWatcher();
 		}
 	} catch (_error) {
-		// Theme is invalid - fall back to dark theme silently
+		// 主题位于valid - fall back to dark theme silently
 		currentThemeName = "dark";
 		setGlobalTheme(loadTheme("dark"));
 		// Don't start watcher for fallback theme
@@ -859,7 +862,7 @@ export function setTheme(name: string, enableWatcher: boolean = false): { succes
 		}
 		return { success: true };
 	} catch (error) {
-		// Theme is invalid - fall back to dark theme
+		// 主题位于valid - fall back to dark theme
 		currentThemeName = "dark";
 		setGlobalTheme(loadTheme("dark"));
 		// Don't start watcher for fallback theme
@@ -1052,7 +1055,7 @@ export function isLightTheme(themeName?: string): boolean {
 
 /**
  * Get explicit export colors from theme JSON, if specified.
- * Returns undefined for each color that isn't explicitly set.
+ * 返回 undefined for each color that isn't explicitly set.
  */
 export function getThemeExportColors(themeName?: string): {
 	pageBg?: string;
@@ -1133,7 +1136,7 @@ function getCliHighlightTheme(t: Theme): CliHighlightTheme {
 
 /**
  * Highlight code with syntax coloring based on file extension or language.
- * Returns array of highlighted lines.
+ * 返回 array of highlighted lines.
  */
 export function highlightCode(code: string, lang?: string): string[] {
 	// Validate language before highlighting to avoid stderr spam from cli-highlight

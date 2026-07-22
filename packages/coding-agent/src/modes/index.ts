@@ -1,5 +1,8 @@
 /**
- * Run modes for the coding agent.
+ * 模块职责：实现 coding-agent 源码模块「modes\index.ts」，负责相关命令行、会话、工具或基础设施逻辑。
+ */
+/**
+ * Run modes for the 编码代理.
  */
 
 export { InteractiveMode, type InteractiveModeOptions } from "./interactive/interactive-mode.ts";

@@ -1,4 +1,7 @@
 /**
+ * 模块职责：实现 coding-agent 源码模块「core\compaction\compaction.ts」，负责相关命令行、会话、工具或基础设施逻辑。
+ */
+/**
  * Context compaction for long sessions.
  *
  * Pure functions for compaction logic. The session manager handles I/O,
@@ -75,7 +78,7 @@ function extractFileOperations(
 
 /**
  * Extract AgentMessage from an entry if it produces one.
- * Returns undefined for entries that don't contribute to LLM context.
+ * 返回 undefined for entries that don't contribute to LLM context.
  */
 function getMessageFromEntryForCompaction(entry: SessionEntry): AgentMessage | undefined {
 	if (entry.type === "compaction") {
@@ -92,7 +95,7 @@ export interface CompactionResult<T = unknown> {
 	estimatedTokensAfter?: number;
 	/** Usage from the LLM call(s) that generated this summary, if available */
 	usage?: Usage;
-	/** Extension-specific data (e.g., ArtifactIndex, version markers for structured compaction) */
+	/** Extension-specific data (例如： ArtifactIndex, version markers for structured compaction) */
 	details?: T;
 }
 
@@ -364,7 +367,7 @@ function findValidCutPoints(entries: SessionEntry[], startIndex: number, endInde
 
 /**
  * Find the context-visible user-role message that starts the turn containing the given entry index.
- * Returns -1 if no turn start found before the index.
+ * 返回 -1 if no turn start found before the index.
  */
 export function findTurnStartIndex(entries: SessionEntry[], entryIndex: number, startIndex: number): number {
 	for (let i = entryIndex; i >= startIndex; i--) {
@@ -393,7 +396,7 @@ export interface CutPointResult {
  * Can cut at user OR assistant messages (never tool results). When cutting at an
  * assistant message with tool calls, its tool results come after and will be kept.
  *
- * Returns CutPointResult with:
+ * 返回 CutPointResult with:
  * - firstKeptEntryIndex: the entry index to start keeping from
  * - turnStartIndex: if cutting mid-turn, the user message that started that turn
  * - isSplitTurn: whether we're cutting in the middle of a turn
@@ -801,7 +804,7 @@ Be concise. Focus on what's needed to understand the kept suffix.`;
 
 /**
  * Generate summaries for compaction using prepared data.
- * Returns CompactionResult - SessionManager adds uuid/parentUuid when saving.
+ * 返回 CompactionResult - SessionManager adds uuid/parentUuid when saving.
  *
  * @param preparation - Pre-calculated preparation from prepareCompaction()
  * @param customInstructions - Optional custom focus for the summary

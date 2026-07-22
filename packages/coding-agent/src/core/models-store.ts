@@ -1,3 +1,6 @@
+/**
+ * 模块职责：实现 coding-agent 源码模块「core\models-store.ts」，负责相关命令行、会话、工具或基础设施逻辑。
+ */
 import { join } from "node:path";
 import type { ModelsStore, ModelsStoreEntry } from "@earendil-works/pi-ai";
 import { getAgentDir } from "../config.ts";

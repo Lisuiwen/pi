@@ -1,10 +1,10 @@
 ---
-description: Worker implements, reviewer reviews, worker applies feedback
+description: worker 实施，reviewer 审查，worker 应用反馈
 ---
-Use the subagent tool with the chain parameter to execute this workflow:
+使用带有 chain 参数的 subagent 工具执行此工作流：
 
-1. First, use the "worker" agent to implement: $@
-2. Then, use the "reviewer" agent to review the implementation from the previous step (use {previous} placeholder)
-3. Finally, use the "worker" agent to apply the feedback from the review (use {previous} placeholder)
+1. 首先使用 "worker" Agent 实施：$@
+2. 然后使用 "reviewer" Agent 审查上一步的实施结果（使用 {previous} 占位符）
+3. 最后使用 "worker" Agent 应用审查反馈（使用 {previous} 占位符）
 
-Execute this as a chain, passing output between steps via {previous}.
+将其作为链执行，并通过 {previous} 在步骤之间传递输出。

@@ -1,3 +1,6 @@
+/**
+ * 模块职责：实现 coding-agent 源码模块「utils\image-resize-core.ts」，负责相关命令行、会话、工具或基础设施逻辑。
+ */
 import { applyExifOrientation } from "./exif-orientation.ts";
 import { loadPhoton } from "./photon.ts";
 
@@ -45,7 +48,7 @@ function encodeCandidate(buffer: Uint8Array, mimeType: string): EncodedCandidate
 
 /**
  * Resize an image to fit within the specified max dimensions and encoded file size.
- * Returns null if the image cannot be resized below maxBytes.
+ * 返回 null if the image cannot be resized below maxBytes.
  *
  * Uses Photon (Rust/WASM) for image processing. If Photon is not available,
  * returns null.

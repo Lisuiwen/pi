@@ -1,3 +1,4 @@
+/** 模块职责：实现 packages/ai/src\providers\opencode.ts 相关的模型、协议或工具逻辑。 */
 import { anthropicMessagesApi } from "../api/anthropic-messages.lazy.ts";
 import { googleGenerativeAIApi } from "../api/google-generative-ai.lazy.ts";
 import { openAICompletionsApi } from "../api/openai-completions.lazy.ts";
@@ -22,3 +23,4 @@ export function opencodeProvider(): Provider<
 		},
 	});
 }
+/** 模块职责：实现 packages/ai/src\providers\opencode.ts 相关的模型、协议或工具逻辑。 */

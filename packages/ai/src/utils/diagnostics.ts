@@ -1,3 +1,4 @@
+/** 模块职责：实现 packages/ai/src\utils\diagnostics.ts 相关的模型、协议或工具逻辑。 */
 export interface DiagnosticErrorInfo {
 	name?: string;
 	message: string;
@@ -43,3 +44,4 @@ export function appendAssistantMessageDiagnostic<T extends { diagnostics?: Assis
 ): void {
 	message.diagnostics = [...(message.diagnostics ?? []), diagnostic];
 }
+/** 模块职责：实现 packages/ai/src\utils\diagnostics.ts 相关的模型、协议或工具逻辑。 */

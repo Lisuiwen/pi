@@ -1,21 +1,25 @@
+/**
+ * 模块职责：实现 packages/storage/sqlite-node/src/sqlite/types.ts 中的核心功能。
+ */
+
 import type { FileSystem, SessionCreateOptions, SessionMetadata, SessionRepo } from "@earendil-works/pi-agent-core";
 
-/** Result of a prepared SQLite statement execution. */
+/** ……的结果：已准备 SQLite 语句的执行结果. */
 export interface SqliteRunResult {
-	/** Number of rows changed by the statement. */
+	/** 数量：语句变更的行数. */
 	changes: number;
-	/** Inserted row id when the backend exposes one. */
+	/** 后端提供的插入行 ID. */
 	lastInsertRowid?: number;
 }
 
-/** Prepared SQLite statement capability used by the SQLite session backend. */
+/** 已准备的SQLite SQLite 会话后端使用的语句能力. */
 export interface SqliteStatement {
 	run(...params: unknown[]): Promise<SqliteRunResult>;
 	get<TRow extends object>(...params: unknown[]): Promise<TRow | undefined>;
 	all<TRow extends object>(...params: unknown[]): Promise<TRow[]>;
 }
 
-/** SQLite database capability used by the SQLite session backend. */
+/** SQLite SQLite 会话后端使用的数据库能力. */
 export interface SqliteDatabase {
 	exec(sql: string): Promise<void>;
 	prepare(sql: string): SqliteStatement;

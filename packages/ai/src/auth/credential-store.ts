@@ -1,15 +1,16 @@
+/** 模块职责：实现 packages/ai/src\auth\credential-store.ts 相关的模型、协议或工具逻辑。 */
 import type { Credential, CredentialInfo, CredentialStore } from "./types.ts";
 
 /**
- * Default in-memory credential store. Apps inject persistent stores.
- * Keyed by `Provider.id`, one credential per provider; see `CredentialStore`.
- * Writes are serialized per provider through a promise chain.
+ * 默认的内存凭据存储。应用可注入持久化存储。
+ * 以 `Provider.id` 为键，每个提供商保存一个凭据；参见 `CredentialStore`。
+ * 每个提供商的写操作通过 Promise 链串行执行。
  */
 export class InMemoryCredentialStore implements CredentialStore {
 	private credentials = new Map<string, Credential>();
 	private chains = new Map<string, Promise<unknown>>();
 
-	/** Serialize tasks per provider id. */
+	/** 按提供商 id 串行执行任务。 */
 	private enqueue<T>(providerId: string, task: () => Promise<T>): Promise<T> {
 		const previous = this.chains.get(providerId) ?? Promise.resolve();
 		const next = (async () => {
@@ -49,3 +50,4 @@ export class InMemoryCredentialStore implements CredentialStore {
 		});
 	}
 }
+/** 模块职责：实现 packages/ai/src\auth\credential-store.ts 相关的模型、协议或工具逻辑。 */

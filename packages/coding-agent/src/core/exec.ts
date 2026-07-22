@@ -1,24 +1,27 @@
 /**
- * Shared command execution utilities for extensions and custom tools.
+ * 模块职责：实现 coding-agent 源码模块「core\exec.ts」，负责相关命令行、会话、工具或基础设施逻辑。
+ */
+/**
+ * 扩展和自定义工具共用的命令执行工具。
  */
 
 import { spawn } from "node:child_process";
 import { waitForChildProcess } from "../utils/child-process.ts";
 
 /**
- * Options for executing shell commands.
+ * shell 命令执行选项。
  */
 export interface ExecOptions {
-	/** AbortSignal to cancel the command */
+	/** 用于取消命令的 AbortSignal */
 	signal?: AbortSignal;
-	/** Timeout in milliseconds */
+	/** 超时时间（毫秒） */
 	timeout?: number;
-	/** Working directory */
+	/** 工作目录 */
 	cwd?: string;
 }
 
 /**
- * Result of executing a shell command.
+ * shell 命令执行结果。
  */
 export interface ExecResult {
 	stdout: string;
@@ -28,8 +31,8 @@ export interface ExecResult {
 }
 
 /**
- * Execute a shell command and return stdout/stderr/code.
- * Supports timeout and abort signal.
+ * 执行 shell 命令并返回 stdout、stderr 和退出码。
+ * 支持超时和取消信号。
  */
 export async function execCommand(
 	command: string,
@@ -53,7 +56,7 @@ export async function execCommand(
 			if (!killed) {
 				killed = true;
 				proc.kill("SIGTERM");
-				// Force kill after 5 seconds if SIGTERM doesn't work
+				// SIGTERM 无效时，5 秒后强制终止
 				setTimeout(() => {
 					if (!proc.killed) {
 						proc.kill("SIGKILL");
@@ -62,7 +65,7 @@ export async function execCommand(
 			}
 		};
 
-		// Handle abort signal
+		// 处理取消信号
 		if (options?.signal) {
 			if (options.signal.aborted) {
 				killProcess();
@@ -71,7 +74,7 @@ export async function execCommand(
 			}
 		}
 
-		// Handle timeout
+		// 处理超时
 		if (options?.timeout && options.timeout > 0) {
 			timeoutId = setTimeout(() => {
 				killProcess();
@@ -86,8 +89,7 @@ export async function execCommand(
 			stderr += data.toString();
 		});
 
-		// Wait for process termination without hanging on inherited stdio handles
-		// held open by detached descendants.
+		// 等待进程终止，避免因分离的后代进程持有继承的 stdio 句柄而挂起。
 		waitForChildProcess(proc)
 			.then((code) => {
 				if (timeoutId) clearTimeout(timeoutId);

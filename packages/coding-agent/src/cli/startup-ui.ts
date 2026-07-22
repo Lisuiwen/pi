@@ -1,3 +1,6 @@
+/**
+ * 模块职责：实现 coding-agent 源码模块「cli\startup-ui.ts」，负责相关命令行、会话、工具或基础设施逻辑。
+ */
 import { ProcessTerminal, setKeybindings, TUI } from "@earendil-works/pi-tui";
 import { existsSync } from "fs";
 import { APP_NAME, CONFIG_DIR_NAME, ENV_AGENT_DIR, getAgentDir, getSettingsPath, PACKAGE_NAME } from "../config.ts";

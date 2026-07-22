@@ -1,3 +1,6 @@
+/**
+ * 模块职责：实现 coding-agent 源码模块「core\session-manager.ts」，负责相关命令行、会话、工具或基础设施逻辑。
+ */
 import type { AgentMessage } from "@earendil-works/pi-agent-core";
 import { type ImageContent, type Message, type TextContent, type Usage, uuidv7 } from "@earendil-works/pi-ai";
 import { randomUUID } from "crypto";
@@ -71,7 +74,7 @@ export interface CompactionEntry<T = unknown> extends SessionEntryBase {
 	summary: string;
 	firstKeptEntryId: string;
 	tokensBefore: number;
-	/** Extension-specific data (e.g., ArtifactIndex, version markers for structured compaction) */
+	/** Extension-specific data (例如： ArtifactIndex, version markers for structured compaction) */
 	details?: T;
 	/** Usage from the LLM call(s) that generated this summary, if available */
 	usage?: Usage;
@@ -114,7 +117,7 @@ export interface LabelEntry extends SessionEntryBase {
 	label: string | undefined;
 }
 
-/** Session metadata entry (e.g., user-defined display name). */
+/** Session metadata entry (例如： user-defined display name). */
 export interface SessionInfoEntry extends SessionEntryBase {
 	type: "session_info";
 	name?: string;
@@ -276,7 +279,7 @@ function migrateV2ToV3(entries: FileEntry[]): void {
 
 /**
  * Run all necessary migrations to bring entries to current version.
- * Mutates entries in place. Returns true if any migration was applied.
+ * Mutates entries in place. 返回 true if any migration was applied.
  */
 function migrateToCurrentVersion(entries: FileEntry[]): boolean {
 	const header = entries.find((e) => e.type === "session") as SessionHeader | undefined;
@@ -558,7 +561,7 @@ export function loadEntriesFromFile(filePath: string): FileEntry[] {
 /**
  * Inspect a physical line while searching for the first parsed session entry.
  * Blank and malformed lines are skipped to match loadEntriesFromFile().
- * Returns undefined to keep scanning, null for a parsed non-header entry, or the header.
+ * 返回 undefined to keep scanning, null for a parsed non-header entry, or the header.
  */
 function parseSessionHeaderCandidate(line: string): SessionHeader | null | undefined {
 	if (!line.trim()) return undefined;
@@ -1048,7 +1051,7 @@ export class SessionManager {
 		this._persist(entry);
 	}
 
-	/** Append a message as child of current leaf, then advance leaf. Returns entry id.
+	/** Append a message as child of current leaf, then advance leaf. 返回 entry id.
 	 * Does not allow writing CompactionSummaryMessage and BranchSummaryMessage directly.
 	 * Reason: we want these to be top-level entries in the session, not message session entries,
 	 * so it is easier to find them.
@@ -1066,7 +1069,7 @@ export class SessionManager {
 		return entry.id;
 	}
 
-	/** Append a thinking level change as child of current leaf, then advance leaf. Returns entry id. */
+	/** Append a thinking level change as child of current leaf, then advance leaf. 返回 entry id. */
 	appendThinkingLevelChange(thinkingLevel: string): string {
 		const entry: ThinkingLevelChangeEntry = {
 			type: "thinking_level_change",
@@ -1079,7 +1082,7 @@ export class SessionManager {
 		return entry.id;
 	}
 
-	/** Append a model change as child of current leaf, then advance leaf. Returns entry id. */
+	/** Append a model change as child of current leaf, then advance leaf. 返回 entry id. */
 	appendModelChange(provider: string, modelId: string): string {
 		const entry: ModelChangeEntry = {
 			type: "model_change",
@@ -1093,7 +1096,7 @@ export class SessionManager {
 		return entry.id;
 	}
 
-	/** Append a compaction summary as child of current leaf, then advance leaf. Returns entry id. */
+	/** Append a compaction summary as child of current leaf, then advance leaf. 返回 entry id. */
 	appendCompaction<T = unknown>(
 		summary: string,
 		firstKeptEntryId: string,
@@ -1118,7 +1121,7 @@ export class SessionManager {
 		return entry.id;
 	}
 
-	/** Append a custom entry (for extensions) as child of current leaf, then advance leaf. Returns entry id. */
+	/** Append a custom entry (for extensions) as child of current leaf, then advance leaf. 返回 entry id. */
 	appendCustomEntry(customType: string, data?: unknown): string {
 		const entry: CustomEntry = {
 			type: "custom",
@@ -1132,7 +1135,7 @@ export class SessionManager {
 		return entry.id;
 	}
 
-	/** Append a session info entry (e.g., display name). Returns entry id. */
+	/** Append a session info entry (例如： display name). 返回 entry id. */
 	appendSessionInfo(name: string): string {
 		const sanitizedName = name.replace(/[\r\n]+/g, " ").trim();
 		const entry: SessionInfoEntry = {
@@ -1146,7 +1149,7 @@ export class SessionManager {
 		return entry.id;
 	}
 
-	/** Get the current session name from the latest session_info entry, if any. */
+	/** 获取 current session name from the latest session_info entry, if any. */
 	getSessionName(): string | undefined {
 		// Walk entries in reverse to find the latest session_info entry.
 		// Empty names explicitly clear the session title.
@@ -1218,7 +1221,7 @@ export class SessionManager {
 	}
 
 	/**
-	 * Get the label for an entry, if any.
+	 * 获取 label for an entry, if any.
 	 */
 	getLabel(id: string): string | undefined {
 		return this.labelsById.get(id);
@@ -1294,7 +1297,7 @@ export class SessionManager {
 	}
 
 	/**
-	 * Get all session entries (excludes header). Returns a shallow copy.
+	 * Get all session entries (excludes header). 返回 a shallow copy.
 	 * The session is append-only: use appendXXX() to add entries, branch() to
 	 * change the leaf pointer. Entries cannot be modified or deleted.
 	 */
@@ -1303,7 +1306,7 @@ export class SessionManager {
 	}
 
 	/**
-	 * Get the session as a tree structure. Returns a shallow defensive copy of all entries.
+	 * 获取 session as a tree structure. 返回 a shallow defensive copy of all entries.
 	 * A well-formed session has exactly one root (first entry with parentId === null).
 	 * Orphaned entries (broken parent chain) are also returned as roots.
 	 */
@@ -1407,7 +1410,7 @@ export class SessionManager {
 	/**
 	 * Create a new session file containing only the path from root to the specified leaf.
 	 * Useful for extracting a single conversation path from a branched session.
-	 * Returns the new session file path, or undefined if not persisting.
+	 * 返回 the new session file path, or undefined if not persisting.
 	 */
 	createBranchedSession(leafId: string): string | undefined {
 		const previousSessionFile = this.sessionFile;

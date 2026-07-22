@@ -1,8 +1,9 @@
+/** 模块职责：实现 packages/ai/src\auth\oauth\anthropic.ts 相关的模型、协议或工具逻辑。 */
 /**
- * Anthropic OAuth flow (Claude Pro/Max)
+ * Anthropic 的 OAuth 流程（Claude Pro/Max）。
  *
- * NOTE: This module uses Node.js http.createServer for the OAuth callback server.
- * It is only intended for CLI use, not browser environments.
+ * 注意：此模块使用 Node.js 的 `http.createServer` 创建 OAuth 回调服务器。
+ * 它仅适用于 CLI，不适用于浏览器环境。
  */
 
 import type { Server } from "node:http";
@@ -60,7 +61,7 @@ function parseAuthorizationInput(input: string): { code?: string; state?: string
 			state: url.searchParams.get("state") ?? undefined,
 		};
 	} catch {
-		// not a URL
+		// 不是 URL
 	}
 
 	if (value.includes("#")) {
@@ -303,7 +304,7 @@ async function loginAnthropic(interaction: AuthInteraction): Promise<OAuthCreden
 }
 
 /**
- * Refresh Anthropic OAuth token
+ * 刷新 Anthropic OAuth 令牌。
  */
 async function refreshAnthropicToken(refreshToken: string): Promise<OAuthCredential> {
 	let responseBody: string;
@@ -348,3 +349,4 @@ export const anthropicOAuth: OAuthAuth = {
 		return { apiKey: credential.access };
 	},
 };
+/** 模块职责：实现 packages/ai/src\auth\oauth\anthropic.ts 相关的模型、协议或工具逻辑。 */

@@ -1,4 +1,7 @@
 /**
+ * 模块职责：实现 coding-agent 源码模块「cli\list-models.ts」，负责相关命令行、会话、工具或基础设施逻辑。
+ */
+/**
  * List available models with optional fuzzy search
  */
 
@@ -9,7 +12,7 @@ import { formatNoModelsAvailableMessage } from "../core/auth-guidance.ts";
 import type { ModelRuntime } from "../core/model-runtime.ts";
 
 /**
- * Format a number as human-readable (e.g., 200000 -> "200K", 1000000 -> "1M")
+ * Format a number as human-readable (例如： 200000 -> "200K", 1000000 -> "1M")
  */
 function formatTokenCount(count: number): string {
 	if (count >= 1_000_000) {

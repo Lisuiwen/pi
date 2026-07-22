@@ -1,3 +1,6 @@
+/**
+ * 模块职责：实现 coding-agent 源码模块「modes\interactive\components\session-selector.ts」，负责相关命令行、会话、工具或基础设施逻辑。
+ */
 import { spawnSync } from "node:child_process";
 import { existsSync } from "node:fs";
 import { unlink } from "node:fs/promises";
@@ -204,7 +207,7 @@ interface FlatSessionNode {
 
 /**
  * Build a tree structure from sessions based on parentSessionPath.
- * Returns root nodes sorted by modified date (descending).
+ * 返回 root nodes sorted by modified date (descending).
  */
 function buildSessionTree(sessions: SessionInfo[]): SessionTreeNode[] {
 	const byPath = new Map<string, SessionTreeNode>();

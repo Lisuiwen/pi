@@ -1,3 +1,4 @@
+/** 模块职责：实现 packages/ai/src\providers\radius-config.ts 相关的模型、协议或工具逻辑。 */
 import type { OAuthCredential } from "../auth/types.ts";
 import type { Model, ThinkingLevelMap } from "../types.ts";
 
@@ -94,3 +95,4 @@ export async function loadRadiusGatewayConfig(
 	if (!config) throw new Error(`Invalid Radius config from ${gateway}`);
 	return config;
 }
+/** 模块职责：实现 packages/ai/src\providers\radius-config.ts 相关的模型、协议或工具逻辑。 */

@@ -1,3 +1,6 @@
+/**
+ * 模块职责：实现 coding-agent 源码模块「utils\tools-manager.ts」，负责相关命令行、会话、工具或基础设施逻辑。
+ */
 import chalk from "chalk";
 import { type SpawnSyncReturns, spawnSync } from "child_process";
 import { chmodSync, createWriteStream, existsSync, mkdirSync, readdirSync, renameSync, rmSync } from "fs";
@@ -19,10 +22,10 @@ function isOfflineModeEnabled(): boolean {
 
 interface ToolConfig {
 	name: string;
-	repo: string; // GitHub repo (e.g., "sharkdp/fd")
+	repo: string; // GitHub repo (例如： "sharkdp/fd")
 	binaryName: string; // Name of the binary inside the archive
 	systemBinaryNames?: string[]; // Alternative system command names to try before downloading
-	tagPrefix: string; // Prefix for tags (e.g., "v" for v1.0.0, "" for 1.0.0)
+	tagPrefix: string; // Prefix for tags (例如： "v" for v1.0.0, "" for 1.0.0)
 	getAssetName: (version: string, plat: string, architecture: string) => string | null;
 }
 
@@ -81,7 +84,7 @@ function commandExists(cmd: string): boolean {
 	}
 }
 
-// Get the path to a tool (system-wide or in our tools dir)
+// 获取 path to a tool (system-wide or in our tools dir)
 export function getToolPath(tool: "fd" | "rg"): string | null {
 	const config = TOOLS[tool];
 	if (!config) return null;
@@ -322,7 +325,7 @@ const TERMUX_PACKAGES: Record<string, string> = {
 };
 
 // Ensure a tool is available, downloading if necessary
-// Returns the path to the tool, or null if unavailable
+// 返回 the path to the tool, or null if unavailable
 export async function ensureTool(tool: "fd" | "rg", silent: boolean = false): Promise<string | undefined> {
 	const existingPath = getToolPath(tool);
 	if (existingPath) {

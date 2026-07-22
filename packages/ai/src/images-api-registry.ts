@@ -1,3 +1,4 @@
+/** 模块职责：实现 packages/ai/src\images-api-registry.ts 相关的模型、协议或工具逻辑。 */
 import type { AssistantImages, ImagesApi, ImagesContext, ImagesFunction, ImagesModel, ImagesOptions } from "./types.ts";
 
 export type ImagesApiFunction = (
@@ -51,3 +52,4 @@ export function registerImagesApiProvider<TApi extends ImagesApi, TOptions exten
 export function getImagesApiProvider(api: ImagesApi): ImagesApiProviderInternal | undefined {
 	return imagesApiProviderRegistry.get(api)?.provider;
 }
+/** 模块职责：实现 packages/ai/src\images-api-registry.ts 相关的模型、协议或工具逻辑。 */

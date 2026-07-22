@@ -1,3 +1,4 @@
+/** 模块职责：实现 packages/agent/src\harness\session\session.ts 的 Agent 运行时逻辑。 */
 import type { ImageContent, TextContent, Usage } from "@earendil-works/pi-ai";
 import type { AgentMessage } from "../../types.ts";
 import { createBranchSummaryMessage, createCompactionSummaryMessage, createCustomMessage } from "../messages.ts";
@@ -30,9 +31,9 @@ export type CustomEntryContextMessageProjector = (
 ) => readonly AgentMessage[] | undefined;
 
 export interface SessionContextBuildOptions {
-	/** Additional entry transforms applied after the default compaction transform. */
+	/** 在默认上下文压缩转换后应用的附加条目转换。 */
 	entryTransforms?: readonly ContextEntryTransform[];
-	/** Optional custom-entry projectors. Custom entries are omitted from model context by default. */
+	/** 可选的自定义条目投影器。默认从模型上下文中省略自定义条目。 */
 	entryProjectors?: Readonly<Record<string, CustomEntryContextMessageProjector>>;
 }
 

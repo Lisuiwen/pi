@@ -1,3 +1,7 @@
+/**
+ * 模块职责：实现 packages/server/src/supervisor.ts 中的核心功能。
+ */
+
 import { randomUUID } from "node:crypto";
 import type {
 	AgentSessionEvent,
@@ -31,9 +35,9 @@ function cloneInstance(record: InstanceRecord): InstanceRecord {
 	return { ...record };
 }
 
-// Only refresh persisted session metadata after commands that can plausibly change
-// the instance identity/details we store in instances.json. Most RPCs mutate transient
-// runtime state only, so forcing a follow-up get_state after every command is wasted IO.
+// 仅refresh persisted session metadata after commands that can plausibly change
+// instances.json 中保存的实例标识/详情。大多数 RPC 只修改瞬时
+// 运行时状态，因此每条命令后强制调用 get_state 会浪费 IO。
 //
 // - new_session / switch_session / fork / clone can change sessionId/sessionFile
 // - set_session_name changes a persisted session detail we may want reflected externally
@@ -60,6 +64,9 @@ function isGetStateSuccess(
 	return response.success === true && response.command === "get_state" && "data" in response;
 }
 
+/**
+ * 管理服务器实例生命周期、会话状态与 RPC 子进程。
+ */
 export class ServerSupervisor {
 	private readonly liveInstances = new Map<string, LiveInstance>();
 

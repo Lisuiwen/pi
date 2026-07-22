@@ -1,3 +1,4 @@
+/** 模块职责：实现 packages/agent/src\harness\session\jsonl-repo.ts 的 Agent 运行时逻辑。 */
 import type {
 	FileSystem,
 	JsonlSessionCreateOptions,

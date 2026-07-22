@@ -1,3 +1,6 @@
+/**
+ * 模块职责：实现 coding-agent 源码模块「utils\clipboard-image.ts」，负责相关命令行、会话、工具或基础设施逻辑。
+ */
 import { spawnSync } from "child_process";
 import { randomUUID } from "crypto";
 import { readFileSync, unlinkSync } from "fs";
@@ -66,7 +69,7 @@ function isSupportedImageMimeType(mimeType: string): boolean {
 
 /**
  * Convert unsupported image formats to PNG using Photon.
- * Returns null if conversion is unavailable or fails.
+ * 返回 null if conversion is unavailable or fails.
  */
 async function convertToPng(bytes: Uint8Array): Promise<Uint8Array | null> {
 	const photon = await loadPhoton();
@@ -287,7 +290,7 @@ export async function readClipboardImage(options?: {
 		return null;
 	}
 
-	// Convert unsupported formats (e.g., BMP from WSLg) to PNG
+	// Convert unsupported formats (例如： BMP from WSLg) to PNG
 	if (!isSupportedImageMimeType(image.mimeType)) {
 		const pngBytes = await convertToPng(image.bytes);
 		if (!pngBytes) {

@@ -1,3 +1,4 @@
+/** 模块职责：实现 packages/ai/src\api\azure-openai-responses.ts 相关的模型、协议或工具逻辑。 */
 import { AzureOpenAI } from "openai";
 import type { ResponseCreateParamsStreaming } from "openai/resources/responses/responses.js";
 import { clampThinkingLevel } from "../models.ts";
@@ -20,7 +21,7 @@ import { buildBaseOptions } from "./simple-options.ts";
 
 const DEFAULT_AZURE_API_VERSION = "v1";
 const AZURE_TOOL_CALL_PROVIDERS = new Set(["openai", "openai-codex", "opencode", "azure-openai-responses"]);
-// OpenAI Responses rejects max_output_tokens below 16: https://github.com/earendil-works/pi/issues/6265
+// OpenAI Responses 会拒绝小于 16 的 max_output_tokens：https://github.com/earendil-works/pi/issues/6265
 const OPENAI_RESPONSES_MIN_OUTPUT_TOKENS = 16;
 
 function parseDeploymentNameMap(value: string | undefined): Map<string, string> {
@@ -50,7 +51,7 @@ function formatAzureOpenAIError(error: unknown): string {
 	return formatProviderError(normalizeProviderError(error), "Azure OpenAI API error");
 }
 
-// Azure OpenAI Responses-specific options
+// Azure OpenAI Responses 专用选项
 export interface AzureOpenAIResponsesOptions extends StreamOptions {
 	reasoningEffort?: "minimal" | "low" | "medium" | "high" | "xhigh" | "max";
 	reasoningSummary?: "auto" | "detailed" | "concise" | null;
@@ -61,7 +62,7 @@ export interface AzureOpenAIResponsesOptions extends StreamOptions {
 }
 
 /**
- * Generate function for Azure OpenAI Responses API
+ * Azure OpenAI Responses API 的生成函数
  */
 export const stream: StreamFunction<"azure-openai-responses", AzureOpenAIResponsesOptions> = (
 	model: Model<"azure-openai-responses">,
@@ -70,7 +71,7 @@ export const stream: StreamFunction<"azure-openai-responses", AzureOpenAIRespons
 ): AssistantMessageEventStream => {
 	const stream = new AssistantMessageEventStream();
 
-	// Start async processing
+	// 启动异步处理
 	(async () => {
 		const deploymentName = resolveDeploymentName(model, options);
 
@@ -93,7 +94,7 @@ export const stream: StreamFunction<"azure-openai-responses", AzureOpenAIRespons
 		};
 
 		try {
-			// Create Azure OpenAI client
+			// 创建 Azure OpenAI 客户端
 			const apiKey = options?.apiKey;
 			if (!apiKey) {
 				throw new Error(`No API key for provider: ${model.provider}`);
@@ -128,7 +129,7 @@ export const stream: StreamFunction<"azure-openai-responses", AzureOpenAIRespons
 		} catch (error) {
 			for (const block of output.content) {
 				delete (block as { index?: number }).index;
-				// partialJson is only a streaming scratch buffer; never persist it.
+				// partialJson 只是流式处理期间的临时缓冲区，绝不能持久化。
 				delete (block as { partialJson?: string }).partialJson;
 			}
 			output.stopReason = options?.signal?.aborted ? "aborted" : "error";
@@ -176,8 +177,8 @@ function normalizeAzureBaseUrl(baseUrl: string): string {
 		url.hostname.endsWith(".ai.azure.com");
 	const normalizedPath = url.pathname.replace(/\/+$/, "");
 
-	// Ensure Azure hosts have /openai/v1 as base path so the AzureOpenAI SDK
-	// can append /deployments/<model>/... and ?api-version=v1 correctly.
+	// 确保 Azure 主机以 /openai/v1 作为基础路径，以便 AzureOpenAI SDK
+	// 能正确追加 /deployments/<model>/... 和 ?api-version=v1。
 	if (
 		isAzureHost &&
 		(normalizedPath === "" ||
@@ -296,3 +297,4 @@ function buildParams(
 
 	return params;
 }
+/** 模块职责：实现 packages/ai/src\api\azure-openai-responses.ts 相关的模型、协议或工具逻辑。 */

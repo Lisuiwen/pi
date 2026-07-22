@@ -1,11 +1,12 @@
+/** 模块职责：实现 packages/ai/src\auth\oauth\openai-codex.ts 相关的模型、协议或工具逻辑。 */
 /**
- * OpenAI Codex (ChatGPT OAuth) flow
+ * OpenAI Codex（ChatGPT OAuth）登录流程。
  *
- * NOTE: This module uses Node.js crypto and http for the OAuth callback.
- * It is only intended for CLI use, not browser environments.
+ * 注意：此模块使用 Node.js 的 `crypto` 和 `http` 来处理 OAuth 回调。
+ * 它仅面向 CLI 使用，不适用于浏览器环境。
  */
 
-// NEVER convert to top-level imports - breaks browser/Vite builds
+// 绝不要改成顶层导入，否则会破坏浏览器/Vite 构建。
 let _randomBytes: typeof import("node:crypto").randomBytes | null = null;
 let _http: typeof import("node:http") | null = null;
 if (typeof process !== "undefined" && (process.versions?.node || process.versions?.bun)) {
@@ -81,7 +82,7 @@ function parseAuthorizationInput(input: string): { code?: string; state?: string
 			state: url.searchParams.get("state") ?? undefined,
 		};
 	} catch {
-		// not a URL
+		// 不是 URL
 	}
 
 	if (value.includes("#")) {
@@ -501,7 +502,7 @@ async function loginOpenAICodex(interaction: AuthInteraction): Promise<OAuthCred
 }
 
 /**
- * Refresh OpenAI Codex OAuth token
+ * 刷新 OpenAI Codex OAuth 令牌。
  */
 async function refreshOpenAICodexToken(refreshToken: string): Promise<OAuthCredential> {
 	return credentialsFromToken(await refreshAccessToken(refreshToken));
@@ -536,3 +537,4 @@ export const openaiCodexOAuth: OAuthAuth = {
 		return { apiKey: credential.access };
 	},
 };
+/** 模块职责：实现 packages/ai/src\auth\oauth\openai-codex.ts 相关的模型、协议或工具逻辑。 */

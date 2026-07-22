@@ -1,3 +1,6 @@
+/**
+ * 模块职责：实现 coding-agent 源码模块「utils\git.ts」，负责相关命令行、会话、工具或基础设施逻辑。
+ */
 import hostedGitInfo from "hosted-git-info";
 
 /**
@@ -8,9 +11,9 @@ export type GitSource = {
 	type: "git";
 	/** Clone URL (always valid for git clone, without ref suffix) */
 	repo: string;
-	/** Git host domain (e.g., "github.com") */
+	/** Git host domain (例如： "github.com") */
 	host: string;
-	/** Repository path (e.g., "user/repo") */
+	/** Repository path (例如： "user/repo") */
 	path: string;
 	/** Git ref (branch, tag, commit) if specified */
 	ref?: string;

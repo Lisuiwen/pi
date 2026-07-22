@@ -1,3 +1,4 @@
+/** 模块职责：实现 packages/ai/src\api\google-vertex.ts 相关的模型、协议或工具逻辑。 */
 import {
 	type GenerateContentConfig,
 	type GenerateContentParameters,
@@ -62,7 +63,7 @@ const THINKING_LEVEL_MAP: Record<GoogleThinkingLevel, ThinkingLevel> = {
 	HIGH: ThinkingLevel.HIGH,
 };
 
-// Counter for generating unique tool call IDs
+// 用于生成唯一工具调用 ID 的计数器
 let toolCallCounter = 0;
 
 export const stream: StreamFunction<"google-vertex", GoogleVertexOptions> = (
@@ -93,7 +94,7 @@ export const stream: StreamFunction<"google-vertex", GoogleVertexOptions> = (
 
 		try {
 			const apiKey = resolveApiKey(options);
-			// Create the client using either a Vertex API key, if provided, or ADC with project and location
+			// 使用 Vertex API key（若提供）或带 project/location 的 ADC 来创建客户端
 			const client = apiKey
 				? createClientWithApiKey(model, apiKey, options?.headers)
 				: createClient(model, resolveProject(options), resolveLocation(options), options?.headers, options?.env);
@@ -109,8 +110,8 @@ export const stream: StreamFunction<"google-vertex", GoogleVertexOptions> = (
 			const blocks = output.content;
 			const blockIndex = () => blocks.length - 1;
 			for await (const chunk of googleStream) {
-				// Vertex uses the same @google/genai GenerateContentResponse type as Gemini.
-				// responseId is documented there as an output-only identifier for each response.
+				// Vertex 与 Gemini 使用相同的 @google/genai GenerateContentResponse 类型。
+				// 其中将 responseId 说明为每个响应的只读输出标识符。
 				output.responseId ||= chunk.responseId;
 				const candidate = chunk.candidates?.[0];
 				if (candidate?.content?.parts) {
@@ -282,7 +283,7 @@ export const stream: StreamFunction<"google-vertex", GoogleVertexOptions> = (
 			stream.push({ type: "done", reason: output.stopReason, message: output });
 			stream.end();
 		} catch (error) {
-			// Remove internal index property used during streaming
+			// 移除流式处理中使用的内部索引属性
 			for (const block of output.content) {
 				if ("index" in block) {
 					delete (block as { index?: number }).index;
@@ -510,9 +511,9 @@ function isGemini3FlashModel(model: Model<"google-generative-ai">): boolean {
 }
 
 function getDisabledThinkingConfig(model: Model<"google-vertex">): ThinkingConfig {
-	// Google docs: Gemini 3.1 Pro cannot disable thinking, and Gemini 3 Flash / Flash-Lite
-	// do not support full thinking-off either. For Gemini 3 models, use the lowest supported
-	// thinkingLevel without includeThoughts so hidden thinking remains invisible to pi.
+	// 根据 Google 文档：Gemini 3.1 Pro 无法禁用 thinking，Gemini 3 Flash / Flash-Lite
+	// 也不支持完全关闭 thinking。对于 Gemini 3 模型，使用支持的最低 thinkingLevel，
+	// 且不传 includeThoughts，这样隐藏的 thinking 就不会暴露给 pi。
 	const geminiModel = model as unknown as Model<"google-generative-ai">;
 	if (isGemini3ProModel(geminiModel)) {
 		return { thinkingLevel: ThinkingLevel.LOW };
@@ -521,7 +522,7 @@ function getDisabledThinkingConfig(model: Model<"google-vertex">): ThinkingConfi
 		return { thinkingLevel: ThinkingLevel.MINIMAL };
 	}
 
-	// Gemini 2.x supports disabling via thinkingBudget = 0.
+	// Gemini 2.x 支持通过 thinkingBudget = 0 禁用 thinking。
 	return { thinkingBudget: 0 };
 }
 
@@ -582,3 +583,4 @@ function getGoogleBudget(
 
 	return -1;
 }
+/** 模块职责：实现 packages/ai/src\api\google-vertex.ts 相关的模型、协议或工具逻辑。 */

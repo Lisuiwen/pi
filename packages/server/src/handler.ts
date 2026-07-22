@@ -1,3 +1,7 @@
+/**
+ * 模块职责：实现 packages/server/src/handler.ts 中的核心功能。
+ */
+
 import type {
 	AgentSessionEvent,
 	RpcCommand,
@@ -46,14 +50,38 @@ function unknownInstanceError(instanceId: string): ErrorResponse {
 	};
 }
 
-// Overhead types
+// 开销类型
+/**
+ * 处理 IPC 请求并分派到对应的服务器操作。
+ */
 export async function handleIpcRequest(request: SpawnRequest): Promise<SpawnResponse | ErrorResponse>;
+/**
+ * 处理 IPC 请求并分派到对应的服务器操作。
+ */
 export async function handleIpcRequest(request: ListRequest): Promise<ListResponse | ErrorResponse>;
+/**
+ * 处理 IPC 请求并分派到对应的服务器操作。
+ */
 export async function handleIpcRequest(request: StopRequest): Promise<StopResponse | ErrorResponse>;
+/**
+ * 处理 IPC 请求并分派到对应的服务器操作。
+ */
 export async function handleIpcRequest(request: StatusRequest): Promise<StatusResponse | ErrorResponse>;
+/**
+ * 处理 IPC 请求并分派到对应的服务器操作。
+ */
 export async function handleIpcRequest(request: RpcRequest): Promise<RpcBridgeResponse | ErrorResponse>;
+/**
+ * 处理 IPC 请求并分派到对应的服务器操作。
+ */
 export async function handleIpcRequest(request: RpcStreamRequest): Promise<RpcReadyResponse | ErrorResponse>;
+/**
+ * 处理 IPC 请求并分派到对应的服务器操作。
+ */
 export async function handleIpcRequest(request: ServerRequest): Promise<ServerResponse>;
+/**
+ * 处理 IPC 请求并分派到对应的服务器操作。
+ */
 export async function handleIpcRequest(request: ServerRequest): Promise<ServerResponse> {
 	switch (request.type) {
 		case "spawn": {
@@ -129,6 +157,9 @@ export async function handleIpcRequest(request: ServerRequest): Promise<ServerRe
 	}
 }
 
+/**
+ * 打开 RPC 流并把子进程事件转发给客户端。
+ */
 export function openRpcStream(
 	instanceId: string,
 	onResponse: (response: RpcResponse) => void,

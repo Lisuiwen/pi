@@ -1,5 +1,8 @@
 /**
- * Interactive mode for the coding agent.
+ * 模块职责：实现 coding-agent 源码模块「modes\interactive\interactive-mode.ts」，负责相关命令行、会话、工具或基础设施逻辑。
+ */
+/**
+ * Interactive mode for the 编码代理.
  * Handles TUI rendering and user interaction, delegating business logic to AgentSession.
  */
 
@@ -2463,7 +2466,7 @@ export class InteractiveMode {
 				closed = true;
 				if (isOverlay) this.ui.hideOverlay();
 				else restoreEditor();
-				// Note: both branches above already call requestRender
+				// 注意： both branches above already call requestRender
 				resolve(result);
 				try {
 					component?.dispose?.();
@@ -3826,7 +3829,7 @@ export class InteractiveMode {
 			// Stop TUI to release terminal
 			this.ui.stop();
 
-			// Split by space to support editor arguments (e.g., "code --wait")
+			// Split by space to support editor arguments (例如： "code --wait")
 			const [editor, ...editorArgs] = editorCmd.split(" ");
 
 			process.stdout.write(`Launching external editor: ${editorCmd}\nPi will resume when the editor exits.\n`);

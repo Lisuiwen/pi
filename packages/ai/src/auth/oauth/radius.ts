@@ -1,14 +1,15 @@
+/** 模块职责：实现 packages/ai/src\auth\oauth\radius.ts 相关的模型、协议或工具逻辑。 */
 /**
- * Radius gateway OAuth flow.
+ * Radius 网关的 OAuth 流程。
  *
- * Radius is a pi-messages gateway. OAuth endpoints are discovered from the
- * gateway (`/v1/oauth`); model catalog loading is owned by the Radius provider.
+ * Radius 是一个 `pi-messages` 网关。OAuth 端点会从网关
+ * （`/v1/oauth`）动态发现；模型目录加载则由 Radius 提供商自身负责。
  *
- * NOTE: This module uses node:http for the OAuth callback server.
- * It is only intended for CLI use, not browser environments.
+ * 注意：此模块使用 `node:http` 运行 OAuth 回调服务器。
+ * 它仅面向 CLI 使用，不适用于浏览器环境。
  */
 
-// NEVER convert to top-level imports - breaks browser/Vite builds
+// 绝不要改成顶层导入，否则会破坏浏览器/Vite 构建。
 let _http: typeof import("node:http") | null = null;
 if (typeof process !== "undefined" && (process.versions?.node || process.versions?.bun)) {
 	import("node:http").then((m) => {
@@ -408,3 +409,4 @@ export function createRadiusOAuth(options: RadiusOAuthOptions): OAuthAuth {
 		},
 	};
 }
+/** 模块职责：实现 packages/ai/src\auth\oauth\radius.ts 相关的模型、协议或工具逻辑。 */

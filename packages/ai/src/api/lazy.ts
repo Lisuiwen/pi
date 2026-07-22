@@ -1,3 +1,4 @@
+/** 模块职责：实现 packages/ai/src\api\lazy.ts 相关的模型、协议或工具逻辑。 */
 import type { Api, AssistantMessage, AssistantMessageEvent, Model, ProviderStreams } from "../types.ts";
 import { AssistantMessageEventStream } from "../utils/event-stream.ts";
 
@@ -39,9 +40,8 @@ async function forwardStream(
 }
 
 /**
- * Returns a stream synchronously while running async setup (auth resolution,
- * lazy module loading) behind it. Setup failures terminate the stream with an
- * error event.
+ * 同步返回一个流，同时在后台执行异步准备工作（认证解析、
+ * 惰性模块加载）。若准备失败，则以错误事件终止该流。
  */
 export function lazyStream(
 	model: Model<Api>,
@@ -61,9 +61,9 @@ export function lazyStream(
 }
 
 /**
- * Wraps a dynamically imported API implementation module as `ProviderStreams`.
- * The module loads on first stream call; the host's import cache deduplicates
- * loads. Load failures terminate the returned stream with an error event.
+ * 将动态导入的 API 实现模块包装为 `ProviderStreams`。
+ * 模块会在首次调用 stream 时加载；宿主环境的导入缓存会去重
+ * 多次加载。加载失败时，返回的流会以错误事件终止。
  */
 export function lazyApi(load: () => Promise<ProviderStreams>): ProviderStreams {
 	return {
@@ -73,3 +73,4 @@ export function lazyApi(load: () => Promise<ProviderStreams>): ProviderStreams {
 			lazyStream(model, async () => (await load()).streamSimple(model, context, options)),
 	};
 }
+/** 模块职责：实现 packages/ai/src\api\lazy.ts 相关的模型、协议或工具逻辑。 */

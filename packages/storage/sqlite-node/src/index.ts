@@ -1,3 +1,7 @@
+/**
+ * 模块职责：实现 packages/storage/sqlite-node/src/index.ts 中的核心功能。
+ */
+
 import type { SQLInputValue } from "node:sqlite";
 import { DatabaseSync } from "node:sqlite";
 import type { SqliteDatabase, SqliteDatabaseFactory, SqliteRunResult, SqliteStatement } from "./sqlite/types.ts";
@@ -70,7 +74,7 @@ class NodeSqliteDatabase implements SqliteDatabase {
 			try {
 				this.db.exec("ROLLBACK");
 			} catch {
-				// Ignore rollback errors to rethrow original error.
+				// 忽略回滚错误，以便重新抛出原始错误。
 			}
 			throw error;
 		}
@@ -93,5 +97,5 @@ export function createNodeSqliteFactory(): SqliteDatabaseFactory {
 	};
 }
 
-// Re-export the SQLite session storage backend and types so this package is a complete node-sqlite backend.
+// 重新导出 SQLite 会话存储后端及类型，使此包成为完整的 node-sqlite 后端。
 export * from "./sqlite/index.ts";

@@ -1,3 +1,7 @@
+/**
+ * 模块职责：实现 packages/server/src/index.ts 中的核心功能。
+ */
+
 export * from "./config.ts";
 export * from "./handler.ts";
 export * from "./ipc/client.ts";

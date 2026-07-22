@@ -1,4 +1,5 @@
-/** Fast deterministic hash to shorten long strings */
+/** 模块职责：实现 packages/ai/src\utils\hash.ts 相关的模型、协议或工具逻辑。 */
+/** 用于缩短长字符串的快速确定性哈希。 */
 export function shortHash(str: string): string {
 	let h1 = 0xdeadbeef;
 	let h2 = 0x41c6ce57;
@@ -11,3 +12,4 @@ export function shortHash(str: string): string {
 	h2 = Math.imul(h2 ^ (h2 >>> 16), 2246822507) ^ Math.imul(h1 ^ (h1 >>> 13), 3266489909);
 	return (h2 >>> 0).toString(36) + (h1 >>> 0).toString(36);
 }
+/** 模块职责：实现 packages/ai/src\utils\hash.ts 相关的模型、协议或工具逻辑。 */

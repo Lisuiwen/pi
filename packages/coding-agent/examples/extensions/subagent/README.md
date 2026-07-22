@@ -1,17 +1,17 @@
-# Subagent Example
+# Subagent 示例
 
-Delegate tasks to specialized subagents with isolated context windows.
+将任务委派给拥有隔离上下文窗口的专业 subagent。
 
-## Features
+## 功能
 
-- **Isolated context**: Each subagent runs in a separate `pi` process
-- **Streaming output**: See tool calls and progress as they happen
-- **Parallel streaming**: All parallel tasks stream updates simultaneously
-- **Markdown rendering**: Final output rendered with proper formatting (expanded view)
-- **Usage tracking**: Shows turns, tokens, cost, and context usage per agent
-- **Abort support**: Ctrl+C propagates to kill subagent processes
+- **隔离上下文**：每个 subagent 在独立的 `pi` 进程中运行
+- **流式输出**：实时查看工具调用和进度
+- **并行流式处理**：所有并行任务同时流式更新
+- **Markdown 渲染**：最终输出以正确格式渲染（展开视图）
+- **用量跟踪**：按 Agent 显示轮次、Token、费用和上下文用量
+- **中止支持**：Ctrl+C 会传递并终止 subagent 进程
 
-## Structure
+## 结构
 
 ```
 subagent/
@@ -29,7 +29,7 @@ subagent/
     └── implement-and-review.md  # worker -> reviewer -> worker
 ```
 
-## Installation
+## 安装
 
 From the repository root, symlink the files:
 
@@ -52,58 +52,58 @@ for f in packages/coding-agent/examples/extensions/subagent/prompts/*.md; do
 done
 ```
 
-## Security Model
+## 安全模型
 
 This tool executes a separate `pi` subprocess with a delegated system prompt and tool/model configuration.
 
-**Project-local agents** (`.pi/agents/*.md`) are repo-controlled prompts that can instruct the model to read files, run bash commands, etc.
+**项目本地 Agent**（`.pi/agents/*.md`）是由仓库控制的提示词，可以指示模型读取文件、运行 Bash 命令等。
 
-**Default behavior:** Only loads **user-level agents** from `~/.pi/agent/agents`.
+**默认行为：**只从 `~/.pi/agent/agents` 加载**用户级 Agent**。
 
 To enable project-local agents, pass `agentScope: "both"` (or `"project"`). Only do this for repositories you trust.
 
-When running interactively, the tool prompts for confirmation before running project-local agents. Set `confirmProjectAgents: false` to disable.
+交互运行时，工具会在运行项目本地 Agent 前请求确认。设置 `confirmProjectAgents: false` 可禁用确认。
 
-## Usage
+## 用法
 
-### Single agent
+### 单个 Agent
 ```
 Use scout to find all authentication code
 ```
 
-### Parallel execution
+### 并行执行
 ```
 Run 2 scouts in parallel: one to find models, one to find providers
 ```
 
-### Chained workflow
+### 链式工作流
 ```
 Use a chain: first have scout find the read tool, then have planner suggest improvements
 ```
 
-### Workflow prompts
+### 工作流提示词
 ```
 /implement add Redis caching to the session store
 /scout-and-plan refactor auth to support OAuth
 /implement-and-review add input validation to API endpoints
 ```
 
-## Tool Modes
+## 工具模式
 
-| Mode | Parameter | Description |
+| 模式 | 参数 | 说明 |
 |------|-----------|-------------|
 | Single | `{ agent, task }` | One agent, one task |
 | Parallel | `{ tasks: [...] }` | Multiple agents run concurrently (max 8, 4 concurrent) |
 | Chain | `{ chain: [...] }` | Sequential with `{previous}` placeholder |
 
-## Output Display
+## 输出显示
 
-**Collapsed view** (default):
+**折叠视图**（默认）：
 - Status icon (✓/✗/⏳) and agent name
 - Last 5-10 items (tool calls and text)
 - Usage stats: `3 turns ↑input ↓output RcacheRead WcacheWrite $cost ctx:contextTokens model`
 
-**Expanded view** (Ctrl+O):
+**展开视图**（Ctrl+O）：
 - Full task text
 - All tool calls with formatted arguments
 - Final output rendered as Markdown
@@ -122,7 +122,7 @@ Use a chain: first have scout find the read tool, then have planner suggest impr
 - `grep /pattern/ in ~/path` for grep
 - etc.
 
-## Agent Definitions
+## Agent 定义
 
 Agents are markdown files with YAML frontmatter:
 
@@ -143,31 +143,31 @@ System prompt for the agent goes here.
 
 Project agents override user agents with the same name when `agentScope: "both"`.
 
-## Sample Agents
+## 示例 Agent
 
-| Agent | Purpose | Model | Tools |
+| Agent | 用途 | 模型 | 工具 |
 |-------|---------|-------|-------|
 | `scout` | Fast codebase recon | Haiku | read, grep, find, ls, bash |
 | `planner` | Implementation plans | Sonnet | read, grep, find, ls |
 | `reviewer` | Code review | Sonnet | read, grep, find, ls, bash |
 | `worker` | General-purpose | Sonnet | (all default) |
 
-## Workflow Prompts
+## 工作流提示词
 
-| Prompt | Flow |
+| 提示词 | 流程 |
 |--------|------|
 | `/implement <query>` | scout → planner → worker |
 | `/scout-and-plan <query>` | scout → planner |
 | `/implement-and-review <query>` | worker → reviewer → worker |
 
-## Error Handling
+## 错误处理
 
 - **Exit code != 0**: Tool returns error with stderr/output
 - **stopReason "error"**: LLM error propagated with error message
 - **stopReason "aborted"**: User abort (Ctrl+C) kills subprocess, throws error
 - **Chain mode**: Stops at first failing step, reports which step failed
 
-## Limitations
+## 限制
 
 - Output truncated to last 10 items in collapsed view (expand to see all)
 - Parallel model-visible output is capped at 50 KB per task; full results remain in tool details

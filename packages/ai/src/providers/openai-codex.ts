@@ -1,3 +1,4 @@
+/** 模块职责：实现 packages/ai/src\providers\openai-codex.ts 相关的模型、协议或工具逻辑。 */
 import { openAICodexResponsesApi } from "../api/openai-codex-responses.lazy.ts";
 import { lazyOAuth } from "../auth/helpers.ts";
 import { loadOpenAICodexOAuth } from "../auth/oauth/load.ts";
@@ -16,3 +17,4 @@ export function openaiCodexProvider(): Provider<"openai-codex-responses"> {
 		api: openAICodexResponsesApi(),
 	});
 }
+/** 模块职责：实现 packages/ai/src\providers\openai-codex.ts 相关的模型、协议或工具逻辑。 */

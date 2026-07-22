@@ -1,5 +1,7 @@
 #!/usr/bin/env node
 
+/** 模块职责：实现 packages/ai/src/cli.ts 相关的模型、协议或工具逻辑。 */
+
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { createInterface } from "node:readline";
 import type { AuthPrompt, OAuthCredential, Provider } from "./index.ts";
@@ -116,3 +118,4 @@ main().catch((error: unknown) => {
 	console.error("Error:", error instanceof Error ? error.message : String(error));
 	process.exit(1);
 });
+/** 模块职责：实现 packages/ai/src\cli.ts 相关的模型、协议或工具逻辑。 */

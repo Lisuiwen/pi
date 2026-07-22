@@ -1,3 +1,4 @@
+/** 模块职责：实现 packages/agent/src\harness\agent-harness.ts 的 Agent 运行时逻辑。 */
 import {
 	type AssistantMessage,
 	contentText,

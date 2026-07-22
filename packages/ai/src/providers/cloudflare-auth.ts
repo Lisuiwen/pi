@@ -1,3 +1,4 @@
+/** 模块职责：实现 packages/ai/src\providers\cloudflare-auth.ts 相关的模型、协议或工具逻辑。 */
 import type { ApiKeyAuth, ApiKeyCredential, AuthContext } from "../auth/types.ts";
 import type { ProviderEnv } from "../types.ts";
 
@@ -12,9 +13,9 @@ async function resolveValue(
 	ctx: AuthContext,
 	credential: ApiKeyCredential | undefined,
 ): Promise<string | undefined> {
-	// Per-field merge: prefer the credential value, fall back to ambient env.
-	// A credential carrying only the API key must still pick up the account /
-	// gateway id from the environment.
+	// 按字段合并：优先使用凭证中的值，缺失时再回退到当前环境变量。
+	// 仅携带 API key 的凭证仍然需要从环境中补齐 account /
+	// gateway id。
 	const fromCredential = credential
 		? name === CLOUDFLARE_API_KEY
 			? credential.key
@@ -94,3 +95,4 @@ export function cloudflareAIGatewayAuth(): ApiKeyAuth {
 		},
 	};
 }
+/** 模块职责：实现 packages/ai/src\providers\cloudflare-auth.ts 相关的模型、协议或工具逻辑。 */

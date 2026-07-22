@@ -1,10 +1,10 @@
-# AgentHarness hooks design
+# AgentHarness 钩子设计
 
 <!-- Synced from jot 3utlzkxy. Edit this file in-repo going forward. -->
 
-Final design.
+最终设计。
 
-## Core model
+## 核心模型
 
 Events carry their result type as a type-only phantom:
 
@@ -51,9 +51,9 @@ interface MessageEndEvent extends HookEvent<"message_end"> {
 }
 ```
 
-No result map. No spec table. The event type defines its own result.
+不使用结果映射表或规范表；事件类型自行定义结果。
 
-## Hooks interface
+## 钩子接口
 
 ```ts
 interface AgentHarnessHooks<E extends HookEvent<string, unknown>, Ctx> {
@@ -80,14 +80,14 @@ interface AgentHarnessHooks<E extends HookEvent<string, unknown>, Ctx> {
 }
 ```
 
-Important split:
+关键划分：
 
-- `observe()` sees all events, read-only, return ignored.
-- `on(type, handler)` participates in that event’s semantics.
-- `emit(event)` is the only thing `AgentHarness` calls.
-- `clear()` removes observers/handlers and runs cleanups.
+- `observe()` 查看所有事件，只读且忽略返回值。
+- `on(type, handler)` 参与对应事件的语义处理。
+- `emit(event)` 是 `AgentHarness` 唯一调用的方法。
+- `clear()` 移除观察器/处理器并执行清理函数。
 
-## Default implementation internals
+## 默认实现内部结构
 
 ```ts
 class DefaultAgentHarnessHooks<E extends HookEvent<string, unknown>, Ctx>
@@ -150,21 +150,21 @@ class DefaultAgentHarnessHooks<E extends HookEvent<string, unknown>, Ctx>
 }
 ```
 
-Internal casts are acceptable inside the implementation because `Map<string, ...>` loses specificity. Public API remains typed.
+由于 `Map<string, ...>` 会丢失具体类型，实现在内部使用类型断言是可接受的；公共 API 仍保持类型安全。
 
-## Mutation semantics
+## 变更语义
 
-### Observation
+### 观察
 
 ```ts
 await hooks.emit({ type: "message_end", message }, signal);
 ```
 
-Observers run. `message_end` handlers run. Return ignored unless that event later gets a result type.
+观察器和 `message_end` 处理器依次运行。除非该事件后来增加结果类型，否则忽略返回值。
 
-### Context transform
+### 上下文转换
 
-Handlers run in order. Each sees current messages.
+处理器按注册顺序运行，每个处理器都能看到当前消息。
 
 ```ts
 let current = event;
@@ -179,9 +179,9 @@ for (const handler of handlers("context")) {
 return current.messages === event.messages ? undefined : { messages: current.messages };
 ```
 
-### Provider request / payload
+### Provider 请求/负载
 
-Sequential transform. Each handler sees previous output.
+按顺序转换，每个处理器看到前一个处理器的输出。
 
 ```ts
 let current = event;
@@ -196,9 +196,9 @@ for (const handler of handlers("before_provider_payload")) {
 return changed ? { payload: current.payload } : undefined;
 ```
 
-### Before agent start
+### Agent 启动前
 
-Collect injected messages, chain system prompt.
+收集注入的消息，并串联系统提示词。
 
 ```ts
 let systemPrompt = event.systemPrompt;
@@ -215,9 +215,9 @@ return messages.length || systemPrompt !== event.systemPrompt
 	: undefined;
 ```
 
-### Tool call
+### 工具调用
 
-Sequential, early exit on block.
+按顺序执行，遇到阻止结果立即退出。
 
 ```ts
 for (const handler of handlers("tool_call")) {
@@ -226,9 +226,9 @@ for (const handler of handlers("tool_call")) {
 }
 ```
 
-### Tool result
+### 工具结果
 
-Sequential patch accumulation. Each handler sees current patched result.
+按顺序累积补丁，每个处理器都能看到当前已修改的结果。
 
 ```ts
 let current = event;
@@ -253,9 +253,9 @@ return modified
 	: undefined;
 ```
 
-### Session-before events
+### 会话前置事件
 
-Sequential, early exit on cancel.
+按顺序执行，遇到取消结果立即退出。
 
 ```ts
 let last;
@@ -270,26 +270,26 @@ for (const handler of handlers(event.type)) {
 return last;
 ```
 
-## Harness usage
+## Harness 用法
 
-Harness only does this:
+Harness 只负责调用：
 
 ```ts
 await this.hooks.emit(event, signal);
 ```
 
-or:
+或者：
 
 ```ts
 const result = await this.hooks.emit({ type: "context", messages }, signal);
 return result?.messages ?? messages;
 ```
 
-Harness does not store handlers, chain listeners, or know extension policy.
+Harness 不保存处理器、不串联监听器，也不感知扩展策略。
 
-## Context
+## 上下文
 
-Context is a normal object, not rebuilt per emit.
+上下文是普通对象，不会在每次 `emit` 时重建。
 
 ```ts
 const hooks = new CodingAgentHooks({
@@ -299,7 +299,7 @@ const hooks = new CodingAgentHooks({
 });
 ```
 
-Later:
+之后：
 
 ```ts
 hooks.setContext({
@@ -308,7 +308,7 @@ hooks.setContext({
 });
 ```
 
-For dynamic state, prefer stable facades/methods over getter maze:
+对于动态状态，优先使用稳定的 facade/方法，避免复杂的 getter 嵌套：
 
 ```ts
 interface CodingAgentHookContext {
@@ -319,11 +319,11 @@ interface CodingAgentHookContext {
 }
 ```
 
-Per-run `signal` is passed as the third handler arg.
+每次运行的 `signal` 作为处理器的第三个参数传入。
 
-## Extension loading later
+## 后续加载扩展
 
-Extension loading can live next to harness and construct hooks:
+扩展加载器可以与 harness 并列，并负责构造钩子：
 
 ```ts
 const hooks = await loadExtensions({
@@ -334,7 +334,7 @@ const hooks = await loadExtensions({
 const harness = new AgentHarness({ ..., hooks });
 ```
 
-The loader registers into hooks:
+加载器向钩子注册：
 
 ```ts
 hooks.on("context", handler);
@@ -342,7 +342,7 @@ hooks.on("tool_call", handler);
 hooks.addCleanup(cleanup);
 ```
 
-For reload:
+重新加载时：
 
 ```ts
 await hooks.clear();
@@ -352,22 +352,22 @@ harness.setHooks(nextHooks); // idle-only if supported
 
 ## Poking holes
 
-### 1. Error policy must be explicit
+### 1. 必须明确错误策略
 
-Existing coding-agent catches extension errors, reports them, and continues. New hooks need the same policy, likely:
+现有 coding-agent 会捕获扩展错误、报告后继续运行。新钩子也应采用相同策略，例如：
 
 ```ts
 errorMode: "continue" | "throw"
 onError(error)
 ```
 
-For coding-agent, default should be `"continue"`.
+对 coding-agent，默认值应为 `"continue"`。
 
-### 2. Source metadata matters
+### 2. 来源元数据很重要
 
-Existing runner knows which extension produced an error/resource/tool. Plain `on()` loses that unless we add registration metadata or scopes.
+现有 runner 知道错误、资源或工具来自哪个扩展。普通 `on()` 会丢失这些信息，除非增加注册元数据或作用域。
 
-Probably needed:
+可能需要：
 
 ```ts
 const scope = hooks.createScope({ sourceInfo });
@@ -377,9 +377,9 @@ scope.addCleanup(...);
 
 Or `on(type, handler, { sourceInfo })`.
 
-### 3. Some extension capabilities are registries, not hooks
+### 3. 某些扩展能力是注册表，而不是钩子
 
-These are not covered by `emit()` and should stay as registries on `CodingAgentHooks` or an extension host:
+这些能力不由 `emit()` 覆盖，应继续作为 `CodingAgentHooks` 或扩展宿主上的注册表：
 
 - tools
 - commands
@@ -390,11 +390,11 @@ These are not covered by `emit()` and should stay as registries on `CodingAgentH
 - OAuth providers
 - custom model providers
 
-That is fine. They do not belong in `AgentHarness`.
+这是合理的；它们不属于 `AgentHarness`。
 
-### 4. Existing coding-agent events can be represented
+### 4. 现有 coding-agent 事件都可以表示
 
-No blocker for:
+以下事件均没有阻碍：
 
 - `context`
 - `before_provider_request`
@@ -411,11 +411,11 @@ No blocker for:
 - model/thinking selection events
 - agent/turn/message/tool lifecycle events
 
-They become additional event types handled by `CodingAgentHooks`.
+它们会成为由 `CodingAgentHooks` 处理的附加事件类型。
 
-### 5. Need to preserve exact old semantics
+### 5. 必须保留旧语义
 
-When porting coding-agent, special cases must be copied:
+迁移 coding-agent 时必须复制以下特殊规则：
 
 - `input`: transform chain, `handled` short-circuits.
 - `user_bash`: first meaningful result wins.
@@ -425,21 +425,21 @@ When porting coding-agent, special cases must be copied:
 - `tool_call`: argument mutation remains visible to later handlers.
 - `tool_result`: later handlers see prior patches.
 
-The design allows all of that, but the default/coding hooks implementation must encode it.
+该设计支持所有规则，但默认实现和 coding hooks 实现必须明确编码这些语义。
 
-### 6. `emit()` switch can miss custom mutation events
+### 6. `emit()` 的分支可能遗漏自定义变更事件
 
-If a subclass adds a result-producing event but forgets to override `emit()`, it will behave observationally. Tests should catch this. Could add a protected strategy registry later if this becomes error-prone, but not initially.
+如果子类新增会产生结果的事件却忘记覆写 `emit()`，该事件会退化为仅观察行为。测试应捕获此问题；若日后风险变高，可增加受保护的策略注册表。
 
-### 7. Observer semantics are intentionally limited
+### 7. 观察器语义是有意限制的
 
-Observers see the original emitted event once. They do not see every intermediate mutation. If something needs final transformed state, emit a separate final event or use an event-specific handler.
+观察器只会看到一次原始事件，不会看到每次中间变更。若需要最终转换状态，应发出单独的最终事件或使用事件专用处理器。
 
-## Verdict
+## 结论
 
-This design can implement a new coding-agent. It is simpler than the current runner, keeps harness clean, and preserves the important extension capabilities as long as `CodingAgentHooks` adds source-aware scopes, registries, cleanup, and the exact old event semantics.
+该设计可以实现新的 coding-agent。它比当前 runner 更简单，能保持 harness 清晰；只要 `CodingAgentHooks` 增加带来源作用域、注册表、清理机制，并严格保留旧事件语义，就能保留关键扩展能力。
 
 --- Comments ---
 
-Thread hn2xk0tzhj on "addCleanup(cleanup"
-  [tmluyaub9v] Owner (2026-05-14T12:55:45.500Z): cleanup should be passed along optionally to on/observe
+关于“addCleanup(cleanup”的线程 hn2xk0tzhj
+  [tmluyaub9v] Owner（2026-05-14T12:55:45.500Z）：应允许将 cleanup 可选地传递给 on/observe

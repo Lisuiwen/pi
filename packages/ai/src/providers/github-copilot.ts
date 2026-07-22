@@ -1,3 +1,4 @@
+/** 模块职责：实现 packages/ai/src\providers\github-copilot.ts 相关的模型、协议或工具逻辑。 */
 import { anthropicMessagesApi } from "../api/anthropic-messages.lazy.ts";
 import { openAICompletionsApi } from "../api/openai-completions.lazy.ts";
 import { openAIResponsesApi } from "../api/openai-responses.lazy.ts";
@@ -32,3 +33,4 @@ export function githubCopilotProvider(): Provider<"anthropic-messages" | "openai
 		},
 	});
 }
+/** 模块职责：实现 packages/ai/src\providers\github-copilot.ts 相关的模型、协议或工具逻辑。 */

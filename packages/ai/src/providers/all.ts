@@ -1,3 +1,4 @@
+/** 模块职责：实现 packages/ai/src\providers\all.ts 相关的模型、协议或工具逻辑。 */
 import { createImagesModels, type ImagesProvider, type MutableImagesModels } from "../images-models.ts";
 import { MODELS } from "../models.generated.ts";
 import { type CreateModelsOptions, createModels, type MutableModels, type Provider } from "../models.ts";
@@ -44,9 +45,8 @@ import { zaiCodingCnProvider } from "./zai-coding-cn.ts";
 
 export { radiusProvider };
 
-/** Providers present in the generated catalog. `KnownProvider` additionally
- * includes purely dynamic providers (e.g. "radius") that have no static
- * catalog entry. */
+/** 生成目录中存在的 provider。`KnownProvider` 还额外包含纯动态 provider
+ *（例如 `"radius"`），它们没有静态目录项。 */
 export type BuiltinProvider = keyof typeof MODELS;
 
 type BuiltinModelApi<
@@ -54,7 +54,7 @@ type BuiltinModelApi<
 	TModelId extends keyof (typeof MODELS)[TProvider],
 > = (typeof MODELS)[TProvider][TModelId] extends { api: infer TApi } ? (TApi extends Api ? TApi : never) : never;
 
-/** Typed read of the generated built-in catalog. */
+/** 以类型安全方式读取生成的内置目录。 */
 export function getBuiltinModel<TProvider extends BuiltinProvider, TModelId extends keyof (typeof MODELS)[TProvider]>(
 	provider: TProvider,
 	modelId: TModelId,
@@ -67,7 +67,7 @@ export function getBuiltinProviders(): BuiltinProvider[] {
 	return Object.keys(MODELS) as BuiltinProvider[];
 }
 
-/** URL of a generated provider catalog, used to compare its mtime with remote catalogs during development. */
+/** 生成的 provider 目录 URL，用于在开发期间与远端目录比较其 mtime。 */
 export function getBuiltinModelDataUrl(provider: BuiltinProvider): URL {
 	return new URL(`./data/${provider}.json`, import.meta.url);
 }
@@ -81,7 +81,7 @@ export function getBuiltinModels<TProvider extends BuiltinProvider>(
 		: [];
 }
 
-/** All built-in providers, freshly constructed. */
+/** 所有内置 provider，按需重新构造返回。 */
 export function builtinProviders(): Provider[] {
 	return [
 		amazonBedrockProvider(),
@@ -125,7 +125,7 @@ export function builtinProviders(): Provider[] {
 	];
 }
 
-/** A `Models` collection with every built-in provider registered. */
+/** 注册了全部内置 provider 的 `Models` 集合。 */
 export function builtinModels(options?: CreateModelsOptions): MutableModels {
 	const models = createModels(options);
 	for (const provider of builtinProviders()) {
@@ -134,12 +134,12 @@ export function builtinModels(options?: CreateModelsOptions): MutableModels {
 	return models;
 }
 
-/** All built-in image-generation providers, freshly constructed. */
+/** 所有内置图像生成 provider，按需重新构造返回。 */
 export function builtinImagesProviders(): ImagesProvider[] {
 	return [openrouterImagesProvider()];
 }
 
-/** An `ImagesModels` collection with every built-in image-generation provider registered. */
+/** 注册了全部内置图像生成 provider 的 `ImagesModels` 集合。 */
 export function builtinImagesModels(options?: CreateModelsOptions): MutableImagesModels {
 	const models = createImagesModels(options);
 	for (const provider of builtinImagesProviders()) {
@@ -147,3 +147,4 @@ export function builtinImagesModels(options?: CreateModelsOptions): MutableImage
 	}
 	return models;
 }
+/** 模块职责：实现 packages/ai/src\providers\all.ts 相关的模型、协议或工具逻辑。 */

@@ -1,5 +1,8 @@
 /**
- * Main entry point for the coding agent CLI.
+ * 模块职责：实现 coding-agent 源码模块「main.ts」，负责相关命令行、会话、工具或基础设施逻辑。
+ */
+/**
+ * Main entry point for the 编码代理 CLI.
  *
  * This file handles CLI argument parsing and translates them into
  * createAgentSession() options. The SDK does the heavy lifting.
@@ -53,7 +56,7 @@ const EXTENSION_LOAD_FAILURE_HINT = 'Hint: Start without extensions using "pi -n
 
 /**
  * Read all content from piped stdin.
- * Returns undefined if stdin is a TTY (interactive terminal).
+ * 返回 undefined if stdin is a TTY (interactive terminal).
  */
 async function readPipedStdin(): Promise<string | undefined> {
 	// If stdin is a TTY, we're running interactively - don't read stdin

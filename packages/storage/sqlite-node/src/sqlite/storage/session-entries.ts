@@ -1,3 +1,7 @@
+/**
+ * 模块职责：实现 packages/storage/sqlite-node/src/sqlite/storage/session-entries.ts 中的核心功能。
+ */
+
 import type { SessionTreeEntry, SessionTreeEntryBase } from "@earendil-works/pi-agent-core";
 import { invalidEntry, isRecord } from "./shared.ts";
 
@@ -47,6 +51,9 @@ function isTextImageContentArray(value: unknown): boolean {
 	);
 }
 
+/**
+ * 校验会话树条目的结构和可序列化内容。
+ */
 export function validateSessionTreeEntry(entry: SessionTreeEntry): void {
 	if (typeof entry.id !== "string" || !entry.id) throw invalidEntry("entry is missing id");
 	if (entry.parentId !== null && typeof entry.parentId !== "string") {
@@ -132,11 +139,17 @@ function entryToPayload<TEntry extends SessionTreeEntry>(entry: TEntry): EntryPa
 	return payload as EntryPayload<TEntry>;
 }
 
+/**
+ * 将会话树条目编码为 SQLite 行数据。
+ */
 export function encodeEntry(entry: SessionTreeEntry): EncodedEntry {
 	validateSessionTreeEntry(entry);
 	return { payload: JSON.stringify(entryToPayload(entry)) };
 }
 
+/**
+ * 将 SQLite 行数据解码为会话树条目。
+ */
 export function decodeEntry(row: SessionEntryRow): SessionTreeEntry {
 	const payload = parsePayload(row);
 	if (!isRecord(payload)) throw invalidEntry(`entry ${row.id} payload is not an object`);

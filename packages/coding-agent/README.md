@@ -18,7 +18,7 @@ Pi ships with powerful defaults but skips features like sub agents and plan mode
 
 Pi runs in four modes: interactive, print or JSON, RPC for process integration, and an SDK for embedding in your own apps. See [openclaw/openclaw](https://github.com/openclaw/openclaw) for a real-world SDK integration.
 
-## Share your OSS coding agent sessions
+## 分享你的开源编程 Agent 会话
 
 If you use pi for open source work, please share your coding agent sessions.
 
@@ -34,7 +34,7 @@ I regularly publish my own `pi-mono` work sessions here:
 
 - [badlogicgames/pi-mono on Hugging Face](https://huggingface.co/datasets/badlogicgames/pi-mono)
 
-## Table of Contents
+## 目录
 
 - [Quick Start](#quick-start)
 - [Providers & Models](#providers--models)
@@ -60,7 +60,7 @@ I regularly publish my own `pi-mono` work sessions here:
 
 ---
 
-## Quick Start
+## 快速开始
 
 ```bash
 npm install -g --ignore-scripts @earendil-works/pi-coding-agent
@@ -94,7 +94,7 @@ Then just talk to pi. By default, pi gives the model four tools: `read`, `write`
 
 ---
 
-## Providers & Models
+## 提供商和模型
 
 For each built-in provider, pi maintains a list of tool-capable models. Configured provider catalogs refresh automatically; run `pi update --models` to force an immediate refresh. Authenticate via subscription (`/login`) or API key, then select any model from that provider via `/model` (or Ctrl+L).
 
@@ -143,7 +143,7 @@ See [docs/providers.md](docs/providers.md) for other provider setup instructions
 
 ---
 
-## Interactive Mode
+## 交互模式
 
 <p align="center"><img src="docs/images/interactive-mode.png" alt="Interactive Mode" width="600"></p>
 
@@ -156,7 +156,7 @@ The interface from top to bottom:
 
 The editor can be temporarily replaced by other UI, like built-in `/settings` or custom UI from extensions (e.g., a Q&A tool that lets the user answer model questions in a structured format). [Extensions](#extensions) can also replace the editor, add widgets above/below it, a status line, custom footer, or overlays.
 
-### Editor
+### 编辑器
 
 | Feature | How |
 |---------|-----|
@@ -169,7 +169,7 @@ The editor can be temporarily replaced by other UI, like built-in `/settings` or
 
 Standard editing keybindings for delete word, undo, etc. See [docs/keybindings.md](docs/keybindings.md).
 
-### Commands
+### 命令
 
 Type `/` in the editor to trigger commands. [Extensions](#extensions) can register custom commands, [skills](#skills) are available as `/skill:name`, and [prompt templates](#prompt-templates) expand via `/templatename`.
 
@@ -198,7 +198,7 @@ Type `/` in the editor to trigger commands. [Extensions](#extensions) can regist
 | `/changelog` | Display version history |
 | `/quit` | Quit pi |
 
-### Keyboard Shortcuts
+### 键盘快捷键
 
 See `/hotkeys` for the full list. Customize via `~/.pi/agent/keybindings.json`. See [docs/keybindings.md](docs/keybindings.md).
 
@@ -217,7 +217,7 @@ See `/hotkeys` for the full list. Customize via `~/.pi/agent/keybindings.json`. 
 | Ctrl+T | Collapse/expand thinking blocks |
 | Ctrl+X | Copy the last assistant message |
 
-### Message Queue
+### 消息队列
 
 Submit messages while the agent is working:
 
@@ -232,11 +232,11 @@ Configure delivery in [settings](docs/settings.md): `steeringMode` and `followUp
 
 ---
 
-## Sessions
+## 会话
 
 Sessions are stored as JSONL files with a tree structure. Each entry has an `id` and `parentId`, enabling in-place branching without creating new files. See [docs/session-format.md](docs/session-format.md) for file format.
 
-### Management
+### 管理
 
 Sessions auto-save to `~/.pi/agent/sessions/` organized by working directory.
 
@@ -251,7 +251,7 @@ pi --fork <path|id>    # Fork specific session file or ID into a new session
 
 Use `/session` in interactive mode to see the current session ID before reusing it with `--session <id>` or `--fork <id>`.
 
-### Branching
+### 分支
 
 **`/tree`** - Navigate the session tree in-place. Select any previous point, continue from there, and switch between branches. All history preserved in a single file.
 
@@ -268,7 +268,7 @@ Use `/session` in interactive mode to see the current session ID before reusing 
 
 **`--fork <path|id>`** - Fork an existing session file or partial session UUID directly from the CLI. This copies the full source session into a new session file in the current project.
 
-### Compaction
+### 压缩
 
 Long sessions can exhaust context windows. Compaction summarizes older messages while keeping recent ones.
 
@@ -280,7 +280,7 @@ Compaction is lossy. The full history remains in the JSONL file; use `/tree` to 
 
 ---
 
-## Settings
+## 设置
 
 Use `/settings` to modify common options, or edit JSON files directly:
 
@@ -291,7 +291,7 @@ Use `/settings` to modify common options, or edit JSON files directly:
 
 See [docs/settings.md](docs/settings.md) for all options.
 
-### Project Trust
+### 项目信任
 
 On interactive startup, pi asks before trusting a project folder that contains project-local settings, resources, or project `.agents/skills` and has no saved decision for the folder or a parent folder in `~/.pi/agent/trust.json`. Trusting a project allows pi to load `.pi/settings.json` and `.pi` resources, install missing project packages, and execute project extensions.
 
@@ -305,7 +305,7 @@ If no extension or saved decision applies, `defaultProjectTrust` controls the fa
 
 Use `/trust` in interactive mode to save a project trust decision for future sessions, including trust for the immediate parent folder. It writes `~/.pi/agent/trust.json` only; the current session is not reloaded, so restart pi for changes to take effect.
 
-### Telemetry and update checks
+### 遥测和更新检查
 
 Pi has two separate startup features:
 
@@ -316,7 +316,7 @@ Use `--offline` or `PI_OFFLINE=1` to disable all startup network operations desc
 
 ---
 
-## Context Files
+## 上下文文件
 
 Pi loads `AGENTS.md` (or `CLAUDE.md`) at startup from:
 - `~/.pi/agent/AGENTS.md` (global)
@@ -327,15 +327,15 @@ Use for project instructions (`AGENTS.md`/`CLAUDE.md`), conventions, common comm
 
 Disable context file loading with `--no-context-files` (or `-nc`).
 
-### System Prompt
+### 系统提示词
 
 Replace the default system prompt with `.pi/SYSTEM.md` (project) or `~/.pi/agent/SYSTEM.md` (global). Append without replacing via `APPEND_SYSTEM.md`.
 
 ---
 
-## Customization
+## 自定义
 
-### Prompt Templates
+### 提示词模板
 
 Reusable prompts as Markdown files. Type `/name` to expand.
 
@@ -347,7 +347,7 @@ Focus on: {{focus}}
 
 Place in `~/.pi/agent/prompts/`, `.pi/prompts/`, or a [pi package](#pi-packages) to share with others. See [docs/prompt-templates.md](docs/prompt-templates.md).
 
-### Skills
+### 技能
 
 On-demand capability packages following the [Agent Skills standard](https://agentskills.io). Invoke via `/skill:name` or let the agent load them automatically.
 
@@ -363,7 +363,7 @@ Use this skill when the user asks about X.
 
 Place in `~/.pi/agent/skills/`, `~/.agents/skills/`, `.pi/skills/`, or `.agents/skills/` (from `cwd` up through parent directories) or a [pi package](#pi-packages) to share with others. See [docs/skills.md](docs/skills.md).
 
-### Extensions
+### 扩展
 
 <p align="center"><img src="docs/images/doom-extension.png" alt="Doom Extension" width="600"></p>
 
@@ -395,13 +395,13 @@ The default export can also be `async`. pi waits for async extension factories b
 
 Place in `~/.pi/agent/extensions/`, `.pi/extensions/`, or a [pi package](#pi-packages) to share with others. See [docs/extensions.md](docs/extensions.md) and [examples/extensions/](examples/extensions/).
 
-### Themes
+### 主题
 
 Built-in: `dark`, `light`. Themes hot-reload: modify the active theme file and pi immediately applies changes.
 
 Place in `~/.pi/agent/themes/`, `.pi/themes/`, or a [pi package](#pi-packages) to share with others. See [docs/themes.md](docs/themes.md).
 
-### Pi Packages
+### Pi 包
 
 Bundle and share extensions, skills, prompts, and themes via npm or git. Find packages on [npmjs.com](https://www.npmjs.com/search?q=keywords%3Api-package) or [Discord](https://discord.com/channels/1456806362351669492/1457744485428629628).
 
@@ -454,7 +454,7 @@ See [docs/packages.md](docs/packages.md).
 
 ---
 
-## Programmatic Usage
+## 程序化使用
 
 ### SDK
 
@@ -474,7 +474,7 @@ For advanced multi-session runtime replacement, use `createAgentSessionRuntime()
 
 See [docs/sdk.md](docs/sdk.md) and [examples/sdk/](examples/sdk/).
 
-### RPC Mode
+### RPC 模式
 
 For non-Node.js integrations, use RPC mode over stdin/stdout:
 
@@ -488,7 +488,7 @@ See [docs/rpc.md](docs/rpc.md) for the protocol.
 
 ---
 
-## Philosophy
+## 设计理念
 
 Pi is aggressively extensible so it doesn't have to dictate your workflow. Features that other tools bake in can be built with [extensions](#extensions), [skills](#skills), or installed from third-party [pi packages](#pi-packages). This keeps the core minimal while letting you shape pi to fit how you work.
 
@@ -508,13 +508,13 @@ Read the [blog post](https://mariozechner.at/posts/2025-11-30-pi-coding-agent/) 
 
 ---
 
-## CLI Reference
+## CLI 参考
 
 ```bash
 pi [options] [@files...] [messages...]
 ```
 
-### Package Commands
+### 包命令
 
 ```bash
 pi install <source> [-l]     # Install package, -l for project-local
@@ -533,7 +533,7 @@ pi config                    # Enable/disable package resources
 
 `pi config` and project package commands accept `--approve`/`--no-approve` to trust or ignore project-local settings for one command. `pi update` never prompts for project trust.
 
-### Modes
+### 模式
 
 | Flag | Description |
 |------|-------------|
@@ -549,7 +549,7 @@ In print mode, pi also reads piped stdin and merges it into the initial prompt:
 cat README.md | pi -p "Summarize this text"
 ```
 
-### Model Options
+### 模型选项
 
 | Option | Description |
 |--------|-------------|
@@ -560,7 +560,7 @@ cat README.md | pi -p "Summarize this text"
 | `--models <patterns>` | Comma-separated patterns for Ctrl+P cycling |
 | `--list-models [search]` | List available models |
 
-### Session Options
+### 会话选项
 
 | Option | Description |
 |--------|-------------|
@@ -572,7 +572,7 @@ cat README.md | pi -p "Summarize this text"
 | `--no-session` | Ephemeral mode (don't save) |
 | `--name <name>`, `-n <name>` | Set session display name at startup |
 
-### Tool Options
+### 工具选项
 
 | Option | Description |
 |--------|-------------|
@@ -583,7 +583,7 @@ cat README.md | pi -p "Summarize this text"
 
 Available built-in tools: `read`, `bash`, `edit`, `write`, `grep`, `find`, `ls`
 
-### Resource Options
+### 资源选项
 
 | Option | Description |
 |--------|-------------|
@@ -599,7 +599,7 @@ Available built-in tools: `read`, `bash`, `edit`, `write`, `grep`, `find`, `ls`
 
 Combine `--no-*` with explicit flags to load exactly what you need, ignoring settings.json (e.g., `--no-extensions -e ./my-ext.ts`).
 
-### Other Options
+### 其他选项
 
 | Option | Description |
 |--------|-------------|
@@ -611,7 +611,7 @@ Combine `--no-*` with explicit flags to load exactly what you need, ignoring set
 | `-h`, `--help` | Show help |
 | `-v`, `--version` | Show version |
 
-### File Arguments
+### 文件参数
 
 Prefix files with `@` to include in the message:
 
@@ -621,7 +621,7 @@ pi -p @screenshot.png "What's in this image?"
 pi @code.ts @test.ts "Review these files"
 ```
 
-### Examples
+### 示例
 
 ```bash
 # Interactive with initial prompt
@@ -658,7 +658,7 @@ pi --exclude-tools ask_question
 pi --thinking high "Solve this complex problem"
 ```
 
-### Environment Variables
+### 环境变量
 
 | Variable | Description |
 |----------|-------------|
@@ -673,15 +673,15 @@ pi --thinking high "Solve this complex problem"
 
 ---
 
-## Contributing & Development
+## 贡献与开发
 
 See [CONTRIBUTING.md](../../CONTRIBUTING.md) for guidelines and [docs/development.md](docs/development.md) for setup, forking, and debugging.
 
-## License
+## 许可证
 
 MIT
 
-## See Also
+## 另请参见
 
 - [@earendil-works/pi-ai](https://www.npmjs.com/package/@earendil-works/pi-ai): Core LLM toolkit
 - [@earendil-works/pi-agent-core](https://www.npmjs.com/package/@earendil-works/pi-agent-core): Agent framework

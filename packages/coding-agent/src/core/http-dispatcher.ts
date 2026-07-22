@@ -1,3 +1,6 @@
+/**
+ * 模块职责：实现 coding-agent 源码模块「core\http-dispatcher.ts」，负责相关命令行、会话、工具或基础设施逻辑。
+ */
 import { EventEmitter } from "node:events";
 import * as undici from "undici";
 
@@ -49,9 +52,9 @@ export function applyHttpProxySettings(httpProxy: string | undefined): void {
 
 const ignoreUndiciDispatcherError = (_error: unknown): void => {};
 
-// Undici can emit an internal Client "error" while terminating a mid-stream
-// fetch body. The body stream still rejects through reader.read(); this listener
-// only prevents EventEmitter's unhandled "error" special case from crashing pi.
+// Undici 在终止传输中的 fetch 响应体时，可能触发 Client 内部的 "error" 事件。
+// 响应体流仍会通过 reader.read() 抛出异常；此监听器只用于避免 EventEmitter
+// 对未处理 "error" 事件的特殊行为导致 pi 崩溃。
 function withUndiciErrorListener<T extends undici.Dispatcher>(dispatcher: T): T {
 	if (dispatcher instanceof EventEmitter) {
 		EventEmitter.prototype.on.call(dispatcher, "error", ignoreUndiciDispatcherError);
@@ -91,10 +94,9 @@ export function configureHttpDispatcher(timeoutMs: number = DEFAULT_HTTP_IDLE_TI
 		}),
 	);
 	undici.setGlobalDispatcher(dispatcher);
-	// Keep fetch and the dispatcher on the same undici implementation. Node 26.0's
-	// bundled fetch can otherwise consume compressed responses through npm undici's
-	// dispatcher without decompressing them, causing response.json() failures.
-	// If a caller replaced fetch after module load, preserve that deliberate override.
+	// 保证 fetch 和 dispatcher 使用同一个 undici 实现。否则，Node 26.0 内置的 fetch
+	// 可能通过 npm undici 的 dispatcher 读取压缩响应却不解压，导致 response.json() 失败。
+	// 如果调用方在模块加载后替换了 fetch，则保留这项有意的覆盖。
 	const shouldInstallGlobals =
 		installedGlobalFetch === undefined
 			? globalThis.fetch === originalGlobalFetch

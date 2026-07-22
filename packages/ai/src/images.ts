@@ -1,3 +1,4 @@
+/** 模块职责：实现 packages/ai/src\images.ts 相关的模型、协议或工具逻辑。 */
 import "./providers/images/register-builtins.ts";
 
 import { getImagesApiProvider } from "./images-api-registry.ts";
@@ -19,3 +20,4 @@ export async function generateImages<TApi extends ImagesApi>(
 	const provider = resolveImagesApiProvider(model.api);
 	return provider.generateImages(model, context, options);
 }
+/** 模块职责：实现 packages/ai/src\images.ts 相关的模型、协议或工具逻辑。 */

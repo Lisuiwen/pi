@@ -1,3 +1,4 @@
+/** 模块职责：实现 packages/ai/src\session-resources.ts 相关的模型、协议或工具逻辑。 */
 export type SessionResourceCleanup = (sessionId?: string) => void;
 
 const sessionResourceCleanups = new Set<SessionResourceCleanup>();
@@ -22,3 +23,4 @@ export function cleanupSessionResources(sessionId?: string): void {
 		throw new AggregateError(errors, "Failed to cleanup session resources");
 	}
 }
+/** 模块职责：实现 packages/ai/src\session-resources.ts 相关的模型、协议或工具逻辑。 */

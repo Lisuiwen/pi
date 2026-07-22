@@ -1,3 +1,6 @@
+/**
+ * 模块职责：实现 coding-agent 源码模块「utils\syntax-highlight.ts」，负责相关命令行、会话、工具或基础设施逻辑。
+ */
 import hljs from "highlight.js/lib/index.js";
 import { decodeHtmlEntityAt } from "./html.ts";
 

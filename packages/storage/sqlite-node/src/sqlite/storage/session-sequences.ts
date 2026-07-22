@@ -1,3 +1,7 @@
+/**
+ * 模块职责：实现 packages/storage/sqlite-node/src/sqlite/storage/session-sequences.ts 中的核心功能。
+ */
+
 import type { SqliteDatabase } from "../types.ts";
 import { invalidSession } from "./shared.ts";
 

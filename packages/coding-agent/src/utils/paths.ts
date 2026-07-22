@@ -1,3 +1,6 @@
+/**
+ * 模块职责：实现 coding-agent 源码模块「utils\paths.ts」，负责相关命令行、会话、工具或基础设施逻辑。
+ */
 import { realpathSync } from "node:fs";
 import { homedir } from "node:os";
 import { isAbsolute, join, resolve as nodeResolvePath, relative, sep } from "node:path";
@@ -34,7 +37,7 @@ export function canonicalizePath(path: string): string {
 }
 
 /**
- * Returns true if the value is NOT a package source (npm:, git:, etc.)
+ * 返回 true if the value is NOT a package source (npm:, git:, etc.)
  * or a remote URL protocol. Bare names, relative paths, and file: URLs
  * are considered local.
  */

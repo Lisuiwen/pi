@@ -1,20 +1,20 @@
-# Extension Examples
+# 扩展示例
 
-Example extensions for pi-coding-agent.
+pi-coding-agent 的示例扩展。
 
-## Usage
+## 用法
 
 ```bash
-# Load an extension with --extension flag
+# 使用 --extension 参数加载扩展
 pi --extension examples/extensions/permission-gate.ts
 
-# Or copy to extensions directory for auto-discovery
+# 或复制到 extensions 目录以自动发现
 cp permission-gate.ts ~/.pi/agent/extensions/
 ```
 
-## Examples
+## 示例
 
-### Lifecycle & Safety
+### 生命周期与安全
 
 | Extension | Description |
 |-----------|-------------|
@@ -26,7 +26,7 @@ cp permission-gate.ts ~/.pi/agent/extensions/
 | `sandbox/` | OS-level sandboxing using `@anthropic-ai/sandbox-runtime` with per-project config |
 | `gondolin/` | Route built-in tools and `!` commands into a Gondolin micro-VM |
 
-### Custom Tools
+### 自定义工具
 
 | Extension | Description |
 |-----------|-------------|
@@ -44,7 +44,7 @@ cp permission-gate.ts ~/.pi/agent/extensions/
 | `ssh.ts` | Delegate all tools to a remote machine via SSH using pluggable operations |
 | `subagent/` | Delegate tasks to specialized subagents with isolated context windows |
 
-### Commands & UI
+### 命令与 UI
 
 | Extension | Description |
 |-----------|-------------|
@@ -80,14 +80,14 @@ cp permission-gate.ts ~/.pi/agent/extensions/
 | `inline-bash.ts` | Expands `!{command}` patterns in prompts via `input` event transformation |
 | `input-transform-streaming.ts` | Skips expensive input preprocessing for mid-stream steering via `streamingBehavior` |
 
-### Git Integration
+### Git 集成
 
 | Extension | Description |
 |-----------|-------------|
 | `git-checkpoint.ts` | Creates git stash checkpoints at each turn for code restoration on fork |
 | `auto-commit-on-exit.ts` | Auto-commits on exit using last assistant message for commit message |
 
-### System Prompt & Compaction
+### 系统提示词与上下文压缩
 
 | Extension | Description |
 |-----------|-------------|
@@ -96,19 +96,19 @@ cp permission-gate.ts ~/.pi/agent/extensions/
 | `custom-compaction.ts` | Custom compaction that summarizes entire conversation |
 | `trigger-compact.ts` | Triggers compaction when context usage exceeds 100k tokens and adds `/trigger-compact` command |
 
-### System Integration
+### 系统集成
 
 | Extension | Description |
 |-----------|-------------|
 | `mac-system-theme.ts` | Syncs pi theme with macOS dark/light mode |
 
-### Resources
+### 资源
 
 | Extension | Description |
 |-----------|-------------|
 | `dynamic-resources/` | Loads skills, prompts, and themes using `resources_discover` |
 
-### Messages & Communication
+### 消息与通信
 
 | Extension | Description |
 |-----------|-------------|
@@ -116,28 +116,28 @@ cp permission-gate.ts ~/.pi/agent/extensions/
 | `entry-renderer.ts` | TUI-only session entry rendering via `appendEntry` and `registerEntryRenderer` |
 | `event-bus.ts` | Inter-extension communication via `pi.events` |
 
-### Session Metadata
+### 会话元数据
 
 | Extension | Description |
 |-----------|-------------|
 | `session-name.ts` | Name sessions for the session selector via `setSessionName` |
 | `bookmark.ts` | Bookmark entries with labels for `/tree` navigation via `setLabel` |
 
-### Custom Providers
+### 自定义提供商
 
 | Extension | Description |
 |-----------|-------------|
 | `custom-provider-anthropic/` | Custom Anthropic provider with OAuth support and custom streaming implementation |
 | `custom-provider-gitlab-duo/` | GitLab Duo provider using pi-ai's built-in Anthropic/OpenAI streaming via proxy |
 
-### External Dependencies
+### 外部依赖
 
 | Extension | Description |
 |-----------|-------------|
 | `with-deps/` | Extension with its own package.json and dependencies (demonstrates jiti module resolution) |
 | `file-trigger.ts` | Watches a trigger file and injects contents into conversation |
 
-## Writing Extensions
+## 编写扩展
 
 See [docs/extensions.md](../../docs/extensions.md) for full documentation.
 
@@ -180,9 +180,9 @@ export default function (pi: ExtensionAPI) {
 }
 ```
 
-## Key Patterns
+## 关键模式
 
-**Use StringEnum for string parameters** (required for Google API compatibility):
+**对字符串参数使用 StringEnum**（Google API 兼容性要求）：
 ```typescript
 import { StringEnum } from "@earendil-works/pi-ai";
 
@@ -193,7 +193,7 @@ action: StringEnum(["list", "add"] as const)
 action: Type.Union([Type.Literal("list"), Type.Literal("add")])
 ```
 
-**State persistence via details:**
+**通过 details 持久化状态：**
 ```typescript
 // Store state in tool result details for proper forking support
 return {

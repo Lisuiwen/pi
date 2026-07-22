@@ -1,9 +1,10 @@
+/** 模块职责：实现 packages/ai/src\auth\oauth\kimi-coding.ts 相关的模型、协议或工具逻辑。 */
 /**
- * Kimi Code (subscription) OAuth flow
+ * Kimi Code（订阅版）的 OAuth 流程。
  *
- * RFC 8628 device authorization grant against https://auth.kimi.com with JSON
- * responses. The access token authenticates requests to
- * https://api.kimi.com/coding as an `Authorization: Bearer` header.
+ * 这里使用 RFC 8628 设备授权流程，请求发送到 `https://auth.kimi.com`，
+ * 返回 JSON 响应。拿到的访问令牌会以 `Authorization: Bearer` 请求头的形式，
+ * 用于访问 `https://api.kimi.com/coding`。
  */
 
 import { getProviderEnvValue } from "../../utils/provider-env.ts";
@@ -54,7 +55,7 @@ async function readJson(response: Response): Promise<Record<string, unknown> | n
 	}
 }
 
-/** The verification URI is opened in the user's browser; only http(s) URLs are trusted. */
+/** 该验证地址会在用户浏览器中打开，因此只信任 `http(s)` URL。 */
 function trustedHttpUrl(value: unknown): string | null {
 	if (typeof value !== "string" || !value) return null;
 	try {
@@ -253,7 +254,7 @@ async function refreshToken(
 			return parseTokenResponse(json, "refresh");
 		}
 
-		// Unauthorized: the stored credential is dead; Models clears it and prompts re-login.
+		// 未授权表示已存储凭据失效；`Models` 会清除它并提示重新登录。
 		if (response.status === 401 || response.status === 403 || json?.error === "invalid_grant") {
 			const description = typeof json?.error_description === "string" ? `: ${json.error_description}` : "";
 			throw new Error(`Kimi Code token refresh unauthorized (status ${response.status})${description}`);
@@ -300,3 +301,4 @@ export const kimiCodingOAuth: OAuthAuth = {
 		return { headers: { Authorization: `Bearer ${credential.access}` } };
 	},
 };
+/** 模块职责：实现 packages/ai/src\auth\oauth\kimi-coding.ts 相关的模型、协议或工具逻辑。 */

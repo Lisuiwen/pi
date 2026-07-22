@@ -1,7 +1,10 @@
 /**
+ * 模块职责：实现 coding-agent 源码模块「core\agent-session.ts」，负责相关命令行、会话、工具或基础设施逻辑。
+ */
+/**
  * AgentSession - Core abstraction for agent lifecycle and session management.
  *
- * This class is shared between all run modes (interactive, print, rpc).
+ * 此类 is shared between all run modes (interactive, print, rpc).
  * It encapsulates:
  * - Agent state access
  * - Event subscription with automatic session persistence
@@ -122,7 +125,7 @@ export interface ParsedSkillBlock {
 
 /**
  * Parse a skill block from message text.
- * Returns null if the text doesn't contain a skill block.
+ * 返回 null if the text doesn't contain a skill block.
  */
 export function parseSkillBlock(text: string): ParsedSkillBlock | null {
 	const match = text.match(/^<skill name="([^"]+)" location="([^"]+)">\n([\s\S]*?)\n<\/skill>(?:\n\n([\s\S]+))?$/);
@@ -202,7 +205,7 @@ export interface AgentSessionConfig {
 	resourceLoader: ResourceLoader;
 	/** SDK custom tools registered outside extensions */
 	customTools?: ToolDefinition[];
-	/** Canonical model/auth runtime used by coding-agent internals. */
+	/** Canonical model/auth runtime used by 编码代理 internals. */
 	modelRuntime: ModelRuntime;
 	/** Initial active built-in tool names. Default: [read, bash, edit, write] */
 	initialActiveToolNames?: string[];
@@ -793,7 +796,7 @@ export class AgentSession {
 	/**
 	 * Subscribe to agent events.
 	 * Session persistence is handled internally (saves messages on message_end).
-	 * Multiple listeners can be added. Returns unsubscribe function for this listener.
+	 * Multiple listeners can be added. 返回 unsubscribe function for this listener.
 	 */
 	subscribe(listener: AgentSessionEventListener): () => void {
 		this._eventListeners.push(listener);
@@ -891,8 +894,8 @@ export class AgentSession {
 	}
 
 	/**
-	 * Get the names of currently active tools.
-	 * Returns the names of tools currently set on the agent.
+	 * 获取 names of currently active tools.
+	 * 返回 the names of tools currently set on the agent.
 	 */
 	getActiveToolNames(): string[] {
 		return this.agent.state.tools.map((t) => t.name);
@@ -1263,7 +1266,7 @@ export class AgentSession {
 	}
 
 	/**
-	 * Try to execute an extension command. Returns true if command was found and executed.
+	 * Try to execute an extension command. 返回 true if command was found and executed.
 	 */
 	private async _tryExecuteExtensionCommand(text: string): Promise<boolean> {
 		// Parse command name and args
@@ -1293,7 +1296,7 @@ export class AgentSession {
 
 	/**
 	 * Expand skill commands (/skill:name args) to their full content.
-	 * Returns the expanded text, or the original text if not a skill command or skill not found.
+	 * 返回 the expanded text, or the original text if not a skill command or skill not found.
 	 * Emits errors via extension runner if file read fails.
 	 */
 	private _expandSkillCommand(text: string): string {
@@ -1873,7 +1876,7 @@ export class AgentSession {
 			this.agent.state.messages = sessionContext.messages;
 			const estimatedTokensAfter = estimateMessagesTokens(sessionContext.messages);
 
-			// Get the saved compaction entry for the extension event
+			// 获取 saved compaction entry for the extension event
 			const savedCompactionEntry = newEntries.find((e) => e.type === "compaction" && e.summary === summary) as
 				| CompactionEntry
 				| undefined;
@@ -2158,7 +2161,7 @@ export class AgentSession {
 			this.agent.state.messages = sessionContext.messages;
 			const estimatedTokensAfter = estimateMessagesTokens(sessionContext.messages);
 
-			// Get the saved compaction entry for the extension event
+			// 获取 saved compaction entry for the extension event
 			const savedCompactionEntry = newEntries.find((e) => e.type === "compaction" && e.summary === summary) as
 				| CompactionEntry
 				| undefined;
@@ -2769,7 +2772,7 @@ export class AgentSession {
 	): Promise<BashResult> {
 		this._bashAbortController = new AbortController();
 
-		// Apply command prefix if configured (e.g., "shopt -s expand_aliases" for alias support)
+		// Apply command prefix if configured (例如： "shopt -s expand_aliases" for alias support)
 		const prefix = this.settingsManager.getShellCommandPrefix();
 		const shellPath = this.settingsManager.getShellPath();
 		const resolvedCommand = prefix ? `${prefix}\n${command}` : command;
@@ -3314,7 +3317,7 @@ export class AgentSession {
 	}
 
 	/**
-	 * Get the extension runner (for setting UI context and error handlers).
+	 * 获取 extension runner (for setting UI context and error handlers).
 	 */
 	get extensionRunner(): ExtensionRunner {
 		return this._extensionRunner;

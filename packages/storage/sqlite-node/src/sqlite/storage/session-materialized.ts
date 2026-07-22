@@ -1,3 +1,7 @@
+/**
+ * 模块职责：实现 packages/storage/sqlite-node/src/sqlite/storage/session-materialized.ts 中的核心功能。
+ */
+
 import type { SessionStats, SessionTreeEntry, ThinkingLevel } from "@earendil-works/pi-agent-core";
 import { invalidSession, isRecord } from "./shared.ts";
 

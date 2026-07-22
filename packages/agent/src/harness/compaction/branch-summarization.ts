@@ -1,3 +1,4 @@
+/** 模块职责：实现 packages/agent/src\harness\compaction\branch-summarization.ts 的 Agent 运行时逻辑。 */
 import { contentText, type Model, type Models, type RetryCallbacks, type RetryPolicy } from "@earendil-works/pi-ai";
 
 import type { AgentMessage } from "../../types.ts";
@@ -19,55 +20,55 @@ import {
 	serializeConversation,
 } from "./utils.ts";
 
-/** File-operation details stored on generated branch summary entries. */
+/** 存储在生成的分支摘要条目中的文件操作详情。 */
 export interface BranchSummaryDetails {
-	/** Files read while exploring the summarized branch. */
+	/** 探索被摘要分支期间读取的文件。 */
 	readFiles: string[];
-	/** Files modified while exploring the summarized branch. */
+	/** 探索被摘要分支期间修改的文件。 */
 	modifiedFiles: string[];
 }
 
 export type { FileOperations } from "./utils.ts";
 
-/** Prepared branch content for summarization. */
+/** 已准备好用于摘要的分支内容。 */
 export interface BranchPreparation {
-	/** Messages selected for the branch summary. */
+	/** 为分支摘要选取的消息。 */
 	messages: AgentMessage[];
-	/** File operations extracted from the branch. */
+	/** 从分支中提取的文件操作。 */
 	fileOps: FileOperations;
-	/** Estimated token count for selected messages. */
+	/** 所选消息的估算 token 数量。 */
 	totalTokens: number;
 }
 
-/** Entries selected for branch summarization. */
+/** 为分支摘要选取的条目。 */
 export interface CollectEntriesResult {
-	/** Entries to summarize in chronological order. */
+	/** 按时间顺序排列的待摘要条目。 */
 	entries: SessionTreeEntry[];
-	/** Deepest common ancestor between the previous leaf and target entry. */
+	/** 前一个叶节点与目标条目的最深公共祖先。 */
 	commonAncestorId: string | null;
 }
 
-/** Options for generating a branch summary. */
+/** 生成分支摘要的选项。 */
 export interface GenerateBranchSummaryOptions {
-	/** Provider collection the summarization request goes through; owns auth resolution. */
+	/** 摘要请求所使用的提供商集合，负责解析认证。 */
 	models: Models;
-	/** Model used for summarization. */
+	/** 用于摘要的模型。 */
 	model: Model<any>;
-	/** Abort signal for the summarization request. */
+	/** 摘要请求的中止信号。 */
 	signal: AbortSignal;
-	/** Optional instructions appended to or replacing the default prompt. */
+	/** 追加到默认提示或替换默认提示的可选指令。 */
 	customInstructions?: string;
-	/** Replace the default prompt with custom instructions instead of appending them. */
+	/** 使用自定义指令替换默认提示，而不是追加。 */
 	replaceInstructions?: boolean;
-	/** Tokens reserved for prompt and model output. Defaults to 16384. */
+	/** 为提示和模型输出预留的 token，默认为 16384。 */
 	reserveTokens?: number;
-	/** Optional retry policy for transient summarization errors. */
+	/** 针对临时摘要错误的可选重试策略。 */
 	retry?: RetryPolicy;
-	/** Optional callbacks for retry reporting. */
+	/** 用于报告重试情况的可选回调。 */
 	callbacks?: RetryCallbacks;
 }
 
-/** Collect entries that should be summarized before navigating to a different session tree entry. */
+/** 收集导航到其他会话树条目前应摘要的条目。 */
 export async function collectEntriesForBranchSummary(
 	session: Session,
 	oldLeafId: string | null,
@@ -123,7 +124,7 @@ function getMessageFromEntry(entry: SessionTreeEntry): AgentMessage | undefined 
 	}
 }
 
-/** Prepare branch entries for summarization within an optional token budget. */
+/** 在可选 token 预算内准备分支条目以供摘要。 */
 export function prepareBranchEntries(entries: SessionTreeEntry[], tokenBudget: number = 0): BranchPreparation {
 	const messages: AgentMessage[] = [];
 	const fileOps = createFileOps();
@@ -199,7 +200,7 @@ Use this EXACT format:
 
 Keep each section concise. Preserve exact file paths, function names, and error messages.`;
 
-/** Generate a summary for abandoned branch entries. */
+/** 为已离开的分支条目生成摘要。 */
 export async function generateBranchSummary(
 	entries: SessionTreeEntry[],
 	options: GenerateBranchSummaryOptions,

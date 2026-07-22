@@ -1,3 +1,4 @@
+/** 模块职责：实现 packages/ai/src\providers\anthropic.ts 相关的模型、协议或工具逻辑。 */
 import { anthropicMessagesApi } from "../api/anthropic-messages.lazy.ts";
 import { envApiKeyAuth, lazyOAuth } from "../auth/helpers.ts";
 import { loadAnthropicOAuth } from "../auth/oauth/load.ts";
@@ -10,7 +11,7 @@ export function anthropicProvider(): Provider<"anthropic-messages"> {
 		name: "Anthropic",
 		baseUrl: "https://api.anthropic.com",
 		auth: {
-			// ANTHROPIC_OAUTH_TOKEN takes precedence over ANTHROPIC_API_KEY
+			// ANTHROPIC_OAUTH_TOKEN 的优先级高于 ANTHROPIC_API_KEY
 			apiKey: envApiKeyAuth("Anthropic API key", ["ANTHROPIC_OAUTH_TOKEN", "ANTHROPIC_API_KEY"]),
 			oauth: lazyOAuth({ name: "Anthropic (Claude Pro/Max)", load: loadAnthropicOAuth }),
 		},
@@ -18,3 +19,4 @@ export function anthropicProvider(): Provider<"anthropic-messages"> {
 		api: anthropicMessagesApi(),
 	});
 }
+/** 模块职责：实现 packages/ai/src\providers\anthropic.ts 相关的模型、协议或工具逻辑。 */

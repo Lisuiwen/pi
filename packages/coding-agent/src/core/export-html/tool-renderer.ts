@@ -1,4 +1,7 @@
 /**
+ * 模块职责：实现 coding-agent 源码模块「core\export-html\tool-renderer.ts」，负责相关命令行、会话、工具或基础设施逻辑。
+ */
+/**
  * Tool HTML renderer for custom tools in HTML export.
  *
  * Renders custom tool calls and results to HTML by invoking their TUI renderers
@@ -23,9 +26,9 @@ export interface ToolHtmlRendererDeps {
 }
 
 export interface ToolHtmlRenderer {
-	/** Render a tool call to HTML. Returns undefined if tool has no custom renderer. */
+	/** Render a tool call to HTML. 返回 undefined if tool has no custom renderer. */
 	renderCall(toolCallId: string, toolName: string, args: unknown): string | undefined;
-	/** Render a tool result to collapsed/expanded HTML. Returns undefined if tool has no custom renderer. */
+	/** Render a tool result to collapsed/expanded HTML. 返回 undefined if tool has no custom renderer. */
 	renderResult(
 		toolCallId: string,
 		toolName: string,

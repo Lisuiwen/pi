@@ -1,3 +1,4 @@
+/** 模块职责：实现 packages/agent/src\harness\session\jsonl-storage.ts 的 Agent 运行时逻辑。 */
 import { uuidv7 } from "@earendil-works/pi-ai";
 import type {
 	FileSystem,
@@ -42,8 +43,8 @@ function buildLabelsById(entries: SessionTreeEntry[]): Map<string, string> {
 
 function generateEntryId(byId: { has(id: string): boolean }): string {
 	for (let i = 0; i < 100; i++) {
-		// The uuidv7 prefix is timestamp-derived and nearly constant between calls,
-		// so short ids must come from the random tail.
+		// uuidv7 前缀由时间戳生成，在相邻调用间几乎不变，
+		// 因此短 ID 必须取自随机尾部。
 		const id = uuidv7().slice(-8);
 		if (!byId.has(id)) return id;
 	}

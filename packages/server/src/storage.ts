@@ -1,3 +1,7 @@
+/**
+ * 模块职责：实现 packages/server/src/storage.ts 中的核心功能。
+ */
+
 import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { getInstancesPath, getMachinePath, getServerDir } from "./config.ts";
 import type { InstanceRecord, MachineRecord } from "./types.ts";

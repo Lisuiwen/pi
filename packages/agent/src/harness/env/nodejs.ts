@@ -1,3 +1,4 @@
+/** 模块职责：实现 packages/agent/src\harness\env\nodejs.ts 的 Agent 运行时逻辑。 */
 import { spawn } from "node:child_process";
 import { randomUUID } from "node:crypto";
 import { constants, createReadStream } from "node:fs";
@@ -227,7 +228,7 @@ function killProcessTree(pid: number): void {
 				windowsHide: true,
 			});
 		} catch {
-			// Ignore errors.
+			// 忽略错误。
 		}
 		return;
 	}
@@ -238,7 +239,7 @@ function killProcessTree(pid: number): void {
 		try {
 			process.kill(pid, "SIGKILL");
 		} catch {
-			// Process already dead.
+			// 进程已经终止。
 		}
 	}
 }
@@ -564,6 +565,6 @@ export class NodeExecutionEnv implements ExecutionEnv {
 	}
 
 	async cleanup(): Promise<void> {
-		// nothing to clean up for the local node implementation
+		// 本地 Node 实现没有需要清理的资源
 	}
 }

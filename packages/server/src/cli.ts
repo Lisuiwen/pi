@@ -1,4 +1,8 @@
 #!/usr/bin/env node
+/**
+ * 模块职责：实现 packages/server/src/cli.ts 中的核心功能。
+ */
+
 import { readFileSync } from "node:fs";
 import { createConnection } from "node:net";
 import { dirname, join } from "node:path";

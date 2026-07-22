@@ -1,3 +1,6 @@
+/**
+ * 模块职责：实现 coding-agent 源码模块「core\tools\write.ts」，负责相关命令行、会话、工具或基础设施逻辑。
+ */
 import type { AgentTool } from "@earendil-works/pi-agent-core";
 import { Container, Text } from "@earendil-works/pi-tui";
 import { mkdir as fsMkdir, writeFile as fsWriteFile } from "fs/promises";
@@ -19,13 +22,13 @@ const writeSchema = Type.Object({
 export type WriteToolInput = Static<typeof writeSchema>;
 
 /**
- * Pluggable operations for the write tool.
- * Override these to delegate file writing to remote systems (for example SSH).
+ * write 工具的可插拔操作。
+ * 可覆盖这些操作，将文件写入委托给远程系统（例如 SSH）。
  */
 export interface WriteOperations {
-	/** Write content to a file */
+	/** 将内容写入文件 */
 	writeFile: (absolutePath: string, content: string) => Promise<void>;
-	/** Create directory recursively */
+	/** 递归创建目录 */
 	mkdir: (dir: string) => Promise<void>;
 }
 
@@ -35,7 +38,7 @@ const defaultWriteOperations: WriteOperations = {
 };
 
 export interface WriteToolOptions {
-	/** Custom operations for file writing. Default: local filesystem */
+	/** 文件写入使用的自定义操作。默认使用本地文件系统。 */
 	operations?: WriteOperations;
 }
 
@@ -201,20 +204,19 @@ export function createWriteToolDefinition(
 			const absolutePath = resolveToCwd(path, cwd);
 			const dir = dirname(absolutePath);
 			return withFileMutationQueue(absolutePath, async () => {
-				// Do not reject from an abort event listener here: that would release the
-				// mutation queue while an in-flight filesystem operation may still finish.
-				// Checking signal.aborted after each await observes the same aborts while
-				// keeping the queue locked until the current operation has settled.
+				// 不要在取消事件监听器中直接 reject：这会释放修改队列，
+				// 而执行中的文件系统操作仍可能完成。每次 await 后检查 signal.aborted，
+				// 既能发现同样的取消操作，也能让队列保持锁定直到当前操作结束。
 				const throwIfAborted = (): void => {
 					if (signal?.aborted) throw new Error("Operation aborted");
 				};
 
 				throwIfAborted();
-				// Create parent directories if needed.
+				// 按需创建父目录。
 				await ops.mkdir(dir);
 				throwIfAborted();
 
-				// Write the file contents.
+				// 写入文件内容。
 				await ops.writeFile(absolutePath, content);
 				throwIfAborted();
 

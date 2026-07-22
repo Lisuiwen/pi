@@ -1,3 +1,4 @@
+/** 模块职责：实现 packages/ai/src\api\openai-completions.ts 相关的模型、协议或工具逻辑。 */
 import OpenAI from "openai";
 import type {
 	ChatCompletionAssistantMessageParam,
@@ -45,9 +46,9 @@ import { buildBaseOptions } from "./simple-options.ts";
 import { transformMessages } from "./transform-messages.ts";
 
 /**
- * Check if conversation messages contain tool calls or tool results.
- * This is needed because Anthropic (via proxy) requires the tools param
- * to be present when messages include tool_calls or tool role messages.
+ * 检查会话消息中是否包含工具调用或工具结果。
+ * 之所以需要这样做，是因为 Anthropic（经由代理）要求当消息中出现
+ * tool_calls 或 tool 角色消息时，必须带上 tools 参数。
  */
 function hasHeader(headers: ProviderHeaders | undefined, name: string): boolean {
 	if (!headers) return false;
@@ -263,8 +264,8 @@ export const stream: StreamFunction<"openai-completions", OpenAICompletionsOptio
 					});
 				} else if (block.type === "toolCall") {
 					block.arguments = parseStreamingJson(block.partialArgs);
-					// Finalize in-place and strip the scratch buffers so replay only
-					// carries parsed arguments.
+					// 就地完成收尾并移除临时缓冲区，这样重放时只会
+					// 携带已解析的参数。
 					delete block.partialArgs;
 					delete block.streamIndex;
 					stream.push({
@@ -347,8 +348,8 @@ export const stream: StreamFunction<"openai-completions", OpenAICompletionsOptio
 			for await (const chunk of openaiStream) {
 				if (!chunk || typeof chunk !== "object") continue;
 
-				// OpenAI documents ChatCompletionChunk.id as the unique chat completion identifier,
-				// and each chunk in a streamed completion carries the same id.
+				// OpenAI 将 ChatCompletionChunk.id 说明为唯一的 chat completion 标识符，
+				// 同一条流式 completion 中的每个 chunk 都会携带相同的 id。
 				output.responseId ||= chunk.id;
 				if (typeof chunk.model === "string" && chunk.model.length > 0 && chunk.model !== model.id) {
 					output.responseModel ||= chunk.model;
@@ -360,8 +361,8 @@ export const stream: StreamFunction<"openai-completions", OpenAICompletionsOptio
 				const choice = Array.isArray(chunk.choices) ? chunk.choices[0] : undefined;
 				if (!choice) continue;
 
-				// Fallback: some providers (e.g., Moonshot) return usage
-				// in choice.usage instead of the standard chunk.usage
+				// 兜底：某些 provider（例如 Moonshot）会把 usage
+				// 放在 choice.usage，而不是标准的 chunk.usage 中
 				if (!chunk.usage && (choice as any).usage) {
 					output.usage = parseChunkUsage((choice as any).usage, model);
 				}
@@ -391,10 +392,10 @@ export const stream: StreamFunction<"openai-completions", OpenAICompletionsOptio
 						});
 					}
 
-					// Some endpoints return reasoning in reasoning_content (llama.cpp),
-					// or reasoning (other openai compatible endpoints)
-					// Use the first non-empty reasoning field to avoid duplication
-					// (e.g., chutes.ai returns both reasoning_content and reasoning with same content)
+					// 某些端点会在 reasoning_content 中返回 reasoning（如 llama.cpp），
+					// 或直接放在 reasoning 中（其他 OpenAI 兼容端点）
+					// 使用第一个非空的 reasoning 字段以避免重复
+					// （例如 chutes.ai 会同时返回内容相同的 reasoning_content 和 reasoning）
 					const reasoningFields = ["reasoning_content", "reasoning", "reasoning_text"];
 					const deltaFields = choice.delta as Record<string, unknown>;
 					let foundReasoningField: string | null = null;
@@ -489,16 +490,16 @@ export const stream: StreamFunction<"openai-completions", OpenAICompletionsOptio
 		} catch (error) {
 			for (const block of output.content) {
 				delete (block as { index?: number }).index;
-				// Streaming scratch buffers are only used during parsing; never persist them.
+				// 流式临时缓冲区仅用于解析阶段，绝不能持久化。
 				delete (block as { partialArgs?: string }).partialArgs;
 				delete (block as { streamIndex?: number }).streamIndex;
 			}
 			output.stopReason = options?.signal?.aborted ? "aborted" : "error";
 			output.errorMessage = formatProviderError(normalizeProviderError(error));
-			// Some providers via OpenRouter give additional information in this field.
-			// normalizeProviderError already stringifies the parsed body (error.error)
-			// into errorMessage, so only append the raw metadata when it is not already
-			// present to avoid double-printing it.
+			// 某些经由 OpenRouter 的 provider 会在这个字段中提供额外信息。
+			// normalizeProviderError 已经把解析后的 body（error.error）字符串化
+			// 写入 errorMessage，因此仅在原始元数据尚未出现时才附加，
+			// 以避免重复打印。
 			const rawMetadata = (error as any)?.error?.metadata?.raw;
 			if (rawMetadata && !output.errorMessage.includes(String(rawMetadata))) {
 				output.errorMessage += `\n${rawMetadata}`;
@@ -560,7 +561,7 @@ function createClient(
 		}
 	}
 
-	// Merge options headers last so they can override defaults
+	// 最后再合并 options headers，以便覆盖默认值
 	if (optionsHeaders) {
 		Object.assign(headers, optionsHeaders);
 	}
@@ -624,7 +625,7 @@ function buildParams(
 			(params as any).tool_stream = true;
 		}
 	} else if (hasToolHistory(context.messages)) {
-		// Anthropic (via LiteLLM/proxy) requires tools param when conversation has tool_calls/tool_results
+		// Anthropic（经由 LiteLLM/代理）要求在会话包含 tool_calls/tool_results 时带上 tools 参数
 		params.tools = [];
 	}
 
@@ -672,7 +673,7 @@ function buildParams(
 				model.thinkingLevelMap?.[options.reasoningEffort] ?? options.reasoningEffort;
 		}
 	} else if (compat.thinkingFormat === "openrouter" && model.reasoning) {
-		// OpenRouter normalizes reasoning across providers via a nested reasoning object.
+		// OpenRouter 通过嵌套的 reasoning 对象在不同 provider 之间统一 reasoning 格式。
 		const openRouterParams = params as typeof params & { reasoning?: { effort?: string } };
 		if (options?.reasoningEffort) {
 			openRouterParams.reasoning = {
@@ -703,7 +704,7 @@ function buildParams(
 			stringThinkingParams.thinking = model.thinkingLevelMap?.off ?? "none";
 		}
 	} else if (options?.reasoningEffort && model.reasoning && compat.supportsReasoningEffort) {
-		// OpenAI-style reasoning_effort
+		// OpenAI 风格的 reasoning_effort
 		(params as any).reasoning_effort = model.thinkingLevelMap?.[options.reasoningEffort] ?? options.reasoningEffort;
 	} else if (!options?.reasoningEffort && model.reasoning && compat.supportsReasoningEffort) {
 		const offValue = model.thinkingLevelMap?.off;
@@ -712,12 +713,12 @@ function buildParams(
 		}
 	}
 
-	// OpenRouter provider routing preferences
+	// OpenRouter provider 路由偏好
 	if (model.compat?.openRouterRouting) {
 		(params as any).provider = model.compat.openRouterRouting;
 	}
 
-	// Vercel AI Gateway provider routing preferences
+	// Vercel AI Gateway provider 路由偏好
 	if (model.compat?.vercelGatewayRouting) {
 		const routing = model.compat.vercelGatewayRouting;
 		if (routing.only || routing.order) {
@@ -893,15 +894,15 @@ export function convertMessages(
 	const params: ChatCompletionMessageParam[] = [];
 
 	const normalizeToolCallId = (id: string): string => {
-		// Handle pipe-separated IDs from OpenAI Responses API
-		// Format: {call_id}|{id} where {id} can be 400+ chars with special chars (+, /, =)
-		// These come from providers like github-copilot, openai-codex, opencode
-		// Extract just the call_id part and normalize it
-		// Multiple tool calls in the same turn can share call_id but differ by item_id.
-		// Preserve item-level uniqueness when replaying into Chat Completions, which
-		// requires distinct tool call ids.
+		// 处理来自 OpenAI Responses API 的竖线分隔 ID
+		// 格式：{call_id}|{id}，其中 {id} 可能有 400+ 个字符并包含特殊字符（+, /, =）
+		// 这些 ID 来自 github-copilot、openai-codex、opencode 等 provider
+		// 这里只提取 call_id 部分并做规范化
+		// 同一轮中的多个工具调用可能共享 call_id，但 item_id 不同。
+		// 在重放到 Chat Completions 时保留 item 级唯一性，因为它
+		// 要求不同的 tool call id。
 		if (id.includes("|")) {
-			// Sanitize to allowed chars and truncate to 40 chars (OpenAI limit)
+			// 清洗为允许的字符，并截断到 40 个字符（OpenAI 限制）
 			const separatorIndex = id.indexOf("|");
 			const callId = id.slice(0, separatorIndex).replace(/[^a-zA-Z0-9_-]/g, "_");
 			const itemId = id.slice(separatorIndex + 1).replace(/[^a-zA-Z0-9_-]/g, "_");
@@ -930,8 +931,8 @@ export function convertMessages(
 
 	for (let i = 0; i < transformedMessages.length; i++) {
 		const msg = transformedMessages[i];
-		// Some providers don't allow user messages directly after tool results
-		// Insert a synthetic assistant message to bridge the gap
+		// 某些 provider 不允许工具结果后直接跟用户消息
+		// 这里插入一条合成的 assistant 消息来衔接
 		if (compat.requiresAssistantAfterToolResult && lastRole === "toolResult" && msg.role === "user") {
 			params.push({
 				role: "assistant",
@@ -968,7 +969,7 @@ export function convertMessages(
 				});
 			}
 		} else if (msg.role === "assistant") {
-			// Some providers don't accept null content, use empty string instead
+			// 某些 provider 不接受 null content，这里改用空字符串
 			const assistantMsg: ChatCompletionAssistantMessageParam = {
 				role: "assistant",
 				content: compat.requiresAssistantAfterToolResult ? "" : null,
@@ -991,22 +992,22 @@ export function convertMessages(
 				.filter((block) => block.thinking.trim().length > 0);
 			if (nonEmptyThinkingBlocks.length > 0) {
 				if (compat.requiresThinkingAsText) {
-					// Convert thinking blocks to plain text (no tags to avoid model mimicking them)
+					// 将 thinking 块转成纯文本（不加标签，避免模型模仿这些标签）
 					const thinkingText = nonEmptyThinkingBlocks
 						.map((block) => sanitizeSurrogates(block.thinking))
 						.join("\n\n");
 					assistantMsg.content = [{ type: "text", text: thinkingText }, ...assistantTextParts];
 				} else {
-					// Always send assistant content as a plain string (OpenAI Chat Completions
-					// API standard format). Sending as an array of {type:"text", text:"..."}
-					// objects is non-standard and causes some models (e.g. DeepSeek V3.2 via
-					// NVIDIA NIM) to mirror the content-block structure literally in their
-					// output, producing recursive nesting like [{'type':'text','text':'[{...}]'}].
+					// assistant content 一律以纯字符串发送（OpenAI Chat Completions
+					// API 的标准格式）。若发送为 {type:"text", text:"..."} 数组，
+					// 属于非标准形式，会导致某些模型（例如经由 NVIDIA NIM 的 DeepSeek V3.2）
+					// 在输出中原样镜像 content-block 结构，
+					// 形成类似 [{'type':'text','text':'[{...}]'}] 的递归嵌套。
 					if (assistantText.length > 0) {
 						assistantMsg.content = assistantText;
 					}
 
-					// Use the signature from the first thinking block if available (for llama.cpp server + gpt-oss)
+					// 如果可用，使用第一个 thinking 块中的 signature（适用于 llama.cpp server + gpt-oss）
 					let signature = nonEmptyThinkingBlocks[0].thinkingSignature;
 					if (model.provider === "opencode-go" && signature === "reasoning") {
 						signature = "reasoning_content";
@@ -1016,11 +1017,11 @@ export function convertMessages(
 					}
 				}
 			} else if (assistantText.length > 0) {
-				// Always send assistant content as a plain string (OpenAI Chat Completions
-				// API standard format). Sending as an array of {type:"text", text:"..."}
-				// objects is non-standard and causes some models (e.g. DeepSeek V3.2 via
-				// NVIDIA NIM) to mirror the content-block structure literally in their
-				// output, producing recursive nesting like [{'type':'text','text':'[{...}]'}].
+				// assistant content 一律以纯字符串发送（OpenAI Chat Completions
+				// API 的标准格式）。若发送为 {type:"text", text:"..."} 数组，
+				// 属于非标准形式，会导致某些模型（例如经由 NVIDIA NIM 的 DeepSeek V3.2）
+				// 在输出中原样镜像 content-block 结构，
+				// 形成类似 [{'type':'text','text':'[{...}]'}] 的递归嵌套。
 				assistantMsg.content = assistantText;
 			}
 
@@ -1055,10 +1056,10 @@ export function convertMessages(
 			) {
 				(assistantMsg as { reasoning_content?: string }).reasoning_content = "";
 			}
-			// Skip assistant messages that have no content and no tool calls.
-			// Some providers require "either content or tool_calls, but not none".
-			// Other providers also don't accept empty assistant messages.
-			// This handles aborted assistant responses that got no content.
+			// 跳过既没有内容也没有工具调用的 assistant 消息。
+			// 某些 provider 要求“要么有 content，要么有 tool_calls，不能两者都没有”。
+			// 另一些 provider 也不接受空的 assistant 消息。
+			// 这可以处理没有产出内容就中止的 assistant 响应。
 			const content = assistantMsg.content;
 			const hasContent =
 				content !== null &&
@@ -1076,17 +1077,17 @@ export function convertMessages(
 			for (; j < transformedMessages.length && transformedMessages[j].role === "toolResult"; j++) {
 				const toolMsg = transformedMessages[j] as ToolResultMessage;
 
-				// Extract text and image content
+				// 提取文本和图片内容
 				const textResult = toolMsg.content
 					.filter(isTextContentBlock)
 					.map((block) => block.text)
 					.join("\n");
 				const hasImages = toolMsg.content.some((c) => c.type === "image");
 
-				// Always send tool result with text (or placeholder if only images)
+				// 工具结果始终带上文本（若只有图片则使用占位文本）
 				const hasText = textResult.length > 0;
 				const toolResultText = hasText ? textResult : hasImages ? "(see attached image)" : "(no tool output)";
-				// Some providers require the 'name' field in tool results
+				// 某些 provider 要求工具结果中包含 `name` 字段
 				const toolResultMsg: ChatCompletionToolMessageParam = {
 					role: "tool",
 					content: sanitizeSurrogates(toolResultText),
@@ -1149,7 +1150,7 @@ export function convertMessages(
 						role: "system",
 						tools: convertTools(deferredTools, compat),
 					};
-					// Kimi accepts a system message with tools but omits the standard content field.
+					// Kimi 接受带 tools 的 system 消息，但会省略标准的 content 字段。
 					params.push(kimiToolMessage as unknown as ChatCompletionMessageParam);
 				}
 			}
@@ -1172,7 +1173,7 @@ function convertTools(
 			name: tool.name,
 			description: tool.description,
 			parameters: tool.parameters as any, // TypeBox already generates JSON Schema
-			// Only include strict if provider supports it. Some reject unknown fields.
+			// 仅在 provider 支持时才包含 strict；有些 provider 会拒绝未知字段。
 			...(compat.supportsStrictMode !== false && { strict: false }),
 		},
 	}));
@@ -1192,16 +1193,16 @@ function parseChunkUsage(
 	const cacheReadTokens = rawUsage.prompt_tokens_details?.cached_tokens ?? rawUsage.prompt_cache_hit_tokens ?? 0;
 	const cacheWriteTokens = rawUsage.prompt_tokens_details?.cache_write_tokens || 0;
 
-	// Follow documented OpenAI/OpenRouter semantics: cached_tokens is cache-read
-	// tokens (hits). OpenAI does not document or emit cache_write_tokens, but
-	// OpenRouter-compatible providers can include it as a separate write count.
-	// OpenRouter's own provider/tests affirm the separate mapping:
+	// 遵循 OpenAI/OpenRouter 的文档语义：cached_tokens 表示缓存读取
+	// token（命中数）。OpenAI 未文档化也不会返回 cache_write_tokens，但
+	// OpenRouter 兼容 provider 可能会把它作为单独的写入计数返回。
+	// OpenRouter 自己的 provider/测试也确认了这种独立映射：
 	// https://github.com/OpenRouterTeam/ai-sdk-provider/pull/409
-	// Do not subtract writes from cached_tokens, otherwise spec-compliant
-	// providers are under-reported. DS4 mirrors this contract too:
+	// 不要从 cached_tokens 中扣除写入数，否则符合规范的
+	// provider 会被低估。DS4 也遵循这一约定：
 	// https://github.com/antirez/ds4/pull/29
 	const input = Math.max(0, promptTokens - cacheReadTokens - cacheWriteTokens);
-	// OpenAI completion_tokens already includes reasoning_tokens.
+	// OpenAI 的 completion_tokens 已经包含 reasoning_tokens。
 	const outputTokens = rawUsage.completion_tokens || 0;
 	const usage: AssistantMessage["usage"] = {
 		input,
@@ -1243,9 +1244,9 @@ function mapStopReason(reason: ChatCompletionChunk.Choice["finish_reason"] | str
 }
 
 /**
- * Auto-detect compatibility settings from provider name and baseUrl.
- * Used as the base when model.compat is not set; explicit model.compat
- * entries override these detected values.
+ * 根据 provider 名称和 baseUrl 自动探测兼容性设置。
+ * 当 model.compat 未设置时，将其作为基础值；显式的 model.compat
+ * 条目会覆盖这些探测结果。
  */
 function detectCompat(model: Model<"openai-completions">): ResolvedOpenAICompletionsCompat {
 	const provider = model.provider;
@@ -1333,8 +1334,8 @@ function detectCompat(model: Model<"openai-completions">): ResolvedOpenAIComplet
 }
 
 /**
- * Get resolved compatibility settings for a model.
- * Auto-detects from provider/URL then overrides with explicit model.compat.
+ * 获取模型最终解析后的兼容性设置。
+ * 先根据 provider/URL 自动探测，再由显式的 model.compat 覆盖。
  */
 function getCompat(model: Model<"openai-completions">): ResolvedOpenAICompletionsCompat {
 	const detected = detectCompat(model);
@@ -1366,3 +1367,4 @@ function getCompat(model: Model<"openai-completions">): ResolvedOpenAICompletion
 		supportsLongCacheRetention: model.compat.supportsLongCacheRetention ?? detected.supportsLongCacheRetention,
 	};
 }
+/** 模块职责：实现 packages/ai/src\api\openai-completions.ts 相关的模型、协议或工具逻辑。 */

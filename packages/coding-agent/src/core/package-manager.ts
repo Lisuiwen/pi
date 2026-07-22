@@ -1,3 +1,6 @@
+/**
+ * 模块职责：实现 coding-agent 源码模块「core\package-manager.ts」，负责相关命令行、会话、工具或基础设施逻辑。
+ */
 import type { ChildProcess, ChildProcessByStdio } from "node:child_process";
 import { createHash } from "node:crypto";
 import { chmodSync, existsSync, mkdirSync, readdirSync, readFileSync, rmSync, statSync, writeFileSync } from "node:fs";
@@ -171,7 +174,7 @@ interface ResourceAccumulator {
 
 /**
  * Compute a numeric precedence rank for a resource based on its metadata.
- * Lower rank = higher precedence. Used to sort resolved resources so that
+ * Lower rank = higher precedence. 用于sort resolved resources so that
  * name-collision resolution ("first wins") produces the correct outcome.
  *
  * Precedence (highest to lowest):
@@ -1669,7 +1672,7 @@ export class DefaultPackageManager implements PackageManager {
 
 	/**
 	 * Get a unique identity for a package, ignoring version/ref.
-	 * Used to detect when the same package is in both global and project settings.
+	 * 用于detect when the same package is in both global and project settings.
 	 * For git packages, uses normalized host/path to ensure SSH and HTTPS URLs
 	 * for the same repository are treated as identical.
 	 */
@@ -2200,7 +2203,7 @@ export class DefaultPackageManager implements PackageManager {
 
 	/**
 	 * Collect all files from a package for a resource type, applying manifest patterns.
-	 * Returns { allFiles, enabledByManifest } where enabledByManifest is the set of files
+	 * 返回 { allFiles, enabledByManifest } where enabledByManifest is the set of files
 	 * that pass the manifest's own patterns.
 	 */
 	private collectManifestFiles(

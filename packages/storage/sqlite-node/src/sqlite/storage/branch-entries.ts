@@ -1,3 +1,7 @@
+/**
+ * 模块职责：实现 packages/storage/sqlite-node/src/sqlite/storage/branch-entries.ts 中的核心功能。
+ */
+
 import type { SessionTreeEntry } from "@earendil-works/pi-agent-core";
 import type { SqliteDatabase } from "../types.ts";
 import { decodeEntry, type SessionEntryRow } from "./session-entries.ts";
@@ -33,7 +37,7 @@ export async function getMaterializedBranchPathOrCompaction(
 	const entries: SessionTreeEntry[] = [];
 	for (const branchRow of branchRows) {
 		// leaf entries are navigation markers used to mark which branch became active;
-		// they are not part of the model/context path reconstructed from branch_entries.
+		// 它们不属于根据 branch_entries 重建的模型/上下文路径。
 		const cached = byId.get(branchRow.entry_id);
 		if (cached) {
 			if (cached.type !== "leaf") {

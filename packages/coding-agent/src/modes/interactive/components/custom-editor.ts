@@ -1,8 +1,11 @@
+/**
+ * 模块职责：实现 coding-agent 源码模块「modes\interactive\components\custom-editor.ts」，负责相关命令行、会话、工具或基础设施逻辑。
+ */
 import { Editor, type EditorOptions, type EditorTheme, type TUI } from "@earendil-works/pi-tui";
 import type { AppKeybinding, KeybindingsManager } from "../../../core/keybindings.ts";
 
 /**
- * Custom editor that handles app-level keybindings for coding-agent.
+ * Custom editor that handles app-level keybindings for 编码代理.
  */
 export class CustomEditor extends Editor {
 	private keybindings: KeybindingsManager;
@@ -12,7 +15,7 @@ export class CustomEditor extends Editor {
 	public onEscape?: () => void;
 	public onCtrlD?: () => void;
 	public onPasteImage?: () => void;
-	/** Handler for extension-registered shortcuts. Returns true if handled. */
+	/** Handler for extension-registered shortcuts. 返回 true if handled. */
 	public onExtensionShortcut?: (data: string) => boolean;
 
 	constructor(tui: TUI, theme: EditorTheme, keybindings: KeybindingsManager, options?: EditorOptions) {

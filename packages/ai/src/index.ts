@@ -1,10 +1,10 @@
+/** 模块职责：实现 packages/ai/src\index.ts 相关的模型、协议或工具逻辑。 */
 export type { Static, TSchema } from "typebox";
 export { Type } from "typebox";
 
-// Core only, side-effect free: no generated catalogs, no provider factories,
-// no api-registry, no OAuth implementations, no compat. Provider factories
-// live under "@earendil-works/pi-ai/providers/*", API implementations under
-// "@earendil-works/pi-ai/api/*", the old global API under
+// 仅导出无副作用的核心内容：不包含生成目录、提供商工厂、API 注册表、OAuth 实现和 compat。
+// 提供商工厂位于 "@earendil-works/pi-ai/providers/*"，API 实现位于
+// "@earendil-works/pi-ai/api/*"，旧版全局 API 位于
 // "@earendil-works/pi-ai/compat".
 export type { AnthropicEffort, AnthropicOptions, AnthropicThinkingDisplay } from "./api/anthropic-messages.ts";
 export type { AzureOpenAIResponsesOptions } from "./api/azure-openai-responses.ts";
@@ -45,3 +45,4 @@ export { contentText } from "./utils/text.ts";
 export * from "./utils/typebox-helpers.ts";
 export { uuidv7 } from "./utils/uuid.ts";
 export * from "./utils/validation.ts";
+/** 模块职责：实现 packages/ai/src\index.ts 相关的模型、协议或工具逻辑。 */

@@ -1,7 +1,10 @@
 /**
+ * 模块职责：实现 coding-agent 源码模块「utils\photon.ts」，负责相关命令行、会话、工具或基础设施逻辑。
+ */
+/**
  * Photon image processing wrapper.
  *
- * This module provides a unified interface to @silvia-odwyer/photon-node that works in:
+ * 此模块 provides a unified interface to @silvia-odwyer/photon-node that works in:
  * 1. Node.js (development, npm run build)
  * 2. Bun compiled binaries (standalone distribution)
  *
@@ -111,7 +114,7 @@ function patchPhotonWasmRead(): () => void {
 
 /**
  * Load the photon module asynchronously.
- * Returns cached module on subsequent calls.
+ * 返回 cached module on subsequent calls.
  */
 export async function loadPhoton(): Promise<typeof import("@silvia-odwyer/photon-node") | null> {
 	if (photonModule) {

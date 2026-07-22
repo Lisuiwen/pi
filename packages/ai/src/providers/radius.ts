@@ -1,3 +1,4 @@
+/** 模块职责：实现 packages/ai/src\providers\radius.ts 相关的模型、协议或工具逻辑。 */
 import { piMessagesApi } from "../api/pi-messages.lazy.ts";
 import { envApiKeyAuth, lazyOAuth } from "../auth/helpers.ts";
 import { loadRadiusOAuth } from "../auth/oauth/load.ts";
@@ -16,7 +17,7 @@ export interface RadiusProviderOptions {
 	gateway?: string;
 }
 
-/** Radius gateway provider with a persisted, dynamically refreshed catalog. */
+/** 使用持久化且动态刷新目录的 Radius 网关提供商。 */
 export function radiusProvider(options: RadiusProviderOptions = {}): Provider<"pi-messages"> {
 	const id = options.id ?? "radius";
 	const name = options.name ?? "Radius";
@@ -39,7 +40,7 @@ export function radiusProvider(options: RadiusProviderOptions = {}): Provider<"p
 					const stored = await context.store.read();
 					if (stored) models = stored.models.filter((model) => model.provider === id) as typeof models;
 
-					// Import catalogs cached by the pre-ModelsStore Radius implementation.
+					// 导入旧版（使用 ModelsStore 之前）Radius 实现缓存的目录。
 					if (!stored && context.credential?.type === "oauth") {
 						const legacy = getRadiusModels(id, context.credential);
 						if (legacy.length > 0) {
@@ -65,3 +66,4 @@ export function radiusProvider(options: RadiusProviderOptions = {}): Provider<"p
 		streamSimple: (model, context, streamOptions) => streams.streamSimple(model, context, streamOptions),
 	};
 }
+/** 模块职责：实现 packages/ai/src\providers\radius.ts 相关的模型、协议或工具逻辑。 */

@@ -1,3 +1,4 @@
+/** 模块职责：实现 packages/ai/src\utils\node-http-proxy.ts 相关的模型、协议或工具逻辑。 */
 import type { ProviderEnv } from "../types.ts";
 import { getProviderEnvValue } from "./provider-env.ts";
 
@@ -110,3 +111,4 @@ export function resolveHttpProxyUrlForTarget(targetUrl: string | URL, env?: Prov
 
 	return proxyUrl;
 }
+/** 模块职责：实现 packages/ai/src\utils\node-http-proxy.ts 相关的模型、协议或工具逻辑。 */

@@ -1,3 +1,4 @@
+/** 模块职责：实现 packages/ai/src\utils\validation.ts 相关的模型、协议或工具逻辑。 */
 import { Compile } from "typebox/compile";
 import type { TLocalizedValidationError } from "typebox/error";
 import { Value } from "typebox/value";
@@ -254,11 +255,11 @@ function formatValidationPath(error: TLocalizedValidationError): string {
 }
 
 /**
- * Finds a tool by name and validates the tool call arguments against its TypeBox schema
- * @param tools Array of tool definitions
- * @param toolCall The tool call from the LLM
- * @returns The validated arguments
- * @throws Error if tool is not found or validation fails
+ * 按名称查找工具，并依据其 TypeBox schema 校验工具调用参数。
+ * @param tools 工具定义数组
+ * @param toolCall 来自 LLM 的工具调用
+ * @returns 校验后的参数
+ * @throws 当工具不存在或校验失败时抛出错误
  */
 export function validateToolCall(tools: Tool[], toolCall: ToolCall): any {
 	const tool = tools.find((t) => t.name === toolCall.name);
@@ -269,11 +270,11 @@ export function validateToolCall(tools: Tool[], toolCall: ToolCall): any {
 }
 
 /**
- * Validates tool call arguments against the tool's TypeBox schema
- * @param tool The tool definition with TypeBox schema
- * @param toolCall The tool call from the LLM
- * @returns The validated (and potentially coerced) arguments
- * @throws Error with formatted message if validation fails
+ * 依据工具的 TypeBox schema 校验工具调用参数。
+ * @param tool 携带 TypeBox schema 的工具定义
+ * @param toolCall 来自 LLM 的工具调用
+ * @returns 校验后的参数（必要时会做类型规整）
+ * @throws 当校验失败时抛出带格式化信息的错误
  */
 export function validateToolArguments(tool: Tool, toolCall: ToolCall): any {
 	const args = structuredClone(toolCall.arguments);
@@ -308,3 +309,4 @@ export function validateToolArguments(tool: Tool, toolCall: ToolCall): any {
 
 	throw new Error(errorMessage);
 }
+/** 模块职责：实现 packages/ai/src\utils\validation.ts 相关的模型、协议或工具逻辑。 */

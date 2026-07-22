@@ -1,23 +1,23 @@
-# DOOM Overlay Demo
+# DOOM 覆盖层演示
 
-Play DOOM as an overlay in pi. Demonstrates that the overlay system can handle real-time game rendering at 35 FPS.
+在 pi 中以覆盖层运行 DOOM。演示覆盖层系统如何以 35 FPS 处理实时游戏渲染。
 
-## Usage
+## 用法
 
 ```bash
 pi --extension ./examples/extensions/doom-overlay
 ```
 
-Then run:
+然后运行：
 ```
 /doom-overlay
 ```
 
-The shareware WAD file (~4MB) is auto-downloaded on first run.
+共享版 WAD 文件（约 4MB）会在首次运行时自动下载。
 
-## Controls
+## 操作
 
-| Action | Keys |
+| 操作 | 按键 |
 |--------|------|
 | Move | WASD or Arrow Keys |
 | Run | Shift + WASD |
@@ -28,18 +28,18 @@ The shareware WAD file (~4MB) is auto-downloaded on first run.
 | Menu | Escape |
 | Pause/Quit | Q |
 
-## How It Works
+## 工作原理
 
-DOOM runs as WebAssembly compiled from [doomgeneric](https://github.com/ozkl/doomgeneric). Each frame is rendered using half-block characters (▀) with 24-bit color, where the top pixel is the foreground color and the bottom pixel is the background color.
+DOOM 以由 [doomgeneric](https://github.com/ozkl/doomgeneric) 编译得到的 WebAssembly 运行。每一帧使用带 24 位颜色的半块字符（▀）渲染：上方像素使用前景色，下方像素使用背景色。
 
-The overlay uses:
+覆盖层使用：
 - `width: "90%"` - 90% of terminal width
 - `maxHeight: "80%"` - Maximum 80% of terminal height
 - `anchor: "center"` - Centered in terminal
 
-Height is calculated from width to maintain DOOM's 3.2:1 aspect ratio (accounting for half-block rendering).
+高度根据宽度计算，以保持 DOOM 的 3.2:1 宽高比（同时考虑半块字符渲染）。
 
-## Credits
+## 致谢
 
 - [id Software](https://github.com/id-Software/DOOM) for the original DOOM
 - [doomgeneric](https://github.com/ozkl/doomgeneric) for the portable DOOM implementation

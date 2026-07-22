@@ -1,3 +1,6 @@
+/**
+ * 模块职责：实现 coding-agent 源码模块「modes\interactive\components\tree-selector.ts」，负责相关命令行、会话、工具或基础设施逻辑。
+ */
 import {
 	type Component,
 	Container,
@@ -148,7 +151,7 @@ class TreeList implements Component {
 
 	/**
 	 * Find the index of the nearest visible entry, walking up the parent chain if needed.
-	 * Returns the index in filteredNodes, or the last index as fallback.
+	 * 返回 the index in filteredNodes, or the last index as fallback.
 	 */
 	private findNearestVisibleIndex(entryId: string | null): number {
 		if (this.filteredNodes.length === 0) return 0;

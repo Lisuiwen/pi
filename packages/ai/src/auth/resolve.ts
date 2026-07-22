@@ -1,3 +1,4 @@
+/** 模块职责：实现 packages/ai/src\auth\resolve.ts 相关的模型、协议或工具逻辑。 */
 import type { ProviderEnv } from "../types.ts";
 import type {
 	ApiKeyAuth,
@@ -29,10 +30,9 @@ export class ModelsError extends Error {
 }
 
 /**
- * Auth resolution shared by the `Models` and `ImagesModels` collections.
- * A stored credential owns the provider: ambient/env is consulted only when
- * nothing is stored. No silent env fallback after a failed refresh or for a
- * credential type without a matching handler.
+ * `Models` 与 `ImagesModels` 共用的认证解析逻辑。
+ * 一旦存在已存储凭据，就以该凭据为准；只有完全未存储时才会回退到环境来源。
+ * 刷新失败后不会静默回退到环境变量；没有匹配处理器的凭据类型也同样不会回退。
  */
 export async function resolveProviderAuth(
 	provider: { id: string; auth: ProviderAuth },
@@ -62,7 +62,7 @@ export async function resolveProviderAuth(
 		return undefined;
 	}
 
-	// Ambient (env vars, AWS profiles, ADC files).
+	// 环境来源（环境变量、AWS profile、ADC 文件等）。
 	return provider.auth.apiKey
 		? resolveApiKey(requestAuthContext, provider.auth.apiKey, provider.id, undefined)
 		: undefined;
@@ -76,10 +76,9 @@ function overlayEnvAuthContext(base: AuthContext, env: ProviderEnv): AuthContext
 }
 
 /**
- * OAuth resolution with double-checked locking (same pattern as today's
- * AuthStorage): valid tokens cost zero locks; expired tokens lock, re-check
- * expiry under the lock, refresh once globally, and persist the rotated
- * credential before release.
+ * 使用双重检查加锁的 OAuth 解析流程（与当前 AuthStorage 的模式一致）：
+ * 有效令牌无需加锁；令牌过期时才加锁，并在锁内再次检查过期状态，
+ * 全局只刷新一次，再在释放锁前持久化轮换后的凭据。
  */
 async function resolveStoredOAuth(
 	credentials: CredentialStore,
@@ -90,7 +89,7 @@ async function resolveStoredOAuth(
 	let credential = stored;
 
 	if (Date.now() >= credential.expires) {
-		// Optimistic check said expired; the authoritative check runs under the lock.
+		// 乐观检查认为已过期；最终以锁内的权威检查结果为准。
 		let post: Credential | undefined;
 		try {
 			post = await credentials.modify(providerId, async (current) => {
@@ -137,3 +136,4 @@ async function readCredential(credentials: CredentialStore, providerId: string):
 		throw new ModelsError("auth", `Credential store read failed for ${providerId}`, { cause: error });
 	}
 }
+/** 模块职责：实现 packages/ai/src\auth\resolve.ts 相关的模型、协议或工具逻辑。 */

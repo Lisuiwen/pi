@@ -1,3 +1,6 @@
+/**
+ * 模块职责：实现 coding-agent 源码模块「core\usage-totals.ts」，负责相关命令行、会话、工具或基础设施逻辑。
+ */
 import type { Usage } from "@earendil-works/pi-ai/compat";
 import type { SessionEntry } from "./session-manager.ts";
 
@@ -33,7 +36,7 @@ export interface UsageCostBreakdownEntry {
 	tokens: number;
 }
 
-/** Group attributable assistant usage by model and all other usage into a separate bucket. */
+/** 按模型归集可归因的助手用量，并将其他用量归入单独分组。 */
 export function getUsageCostBreakdown(entries: SessionEntry[]): UsageCostBreakdownEntry[] {
 	const totalsByKey = new Map<string, UsageTotals>();
 
